@@ -20,7 +20,7 @@ export const routes: Routes = [
     component: Authentication,
     children: [
       { path: 'login', component: LoginForm },
-      { path: 'signup', component: SignUpForm },
+      { path: 'register', component: SignUpForm },
       { path: '', redirectTo: 'login', pathMatch: 'full' }, // default: /auth => /auth/login
     ],
   },

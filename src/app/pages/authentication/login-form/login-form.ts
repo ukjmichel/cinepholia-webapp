@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  signal,
+  Signal,
+} from '@angular/core';
 import {
   FormControl,
   Validators,
@@ -34,13 +39,21 @@ export class LoginForm {
   readonly password = new FormControl('', [Validators.required]);
   hide = signal(true);
 
-  // This could become a signal array for more errors if you want to demo @for
   errorMessages = signal<string[]>([]);
 
+  // AuthFacade.error() must return a Signal<string | null>!
+  apiErrorMessage: Signal<string | null>;
+
   constructor(private authFacade: AuthFacade) {
+    this.apiErrorMessage = this.authFacade.error;
+    this.authFacade.clearError();
+
     merge(this.email.statusChanges, this.email.valueChanges)
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateErrorMessages());
+      .subscribe(() => {
+        this.updateErrorMessages();
+        this.clearApiError(); // Clear API error on user interaction
+      });
   }
 
   updateErrorMessages() {
@@ -49,7 +62,7 @@ export class LoginForm {
       messages.push('You must enter a value');
     }
     if (this.email.hasError('email')) {
-      messages.push('format email invalide');
+      messages.push('Format email invalide');
     }
     this.errorMessages.set(messages);
   }
@@ -66,5 +79,9 @@ export class LoginForm {
       return;
     }
     this.authFacade.login(this.email.value!, this.password.value!);
+  }
+
+  clearApiError() {
+    this.authFacade.clearError();
   }
 }

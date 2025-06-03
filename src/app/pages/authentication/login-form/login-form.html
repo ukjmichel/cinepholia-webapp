@@ -12,6 +12,8 @@
         required
         autocomplete="username"
         type="email"
+        (focus)="clearApiError()"
+        (input)="clearApiError()"
       />
       @if (email.invalid && (email.dirty || email.touched)) {
       <mat-error>
@@ -32,6 +34,8 @@
         [formControl]="password"
         required
         autocomplete="current-password"
+        (focus)="clearApiError()"
+        (input)="clearApiError()"
       />
       <button
         mat-icon-button
@@ -50,10 +54,12 @@
       </mat-error>
       }
     </mat-form-field>
+    <div class="api-error-message">
+      @if(apiErrorMessage()){ {{apiErrorMessage()}} }
+    </div>
 
     <button
       mat-raised-button
-      color="primary"
       class="full-width"
       type="submit"
       [disabled]="email.invalid || password.invalid"
