@@ -1,0 +1,18 @@
+@if (createdHalls() && createdHalls()!.length > 0) {
+<div class="hall-results">
+  @for (hall of createdHalls()!; track hall.hallId) {
+  <div class="hall-card">
+    <h3>Salle {{ hall.hallId }}</h3>
+    <p><strong>Cinéma ID:</strong> {{ hall.theaterId }}</p>
+    <p>
+      <strong>Nombre de sièges:</strong>
+      {{ getSeatCount(hall) }}
+    </p>
+  </div>
+  }
+</div>
+} @else {
+<div class="empty-state">
+  <p>Aucune salle trouvée.</p>
+</div>
+}

@@ -63,6 +63,11 @@
   display: block;
 }
 
+.login-form mat-error div {
+  position: relative;
+  bottom: 1rem;
+}
+
 /* Fix for Angular Material outline appearance error positioning */
 .login-form
   .mat-form-field-appearance-outline
@@ -83,7 +88,7 @@
 }
 
 .login-form mat-form-field {
-  margin-bottom: 2rem; /* Increased to accommodate error messages */
+  margin-bottom: 1rem; /* Increased to accommodate error messages */
   position: relative;
 }
 
@@ -144,4 +149,10 @@
 .api-error-message {
   text-align: center;
   color: rgb(244, 67, 54);
+}
+
+p {
+  text-align: center;
+  margin: 10px;
+  color: #3f51b5;
 }

@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { AuthFacade } from '../../../store/auth/auth.facade'; // Update the import path as needed
 import { Signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-signup-form',
@@ -23,6 +24,7 @@ import { Signal } from '@angular/core';
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule
   ],
   standalone: true,
 })

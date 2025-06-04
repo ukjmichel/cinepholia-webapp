@@ -1,0 +1,138 @@
+<div class="add-hall-form">
+  <header>
+    <h1>Ajouter une salle</h1>
+  </header>
+  <form [formGroup]="hallForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Theater ID -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Identifiant du cinéma</mat-label>
+      <input
+        matInput
+        placeholder="theater123"
+        formControlName="theaterId"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(hallForm.get('theaterId')?.invalid && (hallForm.get('theaterId')?.dirty || hallForm.get('theaterId')?.touched)) {
+        <mat-error>L'identifiant du cinéma est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Hall ID -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Identifiant de la salle</mat-label>
+      <input
+        matInput
+        placeholder="hallA"
+        formControlName="hallId"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(hallForm.get('hallId')?.invalid && (hallForm.get('hallId')?.dirty || hallForm.get('hallId')?.touched)) {
+        <mat-error>L'identifiant de la salle est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Number of Rows -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre de rangées</mat-label>
+      <input
+        matInput
+        type="number"
+        min="1"
+        placeholder="5"
+        formControlName="rows"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(hallForm.get('rows')?.invalid && (hallForm.get('rows')?.dirty || hallForm.get('rows')?.touched)) {
+        <mat-error>Le nombre de rangées doit être supérieur à 0</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Number of Columns -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre de sièges par rangée</mat-label>
+      <input
+        matInput
+        type="number"
+        min="1"
+        placeholder="10"
+        formControlName="columns"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(hallForm.get('columns')?.invalid && (hallForm.get('columns')?.dirty || hallForm.get('columns')?.touched)) {
+        <mat-error>Le nombre de sièges doit être supérieur à 0</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Editable seat grid using @if and @for -->
+    @if(seatsGrid.length > 0) {
+      <div class="seat-grid">
+        <h3>Configuration des sièges</h3>
+        <p class="grid-instructions">Personnalisez les identifiants des sièges :</p>
+        <table>
+          @for(row of seatsGrid; track i; let i = $index) {
+            <tr>
+              @for(seat of row; track j; let j = $index) {
+                <td>
+                  <input
+                    type="text"
+                    [value]="seat"
+                    (input)="onSeatInputChange($event, i, j)"
+                    class="seat-input"
+                    maxlength="8"
+                    [placeholder]="'Siège ' + seat"
+                  />
+                </td>
+              }
+            </tr>
+          }
+        </table>
+      </div>
+    }
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="full-width"
+      type="submit"
+      [disabled]="hallForm.invalid || isLoading()"
+    >
+      @if(isLoading()) {
+        <ng-container>
+          <mat-icon>hourglass_empty</mat-icon>
+          Création en cours...
+        </ng-container>
+      } @else {
+        <ng-container>
+          <mat-icon>add</mat-icon>
+          Ajouter la salle
+        </ng-container>
+      }
+    </button>
+    
+    @if(successMessage()) {
+      <div class="success-message">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+    
+    @if(apiError()) {
+      <div class="api-error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ apiError() }}</span>
+      </div>
+    }
+  </form>
+</div>

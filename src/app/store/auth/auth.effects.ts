@@ -38,10 +38,11 @@ export class AuthEffects {
       ),
       exhaustMap(({ email, password }) =>
         this.http
-          .post<LoginResponse>(`${this.apiUrl}auth/login`, {
-            emailOrUsername: email,
-            password,
-          })
+          .post<LoginResponse>(
+            `${this.apiUrl}auth/login`,
+            { emailOrUsername: email, password },
+            { withCredentials: true } // <-- This is the key change!
+          )
           .pipe(
             tap((response) =>
               console.log('[AuthEffects] API Response:', response)
@@ -51,7 +52,7 @@ export class AuthEffects {
                 '[AuthEffects] Dispatching loginSuccess with:',
                 response
               );
-              return loginSuccess(response); // Pass the full response to the action
+              return loginSuccess(response);
             }),
             catchError((error) => {
               console.error('[AuthEffects] Login failed:', error);
@@ -76,13 +77,11 @@ export class AuthEffects {
       ),
       exhaustMap(({ email, username, password, firstName, lastName }) =>
         this.http
-          .post<LoginResponse>(`${this.apiUrl}auth/register`, {
-            email,
-            username,
-            password,
-            firstName,
-            lastName,
-          })
+          .post<LoginResponse>(
+            `${this.apiUrl}auth/register`,
+            { email, username, password, firstName, lastName },
+            { withCredentials: true } // <--- Same here!
+          )
           .pipe(
             tap((response) =>
               console.log('[AuthEffects] API Response:', response)
@@ -108,16 +107,11 @@ export class AuthEffects {
   loadUser$ = createEffect(() =>
     this.actions$.pipe(
       ofType(getUser),
-      switchMap(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          return of(getUserFailure({ error: 'No authentication token found' }));
-        }
-        const headers = new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-        });
-        return this.http
-          .get<LoginResponse>(`${this.apiUrl}auth/user`, { headers })
+      switchMap(() =>
+        this.http
+          .get<LoginResponse>(`${this.apiUrl}auth/user`, {
+            withCredentials: true,
+          }) // <--- Only this needed!
           .pipe(
             tap((response) =>
               console.log('[AuthEffects] API Response:', response)
@@ -127,36 +121,12 @@ export class AuthEffects {
               console.error('[AuthEffects] API Error:', error);
               return of(getUserFailure({ error: 'Failed to fetch user data' }));
             })
-          );
-      })
+          )
+      )
     )
   );
 
-  /** Save tokens after login/register */
-  setToken$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(loginSuccess, registerSuccess),
-        tap(({ data }) => {
-          if (data?.tokens?.accessToken) {
-            localStorage.setItem('token', data.tokens.accessToken);
-          }
-        })
-      ),
-    { dispatch: false }
-  );
-
-  /** Clear tokens on logout */
-  clearToken$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(logout),
-        tap(() => {
-          localStorage.removeItem('token');
-        })
-      ),
-    { dispatch: false }
-  );
+  // Remove setToken$ and clearToken$ effects since you no longer store tokens in localStorage
 
   /** Redirect after login/register */
   redirectAfterAuth$ = createEffect(
@@ -168,13 +138,25 @@ export class AuthEffects {
     { dispatch: false }
   );
 
-  /** Redirect after logout */
-  redirectAfterLogout$ = createEffect(
+  /** Logout Effect: call logout API and redirect */
+  logout$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(logout),
-        tap(() => this.router.navigate(['/auth/login']))
+        exhaustMap(() =>
+          this.http
+            .post(`${this.apiUrl}auth/logout`, {}, { withCredentials: true }) // Backend should clear cookies
+            .pipe(
+              tap(() => this.router.navigate(['/auth/login'])),
+              catchError((error) => {
+                // You might want to handle logout error, but still redirect
+                this.router.navigate(['/auth/login']);
+                return of();
+              })
+            )
+        )
       ),
     { dispatch: false }
   );
 }
+

@@ -1,151 +1,160 @@
 .signup-form {
-    max-width: 400px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .signup-form h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .signup-form mat-form-field {
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-  
-  .signup-form mat-form-field:last-child {
-    margin-bottom: 0;
-  }
-  
-  /* Material Design form field styling */
-  .signup-form .mat-form-field {
-    font-family: "Roboto", sans-serif;
-  }
-  
-  .signup-form .mat-form-field-label {
-    color: #666;
-    font-size: 14px;
-  }
-  
-  .signup-form .mat-input-element {
-    background: #fff !important; /* Make input background white */
-    padding: 12px 0;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    color: #333;
-    border-radius: 4px;
-  }
-  
-  .signup-form .mat-form-field-underline {
-    background-color: #e0e0e0;
-  }
-  
-  .signup-form .mat-form-field-ripple {
-    background-color: #3f51b5;
-  }
-  
-  .signup-form .mat-form-field.mat-focused .mat-form-field-label {
-    color: #3f51b5;
-  }
-  
-  .signup-form .mat-form-field.mat-focused .mat-form-field-ripple {
-    background-color: #3f51b5;
-  }
-  
-  /* Error styling - Closer distance for all inputs */
-  .signup-form mat-error {
-    font-size: 12px;
-    height: 20px;
-    color: #f44336;
-    display: block;
-  }
-  
-  /* Fix for Angular Material outline appearance error positioning */
-  .signup-form
-    .mat-form-field-appearance-outline
-    .mat-form-field-subscript-wrapper {
-    position: relative;
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-    min-height: 20px; /* Reserve space for errors */
-  }
-  
-  .signup-form .mat-form-field-appearance-outline {
-    position: relative; /* Required for absolute positioning of errors */
-  }
-  
-  /* Ensure consistent spacing for all form fields */
-  .signup-form .mat-form-field-wrapper {
-    padding-bottom: 0 !important;
-  }
-  
-  .signup-form mat-form-field {
-    margin-bottom: 2rem; /* Increased to accommodate error messages */
-    position: relative;
-  }
-  
-  .signup-form .mat-form-field.mat-form-field-invalid .mat-form-field-label {
-    color: #f44336;
-  }
-  
-  .signup-form .mat-form-field.mat-form-field-invalid .mat-form-field-ripple {
-    background-color: #f44336;
-  }
-  
-  /* Password visibility toggle button */
-  .signup-form .mat-icon-button {
-    color: #666;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-  }
-  
-  .signup-form .mat-icon-button:hover {
-    color: #3f51b5;
-    background-color: rgba(63, 81, 181, 0.04);
-  }
-  
-  .signup-form .mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-  
-  /* Responsive design */
-  @media (max-width: 480px) {
-    .signup-form {
-      margin: 1rem;
-      padding: 1.5rem;
-      max-width: none;
-    }
-  }
-  
-  /* Focus states for accessibility */
-  .signup-form .mat-input-element:focus {
-    outline: 2px solid #3f51b5;
-    outline-offset: 2px;
-  }
-  
-  .signup-form .mat-icon-button:focus {
-    outline: 2px solid #3f51b5;
-    outline-offset: 2px;
-  }
-  
-  .signup-form button[type="submit"] {
-    width: 100%;
-    display: block;
-    margin: 1rem 0 0 0;
-    text-align: center;
-  }
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-  .api-error-message {
-    text-align: center;
-    color: rgb(244, 67, 54);
+.signup-form h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.signup-form mat-form-field {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.signup-form mat-form-field:last-child {
+  margin-bottom: 0;
+}
+
+/* Material Design form field styling */
+.signup-form .mat-form-field {
+  font-family: "Roboto", sans-serif;
+}
+
+.signup-form .mat-form-field-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.signup-form .mat-input-element {
+  background: #fff !important; /* Make input background white */
+  padding: 12px 0;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  border-radius: 4px;
+}
+
+.signup-form .mat-form-field-underline {
+  background-color: #e0e0e0;
+}
+
+.signup-form .mat-form-field-ripple {
+  background-color: #3f51b5;
+}
+
+.signup-form .mat-form-field.mat-focused .mat-form-field-label {
+  color: #3f51b5;
+}
+
+.signup-form .mat-form-field.mat-focused .mat-form-field-ripple {
+  background-color: #3f51b5;
+}
+
+/* Error styling - Closer distance for all inputs */
+.signup-form mat-error {
+  font-size: 12px;
+  height: 20px;
+  color: #f44336;
+  display: block;
+}
+
+.signup-form mat-error div {
+  position: relative;
+  bottom: 1rem;
+}
+
+/* Fix for Angular Material outline appearance error positioning */
+.signup-form
+  .mat-form-field-appearance-outline
+  .mat-form-field-subscript-wrapper {
+  position: relative;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  min-height: 20px; /* Reserve space for errors */
+}
+
+.signup-form .mat-form-field-appearance-outline {
+  position: relative; /* Required for absolute positioning of errors */
+}
+
+/* Ensure consistent spacing for all form fields */
+.signup-form .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.signup-form mat-form-field {
+  margin-bottom: 1rem; /* Increased to accommodate error messages */
+  position: relative;
+}
+
+.signup-form .mat-form-field.mat-form-field-invalid .mat-form-field-label {
+  color: #f44336;
+}
+
+.signup-form .mat-form-field.mat-form-field-invalid .mat-form-field-ripple {
+  background-color: #f44336;
+}
+
+/* Password visibility toggle button */
+.signup-form .mat-icon-button {
+  color: #666;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.signup-form .mat-icon-button:hover {
+  color: #3f51b5;
+  background-color: rgba(63, 81, 181, 0.04);
+}
+
+.signup-form .mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .signup-form {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: none;
   }
-  
-  
+}
+
+/* Focus states for accessibility */
+.signup-form .mat-input-element:focus {
+  outline: 2px solid #3f51b5;
+  outline-offset: 2px;
+}
+
+.signup-form .mat-icon-button:focus {
+  outline: 2px solid #3f51b5;
+  outline-offset: 2px;
+}
+
+.signup-form button[type="submit"] {
+  width: 100%;
+  display: block;
+  margin: 1rem 0 0 0;
+  text-align: center;
+}
+
+.api-error-message {
+  text-align: center;
+  color: rgb(244, 67, 54);
+}
+
+p {
+  text-align: center;
+  margin: 10px;
+  color: #3f51b5;
+}

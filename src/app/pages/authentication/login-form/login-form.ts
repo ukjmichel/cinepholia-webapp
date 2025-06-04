@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { AuthFacade } from '../../../store/auth/auth.facade';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
@@ -29,6 +30,7 @@ import { AuthFacade } from '../../../store/auth/auth.facade';
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
   ],
   templateUrl: './login-form.html',
   styleUrls: ['./login-form.css'],

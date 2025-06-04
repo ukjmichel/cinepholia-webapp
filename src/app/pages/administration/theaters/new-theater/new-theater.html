@@ -1,0 +1,152 @@
+<div class="add-theater-form">
+  <header>
+    <h1>Ajouter un cinéma</h1>
+  </header>
+  <form [formGroup]="theaterForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Theater ID -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Identifiant du cinéma</mat-label>
+      <input
+        matInput
+        placeholder="cinema-central"
+        formControlName="theaterId"
+        required
+        autocomplete="off"
+        (input)="onInputChange()"
+      />
+      @if(hasFieldError('theaterId')) {
+        <mat-error>{{ getFieldError('theaterId') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Address -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Adresse</mat-label>
+      <input
+        matInput
+        placeholder="123 rue du Cinéma"
+        formControlName="address"
+        required
+        autocomplete="street-address"
+        (input)="onInputChange()"
+      />
+      @if(hasFieldError('address')) {
+        <mat-error>{{ getFieldError('address') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Postal Code -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Code postal</mat-label>
+      <input
+        matInput
+        placeholder="75001"
+        formControlName="postalCode"
+        required
+        autocomplete="postal-code"
+        (input)="onInputChange()"
+      />
+      @if(hasFieldError('postalCode')) {
+        <mat-error>{{ getFieldError('postalCode') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- City -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Ville</mat-label>
+      <input
+        matInput
+        placeholder="Paris"
+        formControlName="city"
+        required
+        autocomplete="address-level2"
+        (input)="onInputChange()"
+      />
+      @if(hasFieldError('city')) {
+        <mat-error>{{ getFieldError('city') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Phone -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Téléphone</mat-label>
+      <input
+        matInput
+        placeholder="01 23 45 67 89"
+        formControlName="phone"
+        required
+        type="tel"
+        autocomplete="tel"
+        (input)="onInputChange()"
+      />
+      @if(hasFieldError('phone')) {
+        <mat-error>{{ getFieldError('phone') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        placeholder="contact@cinema.fr"
+        formControlName="email"
+        required
+        type="email"
+        autocomplete="email"
+        (input)="onInputChange()"
+      />
+      @if(hasFieldError('email')) {
+        <mat-error>{{ getFieldError('email') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="full-width"
+        type="submit"
+        [disabled]="theaterForm.invalid || isLoading()"
+      >
+        @if(isLoading()) {
+          <ng-container>
+            <mat-icon>hourglass_empty</mat-icon>
+            Création en cours...
+          </ng-container>
+        } @else {
+          <ng-container>
+            <mat-icon>add</mat-icon>
+            Créer le cinéma
+          </ng-container>
+        }
+      </button>
+
+      <button
+        mat-stroked-button
+        type="button"
+        class="full-width reset-btn"
+        (click)="resetForm()"
+        [disabled]="isLoading()"
+      >
+        <mat-icon>refresh</mat-icon>
+        Réinitialiser
+      </button>
+    </div>
+    
+    @if(successMessage()) {
+      <div class="success-message">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+    
+    @if(apiError()) {
+      <div class="api-error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ apiError() }}</span>
+      </div>
+    }
+  </form>
+</div>

@@ -1,8 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 
-import { LoginResponse, Tokens, User } from '../../models/auth.model';
-
-
+import { LoginResponse, User } from '../../models/auth.model';
 
 // Login Actions
 export const login = createAction(
@@ -12,7 +10,7 @@ export const login = createAction(
 
 export const loginSuccess = createAction(
   '[Auth] Login Success',
-  props<LoginResponse>() 
+  props<LoginResponse>()
 );
 
 export const loginFailure = createAction(
@@ -34,7 +32,7 @@ export const register = createAction(
 
 export const registerSuccess = createAction(
   '[Auth] Register Success',
-  props<LoginResponse>() 
+  props<LoginResponse>()
 );
 
 export const registerFailure = createAction(

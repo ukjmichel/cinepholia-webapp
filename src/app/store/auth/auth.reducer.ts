@@ -16,8 +16,6 @@ export const authReducer = createReducer(
   on(AuthActions.loginSuccess, (state, { message, data }) => ({
     ...state,
     isLogged: true,
-    user: data.user, 
-    tokens: data.tokens, // if you include tokens in your state
     loading: false,
     error: null,
   })),
@@ -27,7 +25,6 @@ export const authReducer = createReducer(
     error,
     isLogged: false,
     user: null,
-    tokens: null,
   })),
 
   // --- Register ---
@@ -40,7 +37,6 @@ export const authReducer = createReducer(
     ...state,
     isLogged: true,
     user: data.user,
-    tokens: data.tokens,
     loading: false,
     error: null,
   })),
@@ -50,7 +46,6 @@ export const authReducer = createReducer(
     error,
     isLogged: false,
     user: null,
-    tokens: null,
   })),
 
   // --- Get User ---

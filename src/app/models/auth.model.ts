@@ -9,15 +9,11 @@ export interface User {
   role: Role;
 }
 
-export interface Tokens {
-  accessToken: string;
-  refreshToken: string;
-}
+
 
 export interface LoginResponse {
   message: string;
   data: {
     user: User;
-    tokens: Tokens;
   };
 }
