@@ -1,8 +1,19 @@
 import { createReducer, on } from '@ngrx/store';
 import * as AuthActions from './auth.actions';
-import {  initialAuthState } from './auth.state';
+import { initialAuthState } from './auth.state';
+import { Role } from './auth.state'; // Import the Role type
 
-
+// Helper function to ensure the role is one of the allowed values
+function getValidRole(role: string): Role {
+  switch (role) {
+    case 'administrateur':
+    case 'employé':
+    case 'utilisateur':
+      return role;
+    default:
+      return 'utilisateur'; // Default role if the provided role is not valid
+  }
+}
 
 export const authReducer = createReducer(
   initialAuthState,
@@ -13,9 +24,11 @@ export const authReducer = createReducer(
     loading: true,
     error: null,
   })),
-  on(AuthActions.loginSuccess, (state, { message, data }) => ({
+  on(AuthActions.loginSuccess, (state, { data }) => ({
     ...state,
     isLogged: true,
+    user: data.user,
+    role: getValidRole(data.user.role), // Use the helper function to ensure type safety
     loading: false,
     error: null,
   })),
@@ -25,6 +38,7 @@ export const authReducer = createReducer(
     error,
     isLogged: false,
     user: null,
+    role: 'utilisateur' as Role, // Reset to default role
   })),
 
   // --- Register ---
@@ -33,10 +47,11 @@ export const authReducer = createReducer(
     loading: true,
     error: null,
   })),
-  on(AuthActions.registerSuccess, (state, { message, data }) => ({
+  on(AuthActions.registerSuccess, (state, { data }) => ({
     ...state,
     isLogged: true,
     user: data.user,
+    role: getValidRole(data.user.role), // Use the helper function to ensure type safety
     loading: false,
     error: null,
   })),
@@ -46,6 +61,7 @@ export const authReducer = createReducer(
     error,
     isLogged: false,
     user: null,
+    role: 'utilisateur' as Role, // Reset to default role
   })),
 
   // --- Get User ---
@@ -54,10 +70,11 @@ export const authReducer = createReducer(
     loading: true,
     error: null,
   })),
-  on(AuthActions.getUserSuccess, (state, { message, data }) => ({
+  on(AuthActions.getUserSuccess, (state, { data }) => ({
     ...state,
     isLogged: true,
     user: data.user,
+    role: getValidRole(data.user.role), // Use the helper function to ensure type safety
     loading: false,
     error: null,
   })),
@@ -67,6 +84,7 @@ export const authReducer = createReducer(
     error,
     isLogged: false,
     user: null,
+    role: 'utilisateur' as Role, // Reset to default role
   })),
 
   // --- Logout ---

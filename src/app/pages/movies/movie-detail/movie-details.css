@@ -1,0 +1,175 @@
+.movie-detail-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: auto;
+}
+
+.movie-detail-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 12px;
+}
+
+.movie-poster-container {
+  width: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.movie-detail-poster {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.movie-detail-content {
+  width: 100%;
+  max-width: 600px;
+}
+
+.movie-detail-content mat-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Take full height so actions align at bottom */
+}
+
+.movie-detail-content mat-card-actions {
+  margin-top: auto; /* Push actions to the bottom */
+  justify-content: flex-start; /* Align left */
+  margin-left: auto;
+}
+
+.theater-selection-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.theater-select {
+  width: 100%;
+  max-width: 380px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.theater-info-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--secondary-color);
+  border-radius: 12px;
+  box-shadow: 0 1px 8px rgba(60, 60, 60, 0.09);
+  padding: 18px 22px 14px 22px;
+  color: #222;
+  font-size: 1rem;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.theater-selection-center {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+  margin-bottom: 24px;
+}
+
+.movie-screenings-section {
+  max-width: 700px;
+  margin: 24px auto 0 auto;
+  padding-bottom: 32px;
+  width: 100%;
+}
+
+.screenings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+/* ------ UPDATED SECTION START ------ */
+.screening-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+/* Add a max-width to screening items, and center them in their grid cell */
+.screening-item {
+  background: var(--secondary-color);
+  color: #222;
+  padding: 18px;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 1px 2px #0001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.2s;
+  min-width: 0;
+  max-width: 220px; /* NEW: restrict item width */
+  margin: 0 auto; /* NEW: center item inside grid column */
+}
+
+.screening-item:hover {
+  box-shadow: 0 3px 8px #0002;
+}
+/* ------ UPDATED SECTION END ------ */
+
+.screening-hour {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.screening-quality {
+  color: #333;
+  margin-left: 4px;
+}
+
+/* Smaller/compact date picker */
+.date-select {
+  width: 100%;
+}
+
+@media (min-width: 780px) {
+  .movie-detail-container {
+    max-width: 1024px;
+  }
+  .movie-detail-content mat-card {
+    min-height: 300px;
+  }
+
+  .movie-detail-wrapper {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: start;
+    gap: 48px;
+    max-width: 1024px;
+  }
+  .movie-poster-container {
+    align-items: start;
+  }
+  .theater-selection-center {
+    max-width: 1024px;
+    justify-content: start;
+    padding: 15px;
+  }
+  .theater-selection-center {
+    flex-direction: row;
+  }
+  .date-select {
+    margin-left: 15px;
+    max-width: 250px;
+  }
+}

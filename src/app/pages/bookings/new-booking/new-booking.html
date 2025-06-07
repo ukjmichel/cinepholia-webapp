@@ -1,0 +1,175 @@
+<div class="add-booking-form">
+  <header>
+    <h1>Créer une réservation</h1>
+  </header>
+  <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Movie select -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Film</mat-label>
+      <mat-select formControlName="movieId" required>
+        <mat-option value="">Choisir un film</mat-option>
+        @for (movie of movies(); track movie.movieId) {
+        <mat-option [value]="movie.movieId">{{ movie.title }}</mat-option>
+        }
+      </mat-select>
+      @if (hasFieldError('movieId')) {
+      <mat-error>{{ getFieldError('movieId') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Theater select -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cinéma</mat-label>
+      <mat-select formControlName="theaterId" required>
+        <mat-option value="">Choisir un cinéma</mat-option>
+        @for (theater of theaters(); track theater.theaterId) {
+        <mat-option [value]="theater.theaterId">
+          {{ theater.theaterId }} - {{ theater.city }}
+        </mat-option>
+        }
+      </mat-select>
+      @if (hasFieldError('theaterId')) {
+      <mat-error>{{ getFieldError('theaterId') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Date -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="date"
+        required
+        autocomplete="off"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Liste des séances disponibles ce jour -->
+    @if (screenings().length > 0) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Séance</mat-label>
+      <mat-select formControlName="screeningId" required>
+        <mat-option value="">Choisir une séance</mat-option>
+        @for (screening of screenings(); track screening.screeningId) {
+        <mat-option [value]="screening.screeningId">
+          {{ screening.startTime | date:'shortTime' }} - Salle {{
+          screening.hallId }}
+        </mat-option>
+        }
+      </mat-select>
+      @if (hasFieldError('screeningId')) {
+      <mat-error>{{ getFieldError('screeningId') }}</mat-error>
+      }
+    </mat-form-field>
+    } @else {
+    <div
+      *ngIf="bookingForm.get('movieId')?.value && bookingForm.get('theaterId')?.value && bookingForm.get('date')?.value"
+      class="no-screenings-msg"
+    >
+      Aucune séance disponible pour cette date.
+    </div>
+    }
+
+    <!-- Seat selection table -->
+    @if (seatsLayout().length > 0) {
+    <div class="seats-container">
+      <table>
+        <tbody>
+          @for (row of seatsLayout(); track row) {
+          <tr>
+            @for (seat of row; track seat) {
+            <td
+              class="seat"
+              [class.empty]="seat === 'x'"
+              [class.selected]="isSeatSelected(seat)"
+              [class.disabled]="seat === 'x'"
+              (click)="seat !== 'x' && toggleSeat(seat)"
+            >
+              <div class="seat-backrest"></div>
+              <div class="seat-bottom">{{ seat !== 'x' ? seat : '' }}</div>
+            </td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+
+    <!-- Auto-calculated fields -->
+    <div class="auto-fields-container">
+      <div class="auto-field">
+        <label for="selectedSeatsCount">Nombre de places sélectionnée</label>
+        <input
+          id="selectedSeatsCount"
+          type="text"
+          class="auto-calculated-field"
+          [value]="selectedSeats.length"
+          placeholder="Nombre de places sélectionnée"
+          disabled
+        />
+      </div>
+
+      <div class="auto-field">
+        <label for="selectedSeatsIds">IDs des sièges sélectionnés</label>
+        <input
+          id="selectedSeatsIds"
+          type="text"
+          class="auto-calculated-field"
+          [value]="selectedSeats().join(', ')"
+          placeholder="IDs des sièges sélectionnés"
+          disabled
+        />
+      </div>
+    </div>
+
+    <!-- Total price -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Prix total (€)</mat-label>
+      <input
+        matInput
+        formControlName="totalPrice"
+        type="number"
+        min="0"
+        step="0.01"
+        readonly
+      />
+      @if (hasFieldError('totalPrice')) {
+      <mat-error>{{ getFieldError('totalPrice') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Submit button -->
+    <div class="form-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="full-width"
+        type="submit"
+        [disabled]="bookingForm.invalid || isLoading()"
+      >
+        @if (isLoading()) {
+        <ng-container>
+          <mat-icon>hourglass_empty</mat-icon> Réservation en cours...
+        </ng-container>
+        } @else {
+        <ng-container> <mat-icon>check</mat-icon> Réserver </ng-container>
+        }
+      </button>
+    </div>
+
+    <!-- Success & Error messages -->
+    @if (successMessage()) {
+    <div class="success-message">
+      <mat-icon>check_circle</mat-icon> {{ successMessage() }}
+    </div>
+    } @if (apiError()) {
+    <div class="api-error-message">
+      <mat-icon>error</mat-icon> {{ apiError() }}
+    </div>
+    }
+  </form>
+</div>

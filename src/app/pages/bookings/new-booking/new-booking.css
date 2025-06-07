@@ -1,0 +1,379 @@
+/* === Form container === */
+.add-booking-form {
+  min-width: 300px;
+  width: 90vw;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* === Form layout: center and gap === */
+.add-booking-form form {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center horizontally */
+  gap: 1.5rem; /* vertical spacing */
+  margin: 0;
+  width: 100%;
+}
+
+/* === Form fields styling === */
+.add-booking-form mat-form-field {
+  width: 80%; /* narrower than full width */
+  max-width: 400px;
+  min-width: 280px; /* optional, to avoid too small fields */
+  margin-bottom: 0;
+}
+
+/* === Buttons styling === */
+.add-booking-form button {
+  width: 80%; /* match form fields width */
+  max-width: 400px;
+}
+
+/* === Title and header === */
+.add-booking-form header h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #3f51b5;
+  font-weight: 500;
+}
+
+/* === Angular Material input and label styling === */
+.add-booking-form .mat-form-field {
+  font-family: "Roboto", sans-serif;
+}
+.add-booking-form .mat-form-field-label {
+  color: #666;
+  font-size: 14px;
+}
+.add-booking-form .mat-input-element {
+  padding: 12px 0;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+}
+.add-booking-form .mat-form-field-underline {
+  background-color: #e0e0e0;
+}
+.add-booking-form .mat-form-field-ripple {
+  background-color: #3f51b5;
+}
+
+/* Focus state colors */
+.add-booking-form .mat-form-field.mat-focused .mat-form-field-label {
+  color: #3f51b5;
+}
+.add-booking-form .mat-form-field.mat-focused .mat-form-field-ripple {
+  background-color: #3f51b5;
+}
+
+/* === Error messages styling === */
+.add-booking-form mat-error {
+  font-size: 12px;
+  min-height: 20px;
+  color: #f44336;
+  display: block;
+  margin-top: 0.2rem;
+}
+
+/* Fix outline appearance positioning */
+.add-booking-form
+  .mat-form-field-appearance-outline
+  .mat-form-field-subscript-wrapper {
+  position: relative;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  min-height: 20px; /* Reserve space for errors */
+}
+.add-booking-form .mat-form-field-appearance-outline {
+  position: relative;
+}
+
+/* Remove extra padding below form fields */
+.add-booking-form .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+.add-booking-form mat-form-field {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+/* Error coloring for invalid fields */
+.add-booking-form .mat-form-field.mat-form-field-invalid .mat-form-field-label {
+  color: #f44336;
+}
+.add-booking-form
+  .mat-form-field.mat-form-field-invalid
+  .mat-form-field-ripple {
+  background-color: #f44336;
+}
+
+/* Material icon button styling */
+.add-booking-form .mat-icon-button {
+  color: #666;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+}
+.add-booking-form .mat-icon-button:hover {
+  color: #3f51b5;
+  background-color: rgba(63, 81, 181, 0.04);
+}
+.add-booking-form .mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 480px) {
+  .add-booking-form {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: none;
+  }
+  .add-booking-form mat-form-field,
+  .add-booking-form button {
+    width: 100%;
+    max-width: none;
+    min-width: auto;
+  }
+}
+
+/* Focus states for accessibility */
+.add-booking-form .mat-input-element:focus {
+  outline: 2px solid #3f51b5;
+  outline-offset: 2px;
+}
+.add-booking-form .mat-icon-button:focus {
+  outline: 2px solid #3f51b5;
+  outline-offset: 2px;
+}
+
+/* Submit button styling */
+.add-booking-form button[type="submit"] {
+  display: block;
+  margin: 1rem 0 0 0;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* Success and error messages styling */
+.add-booking-form .success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4caf50;
+  background-color: #e8f5e8;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 16px;
+  border-left: 4px solid #4caf50;
+  font-weight: 500;
+  text-align: center;
+  justify-content: center;
+}
+.add-booking-form .success-message mat-icon {
+  color: #4caf50;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+.add-booking-form .api-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f44336;
+  background-color: #ffeaea;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 16px;
+  border-left: 4px solid #f44336;
+  font-weight: 500;
+  text-align: center;
+  justify-content: center;
+}
+.add-booking-form .api-error-message mat-icon {
+  color: #f44336;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Remove default margin from form */
+.add-booking-form form {
+  margin-bottom: 0;
+}
+
+/* Center paragraph text for minor info sections */
+.add-booking-form p {
+  text-align: center;
+  margin: 10px;
+  color: #3f51b5;
+  font-size: 15px;
+}
+
+/* Disabled state for loading submit button */
+.add-booking-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.add-booking-form button[type="submit"] mat-icon {
+  margin-right: 8px;
+}
+
+/* Slide in animation for messages */
+.success-message,
+.api-error-message {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* SlideIn animation for feedback messages */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container for seat selection */
+.seats-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+/* Each seat row displayed horizontally */
+.seats-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Individual seat styling */
+.seat {
+  position: relative;
+  width: 36px; /* slightly narrower */
+  height: 52px; /* shorter height */
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  transition: transform 0.2s ease;
+  padding: 0;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* Seat hover effect for selectable seats */
+.seat:hover:not(.empty):not(.disabled) {
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+/* Disabled or empty seats */
+.seat.empty,
+.seat.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+/* Backrest (top part) */
+.seat .seat-backrest {
+  width: 90%;
+  height: 14px; /* reduced height */
+  background-color: #ffa60c;
+  border-radius: 6px 6px 0 0;
+  box-shadow: inset 0 1px 3px #cc8400;
+  margin-bottom: 3px;
+}
+
+/* Backrest highlight when selected */
+.seat.selected .seat-backrest {
+  background-color: #ffcf70; /* lighter orange */
+  box-shadow: 0 0 8px 2px #ffcf70;
+}
+
+/* Seat bottom (bottom part) */
+.seat .seat-bottom {
+  width: 90%;
+  height: 28px; /* reduced height */
+  background-color: #cc8400;
+  border-radius: 0 0 8px 8px;
+  box-shadow: inset 0 -1px 3px #a36900;
+  display: flex;
+  align-items: center; /* vertically center text */
+  justify-content: center; /* horizontally center text */
+  font-weight: 600;
+  color: #222;
+  font-size: 13px; /* slightly smaller font */
+  user-select: none;
+  line-height: 1;
+}
+
+/* Seat bottom highlight when selected */
+.seat.selected .seat-bottom {
+  background-color: #ffd966;
+  color: #000;
+  box-shadow: 0 0 10px 3px #ffd966;
+}
+.seats-container table {
+  border-collapse: separate;
+  border-spacing: 6px 10px;
+  margin: 0 auto;
+  width: auto;
+  table-layout: auto;
+}
+
+.seats-container tbody tr {
+  display: table-row; /* default but ensure it's not overridden */
+}
+
+.seats-container tbody tr td {
+  display: table-cell; /* default but ensure it's not overridden */
+  vertical-align: bottom;
+}
+
+.auto-fields-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.auto-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  max-width: 250px;
+  width: 100%;
+}
+
+.auto-field label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.auto-calculated-field {
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  color: #555;
+}

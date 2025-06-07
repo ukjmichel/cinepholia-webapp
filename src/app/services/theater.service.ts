@@ -7,11 +7,23 @@ import { Theater } from '../models/theater.model';
 @Injectable({ providedIn: 'root' })
 export class TheaterService {
   private baseUrl = `${environment.apiUrl}movie-theaters/search`;
-  private createUrl = `${environment.apiUrl}movie-theaters`; // <-- POST endpoint
+  private createUrl = `${environment.apiUrl}movie-theaters`;
 
   public filteredTheaters = signal<Theater[]>([]);
+  public allTheaters = signal<Theater[]>([]); // <-- Pluriel et cohérent
 
   constructor(private http: HttpClient) {}
+
+  /** GET: Get all theaters */
+  getAllTheaters(): Observable<Theater[]> {
+    const obs = this.http.get<Theater[]>(this.createUrl, {
+      withCredentials: true,
+    });
+    obs.subscribe((theaters) => {
+      this.allTheaters.set(theaters); // <-- Correction ici
+    });
+    return obs;
+  }
 
   searchMovieTheaters(filters: {
     theaterId?: string;

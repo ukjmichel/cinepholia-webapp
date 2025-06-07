@@ -9,18 +9,33 @@ export class HallService {
   private baseUrl = `${environment.apiUrl}movie-halls/`;
 
   public createdHalls = signal<Hall[]>([]);
+  public allHalls = signal<Hall[]>([]);
 
   constructor(private http: HttpClient) {
     effect(() => {
       console.log('[createdHalls changed]', this.createdHalls());
     });
+    effect(() => {
+      console.log('[allHalls changed]', this.allHalls());
+    });
   }
 
+  /** GET: Get all halls */
+  getAllHalls(): Observable<Hall[]> {
+    const url = this.baseUrl;
+    const obs = this.http.get<Hall[]>(url, { withCredentials: true });
+    obs.subscribe((halls) => {
+      this.allHalls.set(halls); // <-- stocke dans allHalls
+    });
+    return obs;
+  }
+
+  /** GET: Get halls by theater ID */
   getHallsByTheaterId(theaterId: string): Observable<Hall[]> {
     const url = `${this.baseUrl}theater/${encodeURIComponent(theaterId)}`;
     const obs = this.http.get<Hall[]>(url, { withCredentials: true });
     obs.subscribe((halls) => {
-      this.createdHalls.set(halls);
+      this.createdHalls.set(halls); // <-- stocke dans createdHalls
     });
     return obs;
   }

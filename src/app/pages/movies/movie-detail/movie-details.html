@@ -1,0 +1,102 @@
+<div class="movie-detail-container">
+  <div class="movie-detail-wrapper">
+    <!-- Movie Poster & Info -->
+    @if (movie() && movie()!.posterUrl) {
+    <div class="movie-poster-container">
+      <img
+        mat-card-image
+        [src]="movie()!.posterUrl"
+        [alt]="movie()!.title"
+        class="movie-detail-poster"
+      />
+    </div>
+    } @if (movie()) {
+    <div class="movie-detail-content">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>movie</mat-icon>
+            {{ movie()!.title }}
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{ movie()!.genre }} &middot; {{ movie()!.releaseDate | date: 'yyyy'
+            }}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p><strong>Réalisateur :</strong> {{ movie()!.director }}</p>
+          <p><strong>Âge :</strong> {{ movie()!.ageRating }}</p>
+          <p><strong>Résumé :</strong> {{ movie()!.description }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <a mat-button color="primary" routerLink="/movies">
+            ← Retour aux films
+          </a>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    }
+  </div>
+
+  <!-- Theater Selection -->
+  <div class="theater-selection-center">
+    <mat-form-field appearance="outline" class="theater-select">
+      <mat-label>Choisir un cinéma</mat-label>
+      <mat-select
+        [value]="selectedTheaterId()"
+        (valueChange)="selectedTheaterId.set($event)"
+      >
+        <mat-option value="">Aucun</mat-option>
+        @for (theater of theaters(); track theater.theaterId) {
+        <mat-option [value]="theater.theaterId">
+          {{ theater.theaterId }} – {{ theater.city }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    @if (selectedTheater()) {
+    <div class="theater-info-card">
+      <h3>
+        <mat-icon style="vertical-align: middle">location_on</mat-icon>
+        {{ selectedTheater()!.theaterId }}
+      </h3>
+      <p>
+        {{ selectedTheater()!.address }}<br />
+        {{ selectedTheater()!.city }}
+      </p>
+    </div>
+    }
+  </div>
+
+  <!-- Date Picker Field -->
+  @if (selectedTheater()) {
+  <mat-form-field appearance="outline" class="date-select">
+    <mat-label>Filtrer par date</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [value]="selectedDateObj()"
+      (dateChange)="onDateChange($event.value)"
+      placeholder="Sélectionner une date"
+      readonly
+    />
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  </mat-form-field>
+  }
+
+  <!-- Screenings List -->
+  <div class="screening-list">
+    @if (filteredSortedScreenings().length > 0) { @for (screening of
+    filteredSortedScreenings(); track screening.screeningId) {
+    <div class="screening-item">
+      <span class="screening-hour">
+        {{ screening.startTime | date: 'shortTime' }}
+      </span>
+      <span class="screening-quality">({{ screening.quality }})</span>
+    </div>
+    } } @else {
+    <div>Aucune séance pour ce cinéma</div>
+    }
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal, Signal } from '@angular/core';
 import {
   FormBuilder,
   Validators,
@@ -8,8 +8,11 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { HallService } from '../../../../services/halls.service';
+import { TheaterService } from '../../../../services/theater.service';
+import { Theater } from '../../../../models/theater.model';
 
 @Component({
   selector: 'app-new-hall',
@@ -20,6 +23,7 @@ import { HallService } from '../../../../services/halls.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule,
   ],
   templateUrl: './new-hall.html',
   styleUrl: './new-hall.css',
@@ -30,8 +34,14 @@ export class NewHall {
   isLoading = signal(false);
   hallForm: FormGroup;
   seatsGrid: string[][] = [];
+  theaters: Signal<Theater[]>; // <-- Ajout du signal pour les cinémas
 
-  constructor(private fb: FormBuilder, private hallService: HallService) {
+  constructor(
+    private fb: FormBuilder,
+    private hallService: HallService,
+    private theaterService: TheaterService
+  ) {
+    this.theaters = this.theaterService.allTheaters; // <-- Récupère les cinémas
     this.hallForm = this.fb.group({
       theaterId: ['', Validators.required],
       hallId: ['', Validators.required],
@@ -39,7 +49,14 @@ export class NewHall {
       columns: [10, [Validators.required, Validators.min(1)]],
     });
 
-    // Whenever rows or columns change, update the grid
+    // Charge les cinémas si la liste est vide
+    if (
+      !this.theaterService.allTheaters() ||
+      this.theaterService.allTheaters().length === 0
+    ) {
+      this.theaterService.getAllTheaters().subscribe();
+    }
+
     this.hallForm.get('rows')!.valueChanges.subscribe(() => this.buildGrid());
     this.hallForm
       .get('columns')!
@@ -50,14 +67,12 @@ export class NewHall {
   buildGrid() {
     const rows = this.hallForm.get('rows')!.value || 0;
     const columns = this.hallForm.get('columns')!.value || 0;
-    // Preserve previous values if possible
     const oldGrid = this.seatsGrid;
     const newGrid: string[][] = [];
     let seatNum = 1;
     for (let i = 0; i < rows; i++) {
       newGrid[i] = [];
       for (let j = 0; j < columns; j++) {
-        // Reuse old value or default to incremented seat number
         newGrid[i][j] = oldGrid[i]?.[j] ?? String(seatNum++);
       }
     }
@@ -87,10 +102,7 @@ export class NewHall {
         next: () => {
           this.isLoading.set(false);
           this.successMessage.set('La salle a été créée avec succès !');
-          // Optional: Reset form and grid after success
-          setTimeout(() => {
-            this.resetForm();
-          }, 3000);
+          setTimeout(() => this.resetForm(), 3000);
         },
         error: (err) => {
           this.isLoading.set(false);

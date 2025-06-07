@@ -4,6 +4,8 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 import { routes } from './app.routes';
 import {
@@ -26,6 +28,8 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideStore(reducers),
     provideEffects(AuthEffects),
-    provideHttpClient(), 
+    provideHttpClient(),
+    provideNativeDateAdapter(), // This provides the date adapter
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
   ],
 };

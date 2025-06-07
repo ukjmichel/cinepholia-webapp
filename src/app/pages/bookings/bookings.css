@@ -1,0 +1,30 @@
+/* --- Toolbar --- */
+.toolbar-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f6f7fb;
+    padding: 10px;
+  }
+  .toolbar-btn {
+    background: #fff;
+    color: #3f51b5;
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    box-shadow: 0 2px 8px rgba(63, 81, 181, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    font-size: 1.5rem;
+  }
+  .toolbar-btn:hover,
+  .toolbar-btn:focus {
+    background: #e3ebfd;
+    color: #003a80;
+    outline: 2px solid #3f51b5;
+    box-shadow: 0 4px 16px rgba(22, 100, 192, 0.12);
+  }
+  

@@ -1,0 +1,225 @@
+<div class="add-movie-form">
+  <header>
+    <h1>Ajouter un film</h1>
+  </header>
+  <form [formGroup]="movieForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Title -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Titre du film</mat-label>
+      <input
+        matInput
+        placeholder="Ex: Inception"
+        formControlName="title"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(movieForm.get('title')?.invalid && (movieForm.get('title')?.dirty ||
+      movieForm.get('title')?.touched)) {
+      <mat-error>Le titre est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        placeholder="Résumé du film"
+        formControlName="description"
+        required
+        rows="3"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      ></textarea>
+      @if(movieForm.get('description')?.invalid &&
+      (movieForm.get('description')?.dirty ||
+      movieForm.get('description')?.touched)) {
+      <mat-error>La description est requise</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Age Rating -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Classification</mat-label>
+      <mat-select
+        formControlName="ageRating"
+        required
+        (selectionChange)="clearMessages()"
+      >
+        <mat-option [value]="''" disabled
+          >Choisir une classification</mat-option
+        >
+        @for (rating of ageRatings; track rating) {
+        <mat-option [value]="rating">{{ rating }}</mat-option>
+        }
+      </mat-select>
+      @if(movieForm.get('ageRating')?.invalid &&
+      (movieForm.get('ageRating')?.dirty ||
+      movieForm.get('ageRating')?.touched)) {
+      <mat-error>La classification est requise</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Genre -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Genre</mat-label>
+      <input
+        matInput
+        placeholder="Science-fiction, Drame, etc."
+        formControlName="genre"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(movieForm.get('genre')?.invalid && (movieForm.get('genre')?.dirty ||
+      movieForm.get('genre')?.touched)) {
+      <mat-error>Le genre est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Release Date -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de sortie</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        placeholder="Choisir une date"
+        formControlName="releaseDate"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (dateChange)="clearMessages()"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      @if(movieForm.get('releaseDate')?.invalid &&
+      (movieForm.get('releaseDate')?.dirty ||
+      movieForm.get('releaseDate')?.touched)) {
+      <mat-error>La date de sortie est requise</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Director -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Réalisateur</mat-label>
+      <input
+        matInput
+        placeholder="Nom du réalisateur"
+        formControlName="director"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(movieForm.get('director')?.invalid &&
+      (movieForm.get('director')?.dirty || movieForm.get('director')?.touched))
+      {
+      <mat-error>Le nom du réalisateur est requis</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Duration -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Durée (en minutes)</mat-label>
+      <input
+        matInput
+        type="number"
+        min="1"
+        placeholder="120"
+        formControlName="durationMinutes"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      @if(movieForm.get('durationMinutes')?.invalid &&
+      (movieForm.get('durationMinutes')?.dirty ||
+      movieForm.get('durationMinutes')?.touched)) {
+      <mat-error>La durée doit être supérieure à 0</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Movie Poster: Drag & Drop -->
+    <mat-card
+      class="poster-dropzone-mat"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+      (dragleave)="onDragLeave($event)"
+      [class.dragover]="dragging"
+      (click)="fileInput.click()"
+    >
+      <input
+        type="file"
+        accept="image/*"
+        style="display: none"
+        #fileInput
+        (change)="onFileSelected($event)"
+      />
+      @if (posterPreview) {
+      <div class="poster-preview-mat">
+        <img
+          [src]="posterPreview"
+          alt="Aperçu de l'affiche"
+          class="poster-preview-img-mat"
+        />
+        <button
+          mat-stroked-button
+          color="warn"
+          type="button"
+          (click)="removePoster($event)"
+        >
+          <mat-icon>delete</mat-icon> Supprimer
+        </button>
+      </div>
+      } @else {
+      <div class="drop-here-text-mat">
+        <mat-icon fontIcon="cloud_upload" class="upload-icon"></mat-icon>
+        <span
+          >Glissez-déposez l'affiche ici<br />ou cliquez pour choisir un
+          fichier</span
+        >
+      </div>
+      }
+    </mat-card>
+
+    <!-- Recommended -->
+    <mat-checkbox formControlName="recommended" color="primary" style="margin-bottom: 1rem;">
+      Recommandé
+    </mat-checkbox>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="full-width"
+      type="submit"
+      [disabled]="movieForm.invalid || isLoading()"
+    >
+      @if(isLoading()) {
+      <ng-container>
+        <mat-icon>hourglass_empty</mat-icon>
+        Création en cours...
+      </ng-container>
+      } @else {
+      <ng-container>
+        <mat-icon>add</mat-icon>
+        Ajouter le film
+      </ng-container>
+      }
+    </button>
+
+    @if(successMessage()) {
+    <div class="success-message">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ successMessage() }}</span>
+    </div>
+    } @if(apiError()) {
+    <div class="api-error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ apiError() }}</span>
+    </div>
+    }
+  </form>
+</div>

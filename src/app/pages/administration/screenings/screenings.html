@@ -1,0 +1,136 @@
+<mat-drawer-container
+  class="screening-filter-side"
+  [hasBackdrop]="true"
+  (backdropClick)="drawer.close()"
+>
+  <mat-drawer
+    #drawer
+    [mode]="'over'"
+    class="drawer-80vw"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <div class="screening-filter-container">
+      <h1 class="filter-title">Filtrer les séances</h1>
+      <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <!-- Movie select -->
+        <mat-form-field appearance="outline">
+          <mat-label>Film</mat-label>
+          <mat-select formControlName="movieId">
+            <mat-option [value]="''">Tous</mat-option>
+            @for (movie of movies(); track movie.movieId) {
+            <mat-option [value]="movie.movieId">{{ movie.title }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Theater select -->
+        <mat-form-field appearance="outline">
+          <mat-label>Cinéma</mat-label>
+          <mat-select formControlName="theaterId">
+            <mat-option [value]="''">Tous</mat-option>
+            @for (theater of theaters(); track theater.theaterId) {
+            <mat-option [value]="theater.theaterId"
+              >{{ theater.theaterId }}</mat-option
+            >
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Hall select -->
+        <mat-form-field appearance="outline">
+          <mat-label>Salle</mat-label>
+          <mat-select formControlName="hallId">
+            <mat-option [value]="''">Toutes</mat-option>
+            @for (hall of halls(); track hall.hallId) {
+            <mat-option [value]="hall.hallId">{{ hall.hallId }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Date/time -->
+        <mat-form-field appearance="outline">
+          <mat-label>Date de la séance</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            placeholder="Date"
+            formControlName="startTime"
+            autocomplete="off"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Quality -->
+        <mat-form-field appearance="outline">
+          <mat-label>Qualité</mat-label>
+          <mat-select formControlName="quality">
+            <mat-option [value]="''">Toutes</mat-option>
+            <mat-option value="2D">2D</mat-option>
+            <mat-option value="3D">3D</mat-option>
+            <mat-option value="IMAX">IMAX</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Prix min/max -->
+        <mat-form-field appearance="outline">
+          <mat-label>Prix minimum</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            placeholder="Prix min"
+            formControlName="priceMin"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prix maximum</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            placeholder="Prix max"
+            formControlName="priceMax"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <!-- Checkbox "recommandé seulement" -->
+        <mat-checkbox
+          formControlName="recommended"
+          color="primary"
+          style="margin: 12px 0 12px 8px"
+        >
+          Recommandé seulement
+        </mat-checkbox>
+
+        <button mat-raised-button class="full-width" type="submit">
+          Filtrer
+        </button>
+      </form>
+      @if(apiError()) {
+      <div class="api-error-message">{{ apiError() }}</div>
+      }
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="toolbar-actions">
+      <button
+        mat-icon-button
+        class="toolbar-btn"
+        (click)="drawer.toggle()"
+        aria-label="Afficher le filtre"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+      <button mat-icon-button class="toolbar-btn" aria-label="Ajouter">
+        <mat-icon [routerLink]="'./new-screening'">add</mat-icon>
+      </button>
+    </div>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

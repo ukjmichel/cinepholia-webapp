@@ -14,10 +14,6 @@ export class Administration {
   constructor(private router: Router) {}
 
   onModuleChange(value: string) {
-    if (value === 'theaters' || 'halls') {
-      this.router.navigate(['/' + 'admin/' + value]);
-    } else {
-      this.router.navigate(['/' + 'admin/']);
-    }
+    this.router.navigate(['/' + 'admin/' + value]);
   }
 }

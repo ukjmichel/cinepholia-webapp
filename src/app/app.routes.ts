@@ -10,6 +10,19 @@ import { NewTheater } from './pages/administration/theaters/new-theater/new-thea
 import { HallsAdmin } from './pages/administration/halls/halls';
 import { HallsList } from './pages/administration/halls/halls-list/halls-list';
 import { NewHall } from './pages/administration/halls/new-hall/new-hall';
+import { MoviesAdmin } from './pages/administration/movies/movies';
+import { NewMovie } from './pages/administration/movies/new-movie/new-movie';
+
+import { ScreeningsAdmin } from './pages/administration/screenings/screenings';
+import { ScreeningsList } from './pages/administration/screenings/screenings-list/screenings-list';
+import { NewScreening } from './pages/administration/screenings/new-screening/new-screening';
+import { Movies } from './pages/movies/movies';
+import { MoviesList } from './components/movies-list/movies-list';
+import { MoviesAdminList } from './pages/administration/movies/movies-list/movies-list';
+import { MovieDetails } from './pages/movies/movie-detail/movie-details';
+import { BookingsAdmin } from './pages/bookings/bookings';
+import { BookingsList } from './pages/bookings/bookings-list/bookings-list';
+import { NewBooking } from './pages/bookings/new-booking/new-booking';
 
 export const routes: Routes = [
   {
@@ -58,6 +71,44 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'movies',
+        component: MoviesAdmin,
+        children: [
+          {
+            path: 'search',
+            component: MoviesAdminList,
+          },
+          {
+            path: 'new-movie',
+            component: NewMovie,
+          },
+          {
+            path: '',
+            redirectTo: 'search',
+            pathMatch: 'full',
+          },
+        ],
+      },
+      {
+        path: 'screenings',
+        component: ScreeningsAdmin,
+        children: [
+          {
+            path: 'search',
+            component: ScreeningsList,
+          },
+          {
+            path: 'new-screening',
+            component: NewScreening,
+          },
+          {
+            path: '',
+            redirectTo: 'search',
+            pathMatch: 'full',
+          },
+        ],
+      },
     ],
   },
   {
@@ -67,6 +118,44 @@ export const routes: Routes = [
       { path: 'login', component: LoginForm },
       { path: 'register', component: SignUpForm },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
+    ],
+  },
+  {
+    path: 'movies',
+    component: Movies,
+    children: [
+      {
+        path: 'search',
+        component: MoviesList,
+      },
+      {
+        path: '',
+        redirectTo: 'search',
+        pathMatch: 'full',
+      },
+      {
+        path: ':movieId',
+        component: MovieDetails,
+      },
+    ],
+  },
+  {
+    path: 'bookings',
+    component: BookingsAdmin,
+    children: [
+      {
+        path: 'search',
+        component: BookingsList,
+      },
+      {
+        path: '',
+        redirectTo: 'search',
+        pathMatch: 'full',
+      },
+      {
+        path: 'new-booking',
+        component: NewBooking,
+      },
     ],
   },
 ];
