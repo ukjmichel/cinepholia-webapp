@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { MoviesList } from '../../../../components/movies-list/movies-list';
 
 @Component({

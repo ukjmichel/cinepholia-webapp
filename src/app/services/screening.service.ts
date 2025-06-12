@@ -67,9 +67,12 @@ export class ScreeningService {
 
   /** Add a new screening */
   addScreening(screening: CreateScreeningPayload): Observable<any> {
-    console.log(screening);
     return this.http.post<any>(this.baseUrl, screening, {
       withCredentials: true,
     });
+  }
+
+  getBookedSeats(screeningId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}${screeningId}/booked-seats`);
   }
 }

@@ -85,12 +85,13 @@
               class="seat"
               [class.empty]="seat === 'x'"
               [class.selected]="isSeatSelected(seat)"
-              [class.disabled]="seat === 'x'"
-              (click)="seat !== 'x' && toggleSeat(seat)"
+              [class.disabled]="seat === 'x' || isSeatBooked(seat)"
+              (click)="seat !== 'x' && !isSeatBooked(seat) && toggleSeat(seat)"
             >
               <div class="seat-backrest"></div>
               <div class="seat-bottom">{{ seat !== 'x' ? seat : '' }}</div>
             </td>
+
             }
           </tr>
           }
@@ -107,7 +108,7 @@
           id="selectedSeatsCount"
           type="text"
           class="auto-calculated-field"
-          [value]="selectedSeats.length"
+          [value]="selectedSeats().length"
           placeholder="Nombre de places sélectionnée"
           disabled
         />

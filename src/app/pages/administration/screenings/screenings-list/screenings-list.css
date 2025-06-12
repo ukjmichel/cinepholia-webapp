@@ -29,3 +29,10 @@
 .mat-card-footer {
   padding: 10px 18px 8px 18px;
 }
+
+.empty-state {
+  text-align: center;
+  margin: 3rem auto 0 auto;
+  color: #aaa;
+  font-size: 1.1rem;
+}

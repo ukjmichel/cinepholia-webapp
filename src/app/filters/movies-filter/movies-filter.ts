@@ -82,13 +82,9 @@ export class MoviesFilter {
       recommended: [''], // '' = tous, true = recommandés, false = non
     });
 
-    // 👇 L’effet DOIT être dans le constructeur (et pas dans onSubmit)
-    effect(() => {
-      // Si la liste des films n'est pas chargée, on la charge
-      if (!this.allMovies() || this.allMovies().length === 0) {
-        this.movieService.getAllMovies().subscribe();
-      }
-    });
+    if (!this.allMovies() || this.allMovies().length === 0) {
+      this.movieService.getAllMovies().subscribe();
+    }
   }
 
   /** Appelé quand on valide le formulaire de filtre */

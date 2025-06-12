@@ -1,11 +1,8 @@
 .empty-state {
-  display: flex;
-  justify-content: center; /* horizontal */
-  align-items: center;     /* vertical */
-  min-height: 200px;       /* tu peux ajuster pour occuper un espace raisonnable */
-  font-size: 1.3rem;
-  color: #888;
   text-align: center;
+  margin: 3rem auto 0 auto;
+  color: #aaa;
+  font-size: 1.1rem;
 }
 
 

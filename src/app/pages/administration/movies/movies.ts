@@ -56,7 +56,7 @@ export class MoviesAdmin {
       genre: [''],
       ageRating: [''],
       director: [''],
-      recommended: [''], // '' = all, true, false
+      recommended: [''], 
     });
   }
 
@@ -64,7 +64,6 @@ export class MoviesAdmin {
     const { movieId, title, genre, ageRating, director, recommended } =
       this.filterForm.value;
 
-    // Optional: only build the filter object with filled values
     const filters: any = {};
     if (movieId) filters.movieId = movieId;
     if (title) filters.title = title;

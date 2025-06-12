@@ -60,6 +60,9 @@ export class NewBooking {
   seatsLayout = signal<string[][]>([]);
   selectedSeats = signal<string[]>([]);
 
+  // --- NEW: Holds booked seat IDs for current screening
+  bookedSeatIds = signal<string[]>([]);
+
   constructor(
     private fb: FormBuilder,
     private bookingService: BookingService,
@@ -76,7 +79,6 @@ export class NewBooking {
       movieId: ['', Validators.required],
       theaterId: ['', Validators.required],
       date: ['', Validators.required],
-      time: ['', Validators.required],
       screeningId: ['', Validators.required],
       seatsNumber: [{ value: 0, disabled: true }, Validators.required],
       seatIds: [{ value: '', disabled: true }, Validators.required],
@@ -91,7 +93,7 @@ export class NewBooking {
       this.theaterService.getAllTheaters().subscribe();
     }
 
-    // Watch changes to movieId, theaterId, date, time to reload screenings
+    // Watch changes to movieId, theaterId, date to reload screenings
     this.bookingForm
       .get('movieId')!
       .valueChanges.subscribe(() => this.loadScreenings());
@@ -101,11 +103,8 @@ export class NewBooking {
     this.bookingForm
       .get('date')!
       .valueChanges.subscribe(() => this.loadScreenings());
-    this.bookingForm
-      .get('time')!
-      .valueChanges.subscribe(() => this.loadScreenings());
 
-    // When screeningId changes, load hall seats
+    // When screeningId changes, load hall seats and booked seats
     this.bookingForm
       .get('screeningId')!
       .valueChanges.subscribe((screeningId) => {
@@ -115,13 +114,27 @@ export class NewBooking {
           );
           if (screening) {
             this.loadHallSeats(screening.hallId);
+            // --- NEW: Load booked seats for this screening
+            this.screeningService.getBookedSeats(screeningId).subscribe({
+              next: (res) => {
+                // API returns .data as array of { seatId: string, ... }
+                this.bookedSeatIds.set(
+                  res.data.map((seat: any) => seat.seatId)
+                );
+              },
+              error: () => {
+                this.bookedSeatIds.set([]);
+              },
+            });
           } else {
             this.seatsLayout.set([]);
             this.selectedSeats.set([]);
+            this.bookedSeatIds.set([]);
           }
         } else {
           this.seatsLayout.set([]);
           this.selectedSeats.set([]);
+          this.bookedSeatIds.set([]);
         }
       });
 
@@ -166,11 +179,13 @@ export class NewBooking {
             this.bookingForm.get('screeningId')?.setValue('');
             this.seatsLayout.set([]);
             this.selectedSeats.set([]);
+            this.bookedSeatIds.set([]); // --- NEW: clear booked seats
           },
           error: () => {
             this.screenings.set([]);
             this.seatsLayout.set([]);
             this.selectedSeats.set([]);
+            this.bookedSeatIds.set([]); // --- NEW: clear booked seats
           },
         });
     } else {
@@ -178,6 +193,7 @@ export class NewBooking {
       this.seatsLayout.set([]);
       this.selectedSeats.set([]);
       this.bookingForm.get('screeningId')?.setValue('');
+      this.bookedSeatIds.set([]); // --- NEW: clear booked seats
     }
   }
 
@@ -185,25 +201,30 @@ export class NewBooking {
     const theaterId = this.bookingForm.get('theaterId')!.value;
     if (!theaterId) return;
 
-    this.hallService
-      .getHallsByTheaterId(theaterId)
-      .subscribe((halls: Hall[]) => {
-        const hall = halls.find((h) => h.hallId === hallId);
-        if (hall && hall.seatsLayout) {
-          this.seatsLayout.set(hall.seatsLayout);
-          this.selectedSeats.set([]); // reset
-        } else {
-          this.seatsLayout.set([]);
-          this.selectedSeats.set([]);
-        }
-      });
+    this.hallService.getHallsByTheaterId(theaterId).subscribe((halls) => {
+      const hall = halls.find((h) => h.hallId === hallId);
+      if (hall && hall.seatsLayout) {
+        this.seatsLayout.set(hall.seatsLayout);
+        this.selectedSeats.set([]);
+      } else {
+        this.seatsLayout.set([]);
+        this.selectedSeats.set([]);
+      }
+    });
   }
 
   isSeatSelected(seat: string): boolean {
     return this.selectedSeats().includes(seat);
   }
 
+  // --- NEW: Helper to check if a seat is already booked
+  isSeatBooked(seat: string): boolean {
+    return this.bookedSeatIds().includes(seat);
+  }
+
   toggleSeat(seat: string) {
+    // --- NEW: Prevent selection if seat is booked
+    if (this.isSeatBooked(seat)) return;
     const selected = this.selectedSeats();
     if (selected.includes(seat)) {
       this.selectedSeats.set(selected.filter((s) => s !== seat));
@@ -241,7 +262,7 @@ export class NewBooking {
     const formValue = this.bookingForm.getRawValue();
 
     const payload = {
-      userId, // add here
+      userId, // injecté depuis l'auth facade
       screeningId: formValue.screeningId,
       seatsNumber: formValue.seatsNumber,
       seatIds: formValue.seatIds.split(',').map((s: string) => s.trim()),
@@ -256,6 +277,7 @@ export class NewBooking {
         this.screenings.set([]);
         this.seatsLayout.set([]);
         this.selectedSeats.set([]);
+        this.bookedSeatIds.set([]); // --- NEW: clear booked seats
       },
       error: (err) => {
         this.apiError.set(
@@ -268,6 +290,6 @@ export class NewBooking {
 
   get userId(): string | null {
     const user = this.authFacade.user();
-    return user?.userId ?? null; // adjust 'id' to your actual user id field name
+    return user?.userId ?? null;
   }
 }

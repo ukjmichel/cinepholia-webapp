@@ -1,9 +1,10 @@
 import { Component, effect, inject } from '@angular/core';
 import { TheaterService } from '../../../../services/theater.service';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-theaters-list',
-  imports: [],
+  imports: [MatIcon],
   templateUrl: './theaters-list.html',
   styleUrl: './theaters-list.css',
   standalone: true,

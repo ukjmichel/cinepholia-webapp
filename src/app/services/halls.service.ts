@@ -1,4 +1,4 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Hall } from '../models/hall.model';
@@ -11,14 +11,7 @@ export class HallService {
   public createdHalls = signal<Hall[]>([]);
   public allHalls = signal<Hall[]>([]);
 
-  constructor(private http: HttpClient) {
-    effect(() => {
-      console.log('[createdHalls changed]', this.createdHalls());
-    });
-    effect(() => {
-      console.log('[allHalls changed]', this.allHalls());
-    });
-  }
+  constructor(private http: HttpClient) {}
 
   /** GET: Get all halls */
   getAllHalls(): Observable<Hall[]> {
