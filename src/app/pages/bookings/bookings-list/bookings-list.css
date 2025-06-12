@@ -1,0 +1,18 @@
+.booking-card {
+    margin-bottom: 1rem;
+    border-radius: 12px;
+  }
+  .qr-wrapper {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: start;
+  }
+  .status.confirmed {
+    color: green;
+    font-weight: bold;
+  }
+  .status.pending {
+    color: orange;
+    font-weight: bold;
+  }
+  

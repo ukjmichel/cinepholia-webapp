@@ -67,16 +67,10 @@ export class BookingService {
   }
   getBookingsByUserId(userId: string): Observable<BookingAttributes[]> {
     const url = `${this.baseUrl}user/${userId}`;
-
-    const obs = this.http
-      .get<{ message: string; data: BookingAttributes[] }>(url)
+    return this.http
+      .get<{ message: string; data: BookingAttributes[] }>(url, {
+        withCredentials: true,
+      })
       .pipe(map((res) => res.data));
-
-    obs.subscribe({
-      next: (bookings) => this.userBookings.set(bookings),
-      error: () => this.userBookings.set([]),
-    });
-
-    return obs;
   }
 }

@@ -17,3 +17,9 @@ export interface LoginResponse {
     user: User;
   };
 }
+
+
+export interface RegisterResponse {
+  message: string;
+  data: User;
+}

@@ -28,7 +28,7 @@ export const authReducer = createReducer(
     ...state,
     isLogged: true,
     user: data.user,
-    role: getValidRole(data.user.role), // Use the helper function to ensure type safety
+    role: getValidRole(data.user.role),
     loading: false,
     error: null,
   })),
@@ -38,7 +38,7 @@ export const authReducer = createReducer(
     error,
     isLogged: false,
     user: null,
-    role: 'utilisateur' as Role, // Reset to default role
+    role: 'utilisateur' as Role,
   })),
 
   // --- Register ---
@@ -47,11 +47,11 @@ export const authReducer = createReducer(
     loading: true,
     error: null,
   })),
-  on(AuthActions.registerSuccess, (state, { data }) => ({
+  on(AuthActions.registerSuccess, (state, { response }) => ({
     ...state,
     isLogged: true,
-    user: data.user,
-    role: getValidRole(data.user.role), // Use the helper function to ensure type safety
+    user: response.data,
+    role: response.data.role,
     loading: false,
     error: null,
   })),

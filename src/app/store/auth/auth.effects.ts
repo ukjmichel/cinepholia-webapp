@@ -18,7 +18,7 @@ import {
   registerSuccess,
 } from './auth.actions';
 
-import { LoginResponse } from '../../models/auth.model';
+import { LoginResponse, RegisterResponse } from '../../models/auth.model';
 import { environment } from '../../environments/environment';
 
 @Injectable()
@@ -77,16 +77,16 @@ export class AuthEffects {
       ),
       exhaustMap(({ email, username, password, firstName, lastName }) =>
         this.http
-          .post<LoginResponse>(
+          .post<RegisterResponse>(
             `${this.apiUrl}auth/register`,
             { email, username, password, firstName, lastName },
-            { withCredentials: true } // <--- Same here!
+            { withCredentials: true }
           )
           .pipe(
             tap((response) =>
               console.log('[AuthEffects] API Response:', response)
             ),
-            map((response) => registerSuccess(response)),
+            map((response) => registerSuccess({ response })), // <-- wrap in { response }
             catchError((error) => {
               console.error('[AuthEffects] Register failed:', error);
               return of(
@@ -111,7 +111,7 @@ export class AuthEffects {
         this.http
           .get<LoginResponse>(`${this.apiUrl}auth/user`, {
             withCredentials: true,
-          }) // <--- Only this needed!
+          })
           .pipe(
             tap((response) =>
               console.log('[AuthEffects] API Response:', response)
@@ -159,4 +159,3 @@ export class AuthEffects {
     { dispatch: false }
   );
 }
-

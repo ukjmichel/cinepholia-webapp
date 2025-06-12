@@ -1,1 +1,54 @@
-<p>bookings-list works!</p>
+<section>
+    <h2>Confirmed Bookings</h2>
+    @if (confirmedBookings().length === 0) {
+      <p>No confirmed bookings.</p>
+    }
+    @for (booking of confirmedBookings(); track booking.bookingId) {
+      <mat-card class="booking-card">
+        <mat-card-title>
+          Booking #{{ booking.bookingId.slice(0, 8) }}
+          &bull; {{ booking.screening.theaterId }}
+          &bull; {{ booking.screening.hallId }}
+        </mat-card-title>
+        <mat-card-content>
+          <div><b>Movie:</b> {{ booking.screening.movieId }}</div>
+          <div><b>Session:</b> {{ booking.screening.startTime | date:'medium' }} ({{ booking.screening.quality }})</div>
+          <div><b>Seats:</b> {{ booking.seatsNumber }}</div>
+          <div><b>Total:</b> {{ booking.totalPrice }} €</div>
+          <div><b>Status:</b> <span class="status confirmed">Confirmed</span></div>
+          <div class="qr-wrapper">
+            <ngx-qrcode [qrc-value]="booking.bookingId"></ngx-qrcode>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+    }
+  </section>
+  
+  <section style="margin-top:2rem;">
+    <h2>Pending Bookings</h2>
+    @if (pendingBookings().length === 0) {
+      <p>No pending bookings.</p>
+    }
+    @for (booking of pendingBookings(); track booking.bookingId) {
+      <mat-card class="booking-card">
+        <mat-card-title>
+          Booking #{{ booking.bookingId.slice(0, 8) }}
+          &bull; {{ booking.screening.theaterId }}
+          &bull; {{ booking.screening.hallId }}
+        </mat-card-title>
+        <mat-card-content>
+          <div><b>Movie:</b> {{ booking.screening.movieId }}</div>
+          <div><b>Session:</b> {{ booking.screening.startTime | date:'medium' }} ({{ booking.screening.quality }})</div>
+          <div><b>Seats:</b> {{ booking.seatsNumber }}</div>
+          <div><b>Total:</b> {{ booking.totalPrice }} €</div>
+          <div><b>Status:</b> <span class="status pending">Pending</span></div>
+          <div class="qr-wrapper">
+            <ngx-qrcode [qrc-value]="booking.bookingId"></ngx-qrcode>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+    }
+  </section>
+  
