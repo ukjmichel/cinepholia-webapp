@@ -1,15 +1,15 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-import { NgxQrcodeComponent } from 'angularx-qrcode'; // NEW (standalone)
+import { QRCodeComponent } from 'angularx-qrcode';
 import { BookingService } from '../../../services/booking.service';
 import { AuthFacade } from '../../../store/auth/auth.facade';
 
 @Component({
   selector: 'app-bookings-list',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatDividerModule, NgxQrcodeComponent],
+  imports: [CommonModule, MatCardModule, MatDividerModule, QRCodeComponent],
   templateUrl: './bookings-list.html',
   styleUrls: ['./bookings-list.css'],
 })
@@ -23,25 +23,26 @@ export class BookingsList {
       .filter((b) => b.status === 'pending')
       .sort(
         (a, b) =>
-          new Date(b.bookingDate).getTime() - new Date(a.bookingDate).getTime()
+          new Date(a.bookingDate).getTime() - new Date(b.bookingDate).getTime()
       )
   );
 
   // Computed: confirmed bookings, sorted by date DESC
-  confirmedBookings = computed(() =>
+  usedBookings = computed(() =>
     this.allBookings()
-      .filter((b) => b.status === 'confirmed')
+      .filter((b) => b.status === 'used')
       .sort(
         (a, b) =>
           new Date(b.bookingDate).getTime() - new Date(a.bookingDate).getTime()
       )
   );
 
-  constructor(
-    private bookingService: BookingService,
-    private authFacade: AuthFacade
-  ) {
-    const userId = this.authFacade.user()?.userId;
+  private bookingService = inject(BookingService);
+  private authFacade = inject(AuthFacade);
+
+  constructor() {
+    const user = this.authFacade.user?.();
+    const userId = user?.userId;
     if (userId) {
       this.bookingService
         .getBookingsByUserId(userId)

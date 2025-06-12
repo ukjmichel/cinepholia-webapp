@@ -1,18 +1,108 @@
+.booking-section {
+  padding: 2rem 1.5rem;
+  border-radius: 18px;
+  margin-bottom: 2.5rem;
+  background: #fff;
+  box-shadow: 0 6px 24px 0 #0002, 0 1.5px 4px 0 #0001;
+  border: 1px solid #f0f0f4;
+  transition: box-shadow 0.25s;
+  max-width: 800px;
+  margin: auto;
+}
+
+.pending-section {
+  border-left: 7px solid #f2a900;
+}
+
+.used-section {
+  border-left: 7px solid #43a047;
+}
+
 .booking-card {
-    margin-bottom: 1rem;
-    border-radius: 12px;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px #0001;
+  transition: transform 0.18s, box-shadow 0.18s;
+  border: 1px solid #e8e8ee;
+  padding: 20px;
+  margin: 20px auto;
+}
+
+
+
+
+.booking-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 8px 28px 0 #0002, 0 1.5px 4px 0 #0001;
+  background: #f6f9fe;
+}
+
+mat-card-title {
+  font-size: 1.22rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+  color: #363a3f;
+}
+
+mat-card-content > div {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #50505a;
+}
+mat-card-content > div:last-child {
+  margin-bottom: 0;
+}
+
+.status {
+  font-weight: 600;
+  padding: 2.5px 12px;
+  border-radius: 10px;
+  margin-left: 8px;
+  font-size: 0.98rem;
+  letter-spacing: 1px;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1.5px solid transparent;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+}
+.status.pending {
+  color: #f2a900;
+  background: #fffbe7;
+  border-color: #ffe69c;
+}
+.status.used {
+  color: #43a047;
+  background: #e6fbe8;
+  border-color: #b6e9be;
+}
+.status.canceled {
+  color: #e53935;
+  background: #fdeeee;
+  border-color: #fdcccc;
+  text-decoration: line-through;
+}
+
+.qr-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 800px) {
+  .booking-section {
+    padding: 1rem 0.2rem;
+  }
+  .booking-card {
+    padding: 0.5rem 0.2rem;
   }
   .qr-wrapper {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: start;
+    justify-content: center;
   }
-  .status.confirmed {
-    color: green;
-    font-weight: bold;
+  .mat-card-title {
+    font-size: 1.03rem;
   }
-  .status.pending {
-    color: orange;
-    font-weight: bold;
-  }
-  
+}
