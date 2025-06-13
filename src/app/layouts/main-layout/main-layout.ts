@@ -32,34 +32,27 @@ export class MainLayout {
   // Debugging: Log the user data
   user = computed(() => {
     const userData = this.authFacade.user();
-    console.log('User data:', userData);
     return userData;
   });
 
   // Debugging: Log the role
   role = computed(() => {
     const userRole = this.user()?.role;
-    console.log('User role:', userRole);
     return userRole;
   });
 
   // Debugging: Log the computed navlinks
   navlinks = computed(() => {
     const currentRole = this.role();
-    console.log('Computed role for navlinks:', currentRole);
 
     switch (currentRole) {
       case 'utilisateur':
-        console.log('Setting navlinks to USER_NAV_LINKS');
         return USER_NAV_LINKS;
       case 'employé':
-        console.log('Setting navlinks to EMPLOYEE_NAV_LINKS');
         return EMPLOYYEE_NAV_LINKS;
       case 'administrateur':
-        console.log('Setting navlinks to ADMIN_NAV_LINKS');
         return ADMIN_NAV_LINKS;
       default:
-        console.log('Setting navlinks to BASE_NAV_LINKS');
         return BASE_NAV_LINKS;
     }
   });

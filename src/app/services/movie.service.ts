@@ -41,6 +41,18 @@ export class MovieService {
   }
 
   /**
+   * GET: Get a single movie by its ID
+   * @returns Observable<Movie[]>
+   */
+  getUpcommingMovies(): Observable<Movie[]> {
+    return this.http
+      .get<{ message: string; data: Movie[] }>(`${this.baseUrl}upcoming`, {
+        withCredentials: true,
+      })
+      .pipe(map((res) => res.data));
+  }
+
+  /**
    * Search movies by filters
    * @param filters - Object of search fields
    * @returns Observable<Movie[]>

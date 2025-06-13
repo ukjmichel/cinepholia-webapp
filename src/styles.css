@@ -3,6 +3,8 @@
 :root {
   --primary-color: #ca1717;
   --secondary-color: #ffa60c;
+  --primary-dark-color: #232323;
+  --secondary-dark-color: #2d2d2d;
 }
 
 * {
@@ -30,5 +32,3 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 /**/
-
-

@@ -148,11 +148,6 @@ export const routes: Routes = [
         component: BookingsList,
       },
       {
-        path: '',
-        redirectTo: 'search',
-        pathMatch: 'full',
-      },
-      {
         path: 'new-booking',
         component: NewBooking,
       },

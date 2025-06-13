@@ -1,0 +1,61 @@
+@if (movies().length) {
+  <div class="carousel-bg">
+    <div class="carousel-container">
+      <!-- Left Arrow Button -->
+      <button mat-icon-button class="arrow" (click)="prev()" aria-label="Previous movie">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <!-- Slides Group Wrapper -->
+      <div class="carousel-slides-outer">
+        <div
+          class="carousel-slides"
+          [@carouselSlide]="currentPage()"
+        >
+          @for (movie of visibleMovies(); track movie.movieId) {
+            <mat-card class="carousel-slide" appearance="outlined">
+              <div class="poster-wrapper">
+                <img mat-card-image
+                  class="movie-poster"
+                  [src]="movie.posterUrl || 'assets/placeholder.jpg'"
+                  [alt]="movie.title"
+                />
+              </div>
+              <div class="movie-info">
+                <h3>{{ movie.title }}</h3>
+                <p>
+                  <mat-icon fontSize="small">event</mat-icon>
+                  {{ movie.releaseDate | date: 'longDate' }}
+                </p>
+                <p>
+                  <mat-icon fontSize="small">category</mat-icon>
+                  {{ movie.genre }}
+                </p>
+                <p>{{ movie.description }}</p>
+              </div>
+            </mat-card>
+          }
+        </div>
+      </div>
+
+      <!-- Right Arrow Button -->
+      <button mat-icon-button class="arrow" (click)="next()" aria-label="Next movie">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="carousel-dots">
+        @for (_ of [].constructor(totalPages()); track $index) {
+          <button
+            mat-icon-button
+            class="dot"
+            [color]="$index === currentPage() ? 'primary' : undefined"
+            (click)="goToPage($index)">
+            <mat-icon>fiber_manual_record</mat-icon>
+          </button>
+        }
+      </div>
+    }
+  </div>
+}

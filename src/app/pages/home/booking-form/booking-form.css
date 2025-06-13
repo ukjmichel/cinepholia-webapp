@@ -1,0 +1,81 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  background: #232323;
+  padding: 40px;
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2.5rem 2rem;
+  border-radius: 18px;
+  background: #292838;
+  box-shadow: 0 4px 32px #000a;
+  min-width: 320px;
+  max-width: 480px;
+  width: 100%;
+}
+
+.form-fields-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.form-field {
+  width: 100%;
+  color: #fff;
+}
+
+.mat-form-field-infix,
+.mat-form-field-label {
+  color: #fff !important;
+}
+
+.custom-btn {
+  background: var(--secondary-color) !important; /* darker variant of #ffa60c */
+  color: var(--secondary-dark-color) !important;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.03em;
+  border-radius: 100px;
+  padding: 0.7rem 2.2rem;
+  box-shadow: 0 2px 12px #ffa60c33;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  border: none;
+}
+
+.custom-btn:hover:not([disabled]),
+.custom-btn:focus:not([disabled]) {
+  background: var(
+    --secondary-dark-color
+  ) !important; /* your original orange on hover */
+  color: #232323 !important;
+}
+
+.custom-btn[disabled],
+.custom-btn.cdk-disabled {
+  background: #3b3a39 !important; /* subtle beige for disabled */
+  color: var(-primary-dark * color) !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+
+@media (min-width: 800px) {
+  .booking-form {
+    max-width: 680px;
+  }
+  .form-fields-row {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  .form-field {
+    width: 100%;
+  }
+}

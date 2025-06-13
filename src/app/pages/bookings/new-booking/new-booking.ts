@@ -14,7 +14,6 @@ import { MovieService } from '../../../services/movie.service';
 import { TheaterService } from '../../../services/theater.service';
 import { Hall } from '../../../models/hall.model';
 import { HallService } from '../../../services/halls.service';
-
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,6 +25,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthFacade } from '../../../store/auth/auth.facade';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-booking',
@@ -60,7 +60,9 @@ export class NewBooking {
   seatsLayout = signal<string[][]>([]);
   selectedSeats = signal<string[]>([]);
 
-  // --- NEW: Holds booked seat IDs for current screening
+  movieId: string | null = null;
+  theaterId: string | null = null;
+
   bookedSeatIds = signal<string[]>([]);
 
   constructor(
@@ -70,7 +72,9 @@ export class NewBooking {
     private movieService: MovieService,
     private theaterService: TheaterService,
     private hallService: HallService,
-    private authFacade: AuthFacade
+    private authFacade: AuthFacade,
+    private router: Router,
+    private route: ActivatedRoute // <--- inject ActivatedRoute
   ) {
     this.movies = this.movieService.allMovies;
     this.theaters = this.theaterService.allTheaters;
@@ -85,7 +89,7 @@ export class NewBooking {
       totalPrice: [{ value: 0, disabled: true }, Validators.required],
     });
 
-    // Load movies and theaters if empty
+    // Load movies/theaters if missing
     if (!this.movies() || this.movies().length === 0) {
       this.movieService.getAllMovies().subscribe();
     }
@@ -93,7 +97,33 @@ export class NewBooking {
       this.theaterService.getAllTheaters().subscribe();
     }
 
-    // Watch changes to movieId, theaterId, date to reload screenings
+    // --- GET movieId and theaterId from query params
+    this.route.queryParams.subscribe((params) => {
+      this.movieId = params['movieId'] ?? null;
+      this.theaterId = params['theaterId'] ?? null;
+
+      // Patch the form when movies/theaters loaded and query params are present
+      effect(() => {
+        if (
+          this.movies() &&
+          this.movies().length &&
+          this.movieId &&
+          this.bookingForm.get('movieId')!.value !== this.movieId
+        ) {
+          this.bookingForm.get('movieId')?.setValue(this.movieId);
+        }
+        if (
+          this.theaters() &&
+          this.theaters().length &&
+          this.theaterId &&
+          this.bookingForm.get('theaterId')!.value !== this.theaterId
+        ) {
+          this.bookingForm.get('theaterId')?.setValue(this.theaterId);
+        }
+      });
+    });
+
+    // Listen for changes to load screenings
     this.bookingForm
       .get('movieId')!
       .valueChanges.subscribe(() => this.loadScreenings());
@@ -104,7 +134,7 @@ export class NewBooking {
       .get('date')!
       .valueChanges.subscribe(() => this.loadScreenings());
 
-    // When screeningId changes, load hall seats and booked seats
+    // Listen for screeningId changes (hall/seats)
     this.bookingForm
       .get('screeningId')!
       .valueChanges.subscribe((screeningId) => {
@@ -114,10 +144,9 @@ export class NewBooking {
           );
           if (screening) {
             this.loadHallSeats(screening.hallId);
-            // --- NEW: Load booked seats for this screening
+            // Load booked seats for this screening
             this.screeningService.getBookedSeats(screeningId).subscribe({
               next: (res) => {
-                // API returns .data as array of { seatId: string, ... }
                 this.bookedSeatIds.set(
                   res.data.map((seat: any) => seat.seatId)
                 );
@@ -138,7 +167,7 @@ export class NewBooking {
         }
       });
 
-    // Update seatsNumber, seatIds, totalPrice when selectedSeats changes
+    // React to seat selection changes
     effect(() => {
       const selected = this.selectedSeats();
       this.bookingForm
@@ -179,13 +208,13 @@ export class NewBooking {
             this.bookingForm.get('screeningId')?.setValue('');
             this.seatsLayout.set([]);
             this.selectedSeats.set([]);
-            this.bookedSeatIds.set([]); // --- NEW: clear booked seats
+            this.bookedSeatIds.set([]);
           },
           error: () => {
             this.screenings.set([]);
             this.seatsLayout.set([]);
             this.selectedSeats.set([]);
-            this.bookedSeatIds.set([]); // --- NEW: clear booked seats
+            this.bookedSeatIds.set([]);
           },
         });
     } else {
@@ -193,7 +222,7 @@ export class NewBooking {
       this.seatsLayout.set([]);
       this.selectedSeats.set([]);
       this.bookingForm.get('screeningId')?.setValue('');
-      this.bookedSeatIds.set([]); // --- NEW: clear booked seats
+      this.bookedSeatIds.set([]);
     }
   }
 
@@ -217,13 +246,11 @@ export class NewBooking {
     return this.selectedSeats().includes(seat);
   }
 
-  // --- NEW: Helper to check if a seat is already booked
   isSeatBooked(seat: string): boolean {
     return this.bookedSeatIds().includes(seat);
   }
 
   toggleSeat(seat: string) {
-    // --- NEW: Prevent selection if seat is booked
     if (this.isSeatBooked(seat)) return;
     const selected = this.selectedSeats();
     if (selected.includes(seat)) {
@@ -277,7 +304,7 @@ export class NewBooking {
         this.screenings.set([]);
         this.seatsLayout.set([]);
         this.selectedSeats.set([]);
-        this.bookedSeatIds.set([]); // --- NEW: clear booked seats
+        this.bookedSeatIds.set([]);
       },
       error: (err) => {
         this.apiError.set(
