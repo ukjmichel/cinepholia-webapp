@@ -6,6 +6,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MovieService } from '../../services/movie.service';
 import { RouterModule } from '@angular/router';
+import { AuthFacade } from '../../store/auth/auth.facade';
 
 @Component({
   selector: 'app-movie-list',

@@ -23,6 +23,12 @@ import { MovieDetails } from './pages/movies/movie-detail/movie-details';
 import { BookingsAdmin } from './pages/bookings/bookings';
 import { BookingsList } from './pages/bookings/bookings-list/bookings-list';
 import { NewBooking } from './pages/bookings/new-booking/new-booking';
+import { PrivacyPolicy } from './pages/privacy-policy/privacy-policy';
+import { TermsAndConditions } from './pages/terms-and-conditions/terms-and-conditions';
+import { LegalNotices } from './pages/legal-notices/legal-notices';
+import { CookiePolicy } from './pages/cookie-policy/cookie-policy';
+import { CommentsAdmin } from './pages/administration/comments/comments';
+import { CommentsList } from './pages/administration/comments/comments-list/comments-list';
 
 export const routes: Routes = [
   {
@@ -109,6 +115,16 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'comments',
+        component: CommentsAdmin,
+        children: [
+          {
+            path: 'search',
+            component: CommentsList,
+          },
+        ],
+      },
     ],
   },
   {
@@ -152,5 +168,22 @@ export const routes: Routes = [
         component: NewBooking,
       },
     ],
+  },
+
+  {
+    path: 'privacy-policy',
+    component: PrivacyPolicy,
+  },
+  {
+    path: 'terms-and-conditions',
+    component: TermsAndConditions,
+  },
+  {
+    path: 'legal-notices',
+    component: LegalNotices,
+  },
+  {
+    path: 'cookie-policy',
+    component: CookiePolicy,
   },
 ];

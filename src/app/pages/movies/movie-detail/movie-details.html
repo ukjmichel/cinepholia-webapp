@@ -87,9 +87,9 @@
 
   <!-- Screenings List -->
   <div class="screening-list">
-    @if (filteredSortedScreenings().length > 0) { @for (screening of
-    filteredSortedScreenings(); track screening.screeningId) {
-    <div class="screening-item">
+    @if (filteredSortedScreenings().length > 0 ) { @for (screening
+    of filteredSortedScreenings(); track screening.screeningId) {
+    <div class="screening-item" (click)="goToBooking(screening)">
       <span class="screening-hour">
         {{ screening.startTime | date: 'shortTime' }}
       </span>

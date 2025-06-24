@@ -1,0 +1,42 @@
+<div class="contact-form">
+  <header>
+    <h1>Nous contacter</h1>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Cinéma -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cinéma</mat-label>
+      <mat-select formControlName="theaterId" required>
+        <mat-option value="">Choisir un cinéma</mat-option>
+        @for (theater of theaters(); track theater.theaterId) {
+        <mat-option [value]="theater.theaterId">
+          {{ theater.theaterId }} - {{ theater.city }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" required />
+    </mat-form-field>
+
+    <!-- Message -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Message</mat-label>
+      <textarea matInput formControlName="message" rows="5" required></textarea>
+    </mat-form-field>
+
+    <!-- Submit -->
+    <button
+      mat-raised-button
+      color="primary"
+      class="submit-button"
+      type="submit"
+    >
+      Envoyer
+    </button>
+  </form>
+</div>

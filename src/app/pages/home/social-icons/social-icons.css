@@ -1,0 +1,40 @@
+.social-container {
+  background-color: #d50000;
+  color: white;
+  padding: 2rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.icons {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.icons a {
+  text-decoration: none;
+}
+
+mat-icon.icon {
+  width: 48px;
+  height: 48px;
+  fill: white; /* This applies to the internal <path> of the SVG */
+  color: white; /* For fallback */
+  transition: transform 0.2s ease-in-out;
+}
+
+mat-icon.icon:hover {
+  transform: scale(1.2);
+  opacity: 0.85;
+}

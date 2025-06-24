@@ -1,9 +1,10 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { environment } from '../environments/environment'; // adjust path as needed
+import { environment } from '../environments/environment'; // Adjust path as needed
 import { ScreeningAttributes } from '../models/screening.model';
 
+// Type for creating a new screening
 export interface CreateScreeningPayload {
   movieId: string;
   theaterId: string;
@@ -16,28 +17,36 @@ export interface CreateScreeningPayload {
 @Injectable({ providedIn: 'root' })
 export class ScreeningService {
   private baseUrl = `${environment.apiUrl}screenings/`;
-  private createUrl = `${environment.apiUrl}screenings`;
 
+  // State signal for components to subscribe to screening list changes
   public filteredScreenings = signal<ScreeningAttributes[]>([]);
 
   constructor(private http: HttpClient) {}
 
+  // -------------------------------------------------------------------
+  // Public API Methods
+  // -------------------------------------------------------------------
+
   /**
    * Search screenings with filters.
-   * Filters can be: movieId, theaterId, hallId, startTime, priceMin, priceMax, quality, recommended.
+   * Supported filters: movieId, theaterId, hallId, startTime, date,
+   * priceMin, priceMax, quality, recommended.
+   * Always adds a cache-busting timestamp so no 304/cached results.
    */
   searchScreenings(filters: {
     movieId?: string;
     theaterId?: string;
     hallId?: string;
-    startTime?: string; // full ISO datetime, only for exact match!
-    date?: string; // <-- add this: for filtering by day!
+    startTime?: string;
+    date?: string;
     priceMin?: number;
     priceMax?: number;
     quality?: string;
     recommended?: boolean;
   }): Observable<ScreeningAttributes[]> {
     let params = new HttpParams();
+
+    // Build search params
     if (filters.movieId) params = params.set('movieId', filters.movieId);
     if (filters.theaterId) params = params.set('theaterId', filters.theaterId);
     if (filters.hallId) params = params.set('hallId', filters.hallId);
@@ -51,28 +60,49 @@ export class ScreeningService {
     if (filters.recommended !== undefined)
       params = params.set('recommended', String(filters.recommended));
 
+    // Cache buster: always unique, disables cache on server and browser
+    params = params.set('_ts', Date.now().toString());
+
+    // HTTP request
     const obs = this.http
       .get<{ message: string; data: ScreeningAttributes[] }>(
         `${this.baseUrl}search`,
-        {
-          params,
-        }
+        { params }
       )
       .pipe(map((res) => res.data));
 
+    // Update signal automatically (side effect for consumers)
     obs.subscribe((screenings) => this.filteredScreenings.set(screenings));
 
     return obs;
   }
 
-  /** Add a new screening */
+  /**
+   * Add a new screening to the database.
+   */
   addScreening(screening: CreateScreeningPayload): Observable<any> {
     return this.http.post<any>(this.baseUrl, screening, {
       withCredentials: true,
     });
   }
 
-  getBookedSeats(screeningId: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}${screeningId}/booked-seats`);
+  /**
+   * Get the list of already booked seats for a given screening.
+   */
+  getBookedSeats(screeningId: string): Observable<{ data: any[] }> {
+    return this.http.get<{ data: any[] }>(
+      `${this.baseUrl}${screeningId}/booked-seats`
+    );
+  }
+
+  /**
+   * Get a single screening by its unique ID.
+   */
+  getScreeningById(screeningId: string): Observable<ScreeningAttributes> {
+    return this.http
+      .get<{ message: string; data: ScreeningAttributes }>(
+        `${this.baseUrl}${screeningId}`
+      )
+      .pipe(map((res) => res.data));
   }
 }

@@ -22,16 +22,12 @@
   margin-bottom: 1.5rem;
   max-width: 600px;
   border-radius: 14px;
-
   box-shadow: 0 2px 8px #0001;
   transition: transform 0.18s, box-shadow 0.18s;
   border: 1px solid #e8e8ee;
   padding: 20px;
   margin: 20px auto;
 }
-
-
-
 
 .booking-card:hover {
   transform: translateY(-4px) scale(1.01);
@@ -92,6 +88,52 @@ mat-card-content > div:last-child {
   align-items: center;
 }
 
+/* Add comment button style */
+.add-comment-btn {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  min-width: 140px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: box-shadow 0.18s, background 0.18s;
+  /* Optional: uppercase text for material look */
+  /* text-transform: uppercase; */
+}
+
+.add-comment-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #43a04755;
+}
+
+/* Comment input area style */
+.comment-box {
+  margin-top: 1.2rem;
+  background: #f9fbff;
+  border: 1px solid #e6eaf4;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px #00000010;
+}
+.comment-box mat-form-field {
+  width: 100%;
+}
+
+/* Saved comment display */
+.saved-comment {
+  margin-top: 1.1rem;
+  background: #e6fbe8;
+  border-radius: 7px;
+  border: 1px solid #b6e9be;
+  padding: 0.65rem 1rem;
+  color: #246b2a;
+  font-size: 1rem;
+}
+
+/* Optional: Material button tweaks inside the comment box */
+.comment-box button {
+  min-width: 88px;
+}
+
 @media (max-width: 800px) {
   .booking-section {
     padding: 1rem 0.2rem;
@@ -104,5 +146,17 @@ mat-card-content > div:last-child {
   }
   .mat-card-title {
     font-size: 1.03rem;
+  }
+  .add-comment-btn {
+    min-width: 110px;
+    margin-top: 0.6rem;
+    font-size: 0.96rem;
+  }
+  .comment-box {
+    padding: 0.5rem;
+  }
+  .saved-comment {
+    padding: 0.45rem 0.5rem;
+    font-size: 0.95rem;
   }
 }

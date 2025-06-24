@@ -1,16 +1,18 @@
 import { Component, signal, effect, Signal, computed } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MovieService } from '../../../services/movie.service';
 import { Movie } from '../../../models/movie.model';
 import { TheaterService } from '../../../services/theater.service';
 import { Theater } from '../../../models/theater.model';
+import { ScreeningService } from '../../../services/screening.service';
+import { ScreeningAttributes } from '../../../models/screening.model';
+import { AuthFacade } from '../../../store/auth/auth.facade';
+
+import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CommonModule } from '@angular/common';
-import { ScreeningAttributes } from '../../../models/screening.model';
-import { ScreeningService } from '../../../services/screening.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -22,11 +24,11 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './movie-details.html',
   styleUrl: './movie-details.css',
   imports: [
+    CommonModule,
+    RouterModule,
     MatCardModule,
     MatIconModule,
-    CommonModule,
     MatProgressSpinnerModule,
-    RouterModule,
     MatSelectModule,
     MatDatepickerModule,
     MatInputModule,
@@ -35,103 +37,148 @@ import { MatButtonModule } from '@angular/material/button';
   ],
 })
 export class MovieDetails {
-  // Signals for all your data/UI state
+  // ------------------ Signals & State ------------------
   movie = signal<Movie | null>(null);
   isLoading = signal(true);
   error = signal('');
+  isLogged: Signal<boolean>;
 
   theaters = signal<Theater[]>([]);
-  selectedTheaterId = signal<string>(''); // value from select dropdown
+  selectedTheaterId = signal<string>(''); // The currently-selected theater
   selectedTheater = signal<Theater | null>(null);
 
-  // Two signals for date:
-  selectedDate = signal<string>(''); // API filter, format 'yyyy-MM-dd'
-  selectedDateObj = signal<Date | null>(null); // Material Datepicker input
+  // Date management
+  selectedDate = signal<string>(''); // yyyy-MM-dd format for API/filter
+  selectedDateObj = signal<Date | null>(null); // actual Date object
 
-  screeningsList!: Signal<ScreeningAttributes[]>;
+  // Raw list of screenings returned from API (can contain extra or wrong dates)
+  screeningsList: Signal<ScreeningAttributes[]>;
 
-  // List of screenings, sorted by start time
+  // ------------- FILTERED & DEDUPED SCREENINGS --------------
+  /**
+   * Show only unique screenings for the selected date (in local time).
+   * This prevents bugs where backend returns screenings for more than the selected date.
+   */
   filteredSortedScreenings = computed(() => {
-    const screenings = [...(this.screeningsList() ?? [])].sort(
+    const screenings = this.screeningsList() ?? [];
+    const dateStr = this.selectedDate();
+
+    if (!dateStr) return [];
+
+    // Keep only screenings on the selected date
+    const filtered = screenings.filter((s) => {
+      // If backend gives UTC string, use getUTCFullYear etc; else use local
+      const screeningDate = new Date(s.startTime);
+      // Format to yyyy-MM-dd for comparison
+      const y = screeningDate.getFullYear();
+      const m = String(screeningDate.getMonth() + 1).padStart(2, '0');
+      const d = String(screeningDate.getDate()).padStart(2, '0');
+      const screeningDay = `${y}-${m}-${d}`;
+      return screeningDay === dateStr;
+    });
+
+    // Deduplicate by screeningId
+    const uniqueMap = new Map<string, ScreeningAttributes>();
+    filtered.forEach((s) => uniqueMap.set(s.screeningId, s));
+
+    // Sort by start time
+    return Array.from(uniqueMap.values()).sort(
       (a, b) =>
         new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
     );
-    return screenings;
   });
+
+  // ----------------------------------------------------------
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private movieService: MovieService,
     private theaterService: TheaterService,
-    private screeningService: ScreeningService
+    private screeningService: ScreeningService,
+    private authFacade: AuthFacade
   ) {
-    // Link to the reactive screenings list from the service
+    this.isLogged = authFacade.isLogged;
     this.screeningsList = this.screeningService.filteredScreenings;
 
-    // Fetch movie and theater data when the component mounts
+    // Load movie on mount
     effect(() => {
       const id = this.route.snapshot.paramMap.get('movieId');
-      if (id) {
-        this.isLoading.set(true);
-        this.movieService.getMovieById(id).subscribe({
-          next: (result) => {
-            this.movie.set(result);
-            this.isLoading.set(false);
-          },
-          error: () => {
-            this.error.set('Film introuvable');
-            this.isLoading.set(false);
-          },
-        });
-      } else {
+      if (!id) {
         this.error.set('ID de film manquant dans l’URL.');
         this.isLoading.set(false);
+        return;
       }
+      this.isLoading.set(true);
+      this.movieService.getMovieById(id).subscribe({
+        next: (result) => {
+          this.movie.set(result);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.error.set('Film introuvable');
+          this.isLoading.set(false);
+        },
+      });
     });
 
-    // Fetch all theaters
+    // Load theaters on mount
     this.theaterService.getAllTheaters().subscribe({
       next: (theaters) => this.theaters.set(theaters ?? []),
     });
 
-    // Effect to update the current selected theater object (for displaying address etc.)
+    // Update selectedTheater object when selection changes
     effect(() => {
       const all = this.theaters();
       const id = this.selectedTheaterId();
       this.selectedTheater.set(all.find((t) => t.theaterId === id) ?? null);
     });
 
-    // Main effect to re-trigger API request whenever a filter (movie, theater, date) changes
+    // Whenever movie, theater, or date changes, reload screenings from API
     effect(() => {
       const movie = this.movie();
       const theaterId = this.selectedTheaterId();
       const date = this.selectedDate();
 
-      // Debug log: you should see the date value here
-      console.log('Triggering search. date:', date, 'theaterId:', theaterId);
-
-      if (movie) {
-        const filters: any = { movieId: movie.movieId };
-        if (theaterId) filters.theaterId = theaterId;
-        if (date) filters.date = date; // send 'date' (NOT 'startTime') to API
-        this.screeningService.searchScreenings(filters).subscribe();
+      if (!movie || !date) {
+        // Don't search if not enough info
+        this.screeningService.filteredScreenings.set([]);
+        return;
       }
+
+      // Always send date in yyyy-MM-dd to backend
+      const filters: any = { movieId: movie.movieId, date };
+      if (theaterId) filters.theaterId = theaterId;
+      this.screeningService.searchScreenings(filters).subscribe();
     });
   }
 
-  // Called when the user picks a date
-  onDateChange(date: Date | null) {
-    console.log('date:', date); // Should be a Date object or null
-    this.selectedDateObj.set(date);
+  // ------------------- UI Actions -------------------
 
+  // Called when the user picks a date in the date picker
+  onDateChange(date: Date | null) {
+    this.selectedDateObj.set(date);
     if (date && !isNaN(date.getTime())) {
-      // Format date to yyyy-MM-dd
+      // Format date as yyyy-MM-dd (local time)
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       this.selectedDate.set(`${year}-${month}-${day}`);
     } else {
       this.selectedDate.set('');
+    }
+  }
+
+  // Go to booking page with correct params
+  goToBooking(screening: ScreeningAttributes) {
+    const movieId = this.movie()?.movieId;
+    const theaterId = this.selectedTheater()?.theaterId;
+    const screeningId = screening.screeningId;
+
+    if (movieId && theaterId && screeningId) {
+      this.router.navigate(['/bookings', 'new-booking'], {
+        queryParams: { movieId, theaterId, screeningId },
+      });
     }
   }
 }

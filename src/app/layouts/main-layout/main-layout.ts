@@ -11,6 +11,7 @@ import {
 } from '../../shared/nav-links';
 import { RouterModule } from '@angular/router';
 import { AuthFacade } from '../../store/auth/auth.facade';
+import { Footer } from "../../components/footer/footer";
 
 @Component({
   selector: 'app-main-layout',
@@ -20,7 +21,8 @@ import { AuthFacade } from '../../store/auth/auth.facade';
     RouterModule,
     MatFormFieldModule,
     MatSelectModule,
-  ],
+    Footer
+],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.css'],
   standalone: true,

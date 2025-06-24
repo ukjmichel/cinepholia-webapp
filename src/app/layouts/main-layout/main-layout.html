@@ -12,14 +12,13 @@
       <li>
         <a [routerLink]="link.url">{{ link.label }}</a>
       </li>
-      } 
-      @if(!isLogged()){
+      } @if(!isLogged()){
       <li [routerLink]="'auth'">Se connecter</li>
       }@else {
       <li (click)="logout()">Se déconnecter</li>
       }
     </ul>
-
   </mat-drawer>
   <mat-drawer-content><router-outlet></router-outlet> </mat-drawer-content>
 </mat-drawer-container>
+<app-footer></app-footer>

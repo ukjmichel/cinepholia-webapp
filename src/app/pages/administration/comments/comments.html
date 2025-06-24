@@ -1,0 +1,64 @@
+<mat-drawer-container
+  class="comment-filter-side"
+  [hasBackdrop]="true"
+  (backdropClick)="drawer.close()"
+>
+  <mat-drawer
+    #drawer
+    [mode]="'over'"
+    class="drawer-80vw"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <div class="movie-hall-filter-container">
+      <h1 class="filter-title">Filtrer les commentaires</h1>
+      <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Movie ID</mat-label>
+          <input
+            matInput
+            placeholder="Movie ID"
+            formControlName="movieId"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">Tous</mat-option>
+            <mat-option value="pending">En attente</mat-option>
+            <mat-option value="confirmed">Confirmé</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Recherche texte</mat-label>
+          <input
+            matInput
+            placeholder="Mot-clé dans le commentaire"
+            formControlName="q"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <button mat-raised-button class="full-width" type="submit">
+          Filtrer
+        </button>
+      </form>
+      @if (apiError()) {
+      <div class="api-error-message">{{ apiError() }}</div>
+      }
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="toolbar-actions">
+      <button
+        mat-icon-button
+        class="toolbar-btn"
+        (click)="drawer.toggle()"
+        aria-label="Afficher le filtre"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

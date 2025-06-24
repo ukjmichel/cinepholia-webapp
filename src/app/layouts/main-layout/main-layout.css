@@ -1,3 +1,7 @@
+:host {
+  min-height: 100vh;
+}
+
 .navbar {
   display: flex;
   align-items: center;
@@ -6,6 +10,8 @@
   height: 56px;
   padding: 0 10px;
   color: white;
+
+  
 }
 
 .navbar-links {
@@ -16,6 +22,8 @@
 
 .side-nav {
   min-height: calc(100vh - 56px);
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .side-nav li {
@@ -32,4 +40,9 @@
   padding: 2px;
   margin: 5px;
   background-color: var(--secondary-color);
+}
+
+mat-drawer-container,
+mat-drawer-content {
+  overflow-x: hidden !important;
 }

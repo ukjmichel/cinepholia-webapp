@@ -1,0 +1,90 @@
+@if (isReady()) {
+<div
+  class="carousel-bg"
+  [class.fade-in]="showCarousel()"
+  [class.invisible]="!showCarousel()"
+>
+  <header>Films à l'affiche</header>
+
+  <div class="carousel-container">
+    <!-- Left Arrow -->
+    <button
+      mat-icon-button
+      class="arrow"
+      (click)="prev()"
+      [disabled]="isAnimating()"
+      aria-label="Film précédent"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <!-- Slides -->
+    <div class="carousel-slides-outer">
+      <div
+        class="carousel-slides"
+        [@carouselSlide]="hasRendered() ? currentPage() : null"
+        (@carouselSlide.done)="onAnimationDone()"
+      >
+        @for (movie of visibleMovies(); track movie.movieId) {
+        <a [routerLink]="['/','movies',movie.movieId]">
+          <mat-card class="carousel-slide" appearance="outlined">
+            <div class="poster-wrapper">
+              <img
+                mat-card-image
+                class="movie-poster"
+                [src]="movie.posterUrl || 'assets/placeholder.jpg'"
+                [alt]="movie.title"
+              />
+            </div>
+            <div class="movie-info">
+              <h3>{{ movie.title }}</h3>
+              <p>
+                <mat-icon fontSize="small">event</mat-icon>
+                {{ movie.releaseDate | date: 'longDate' }}
+              </p>
+              <p>
+                <mat-icon fontSize="small">category</mat-icon>
+                {{ movie.genre }}
+              </p>
+            </div>
+          </mat-card>
+        </a>
+        }
+      </div>
+    </div>
+
+    <!-- Right Arrow -->
+    <button
+      mat-icon-button
+      class="arrow"
+      (click)="next()"
+      [disabled]="isAnimating()"
+      aria-label="Film suivant"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- Dots -->
+  @if (totalPages() > 1) {
+  <div class="carousel-dots">
+    @for (_ of [].constructor(totalPages()); track $index) {
+    <button
+      mat-icon-button
+      class="dot"
+      [color]="$index === currentPage() ? 'primary' : undefined"
+      (click)="goToPage($index)"
+      [disabled]="isAnimating()"
+    >
+      <mat-icon>fiber_manual_record</mat-icon>
+    </button>
+    }
+  </div>
+  }
+</div>
+}
+
+<button mat-raised-button color="primary" class="cta-button">
+  <a [routerLink]="['/movies']"> Voir tous les Films </a>
+  <mat-icon style="margin-left: 0.5rem">arrow_forward</mat-icon>
+</button>

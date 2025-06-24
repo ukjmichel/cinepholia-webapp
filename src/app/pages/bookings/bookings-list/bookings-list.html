@@ -5,13 +5,13 @@
   } @for (booking of pendingBookings(); track booking.bookingId) {
   <mat-card class="booking-card">
     <mat-card-title>
-      Booking #{{ booking.bookingId.slice(0, 8) }} &bull; {{
+      Réservation #{{ booking.bookingId.slice(0, 8) }} &bull; {{
       booking.screening.theaterId }} &bull; {{ booking.screening.hallId }}
     </mat-card-title>
     <mat-card-content>
-      <div><b>Movie:</b> {{ booking.screening.movieId }}</div>
+      <div><b>Film:</b> {{ booking.screening.movieId }}</div>
       <div>
-        <b>Session:</b>
+        <b>Séance:</b>
         {{ booking.screening.startTime | date:'medium' }} ({{
         booking.screening.quality }})
       </div>
@@ -37,13 +37,13 @@
   } @for (booking of usedBookings(); track booking.bookingId) {
   <mat-card class="booking-card">
     <mat-card-title>
-      Booking #{{ booking.bookingId.slice(0, 8) }} &bull; {{
+      Réservation #{{ booking.bookingId.slice(0, 8) }} &bull; {{
       booking.screening.theaterId }} &bull; {{ booking.screening.hallId }}
     </mat-card-title>
     <mat-card-content>
-      <div><b>Movie:</b> {{ booking.screening.movieId }}</div>
+      <div><b>Film:</b> {{ booking.screening.movieId }}</div>
       <div>
-        <b>Session:</b>
+        <b>Séance:</b>
         {{ booking.screening.startTime | date:'medium' }} ({{
         booking.screening.quality }})
       </div>
@@ -56,8 +56,26 @@
       <div class="qr-wrapper">
         <qrcode [qrdata]="booking.bookingId"></qrcode>
       </div>
+      @if (booking.comment) {
+      <button
+        mat-flat-button
+        color="accent"
+        class="add-comment-btn"
+        (click)="openComment(booking)"
+      >
+        View comment
+      </button>
+      } @else {
+      <button
+        mat-stroked-button
+        color="primary"
+        class="add-comment-btn"
+        (click)="openComment(booking)"
+      >
+        Commentaire
+      </button>
+      }
     </mat-card-content>
   </mat-card>
-  <mat-divider></mat-divider>
   }
 </section>

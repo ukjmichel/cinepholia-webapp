@@ -117,9 +117,10 @@
   align-items: center;
   justify-content: center;
   transition: box-shadow 0.2s;
-  min-width: 0;
+  min-width: 170px;
   max-width: 220px; /* NEW: restrict item width */
   margin: 0 auto; /* NEW: center item inside grid column */
+  cursor: pointer;
 }
 
 .screening-item:hover {

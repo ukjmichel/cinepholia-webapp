@@ -1,0 +1,25 @@
+<div class="favorite-container">
+  <div class="favorite-message">
+    <h2>🎬 Notre coup de cœur</h2>
+    <button (click)="onSubmit()">Réserver</button>
+  </div>
+  <div class="favorite-card">
+    @if (loading) {
+    <div class="movie-loader">Chargement…</div>
+    } @else if (error) {
+    <div class="movie-error">{{ error }}</div>
+    } @else if (movie) {
+
+    <mat-card class="facorite-slide" appearance="outlined" (click)="onSubmit()">
+      <div class="poster-wrapper">
+        <img
+          mat-card-image
+          class="movie-poster"
+          [src]="movie.posterUrl || 'assets/placeholder.jpg'"
+          [alt]="movie.title"
+        />
+      </div>
+    </mat-card>
+    }
+  </div>
+</div>

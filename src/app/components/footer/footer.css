@@ -1,0 +1,37 @@
+.footer {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-content {
+  text-align: center;
+  width: 100%;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.footer-links li {
+  margin: 30px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.footer-copy {
+  margin-top: 100px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: left;
+}

@@ -18,7 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { AuthFacade } from '../../../store/auth/auth.facade';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login-form',
@@ -42,19 +42,23 @@ export class LoginForm {
   hide = signal(true);
 
   errorMessages = signal<string[]>([]);
-
-  // AuthFacade.error() must return a Signal<string | null>!
   apiErrorMessage: Signal<string | null>;
 
-  constructor(private authFacade: AuthFacade) {
+  constructor(private authFacade: AuthFacade, private route: ActivatedRoute) {
     this.apiErrorMessage = this.authFacade.error;
     this.authFacade.clearError();
+
+    // Prefill email from query param
+    const emailFromUrl = this.route.snapshot.queryParamMap.get('email');
+    if (emailFromUrl) {
+      this.email.setValue(emailFromUrl);
+    }
 
     merge(this.email.statusChanges, this.email.valueChanges)
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
         this.updateErrorMessages();
-        this.clearApiError(); // Clear API error on user interaction
+        this.clearApiError();
       });
   }
 

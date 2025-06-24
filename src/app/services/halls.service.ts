@@ -18,7 +18,7 @@ export class HallService {
     const url = this.baseUrl;
     const obs = this.http.get<Hall[]>(url, { withCredentials: true });
     obs.subscribe((halls) => {
-      this.allHalls.set(halls); // <-- stocke dans allHalls
+      this.allHalls.set(halls); 
     });
     return obs;
   }
@@ -28,7 +28,7 @@ export class HallService {
     const url = `${this.baseUrl}theater/${encodeURIComponent(theaterId)}`;
     const obs = this.http.get<Hall[]>(url, { withCredentials: true });
     obs.subscribe((halls) => {
-      this.createdHalls.set(halls); // <-- stocke dans createdHalls
+      this.createdHalls.set(halls); 
     });
     return obs;
   }

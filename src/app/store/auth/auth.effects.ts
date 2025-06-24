@@ -133,7 +133,13 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(loginSuccess, registerSuccess),
-        tap(() => this.router.navigate(['/']))
+        tap(() => {
+          const returnUrl =
+            this.router.routerState.snapshot.root.queryParamMap.get(
+              'returnUrl'
+            ) || '/';
+          this.router.navigateByUrl(returnUrl);
+        })
       ),
     { dispatch: false }
   );
