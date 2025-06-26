@@ -1,20 +1,20 @@
 import { createReducer, on } from '@ngrx/store';
 import * as AuthActions from './auth.actions';
-import { initialAuthState } from './auth.state';
-import { Role } from './auth.state'; // Import the Role type
+import { initialAuthState, AuthState, Role } from './auth.state';
 
-// Helper function to ensure the role is one of the allowed values
+// Helper to ensure valid role values
 function getValidRole(role: string): Role {
   switch (role) {
     case 'administrateur':
     case 'employé':
     case 'utilisateur':
-      return role;
+      return role as Role;
     default:
-      return 'utilisateur'; // Default role if the provided role is not valid
+      return 'utilisateur';
   }
 }
 
+// Auth reducer handles all auth actions and updates state accordingly
 export const authReducer = createReducer(
   initialAuthState,
 
@@ -34,11 +34,11 @@ export const authReducer = createReducer(
   })),
   on(AuthActions.loginFailure, (state, { error }) => ({
     ...state,
-    loading: false,
-    error,
     isLogged: false,
     user: null,
     role: 'utilisateur' as Role,
+    loading: false,
+    error,
   })),
 
   // --- Register ---
@@ -51,20 +51,20 @@ export const authReducer = createReducer(
     ...state,
     isLogged: true,
     user: response.data,
-    role: response.data.role,
+    role: getValidRole(response.data.role),
     loading: false,
     error: null,
   })),
   on(AuthActions.registerFailure, (state, { error }) => ({
     ...state,
-    loading: false,
-    error,
     isLogged: false,
     user: null,
-    role: 'utilisateur' as Role, // Reset to default role
+    role: 'utilisateur' as Role,
+    loading: false,
+    error,
   })),
 
-  // --- Get User ---
+  // --- Get User (session check) ---
   on(AuthActions.getUser, (state) => ({
     ...state,
     loading: true,
@@ -74,17 +74,36 @@ export const authReducer = createReducer(
     ...state,
     isLogged: true,
     user: data.user,
-    role: getValidRole(data.user.role), // Use the helper function to ensure type safety
+    role: getValidRole(data.user.role),
     loading: false,
     error: null,
   })),
   on(AuthActions.getUserFailure, (state, { error }) => ({
     ...state,
-    loading: false,
-    error,
     isLogged: false,
     user: null,
-    role: 'utilisateur' as Role, // Reset to default role
+    role: 'utilisateur' as Role,
+    loading: false,
+    error,
+  })),
+
+  // --- Refresh Token ---
+  on(AuthActions.refreshToken, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
+  // These just end the loading state, any retry logic is handled in effects
+  on(AuthActions.refreshTokenSuccess, (state) => ({
+    ...state,
+    loading: false,
+  })),
+  on(AuthActions.refreshTokenFailure, (state) => ({
+    ...state,
+    loading: false,
+    isLogged: false,
+    user: null,
+    role: 'utilisateur' as Role,
   })),
 
   // --- Logout ---

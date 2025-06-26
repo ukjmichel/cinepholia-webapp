@@ -1,14 +1,14 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AuthState } from './auth.state';
 
-// 1. Feature key
+// Key for feature module
 export const AUTH_FEATURE_KEY = 'auth';
 
-// 2. Feature selector
+// Main feature selector
 export const selectAuthState =
   createFeatureSelector<AuthState>(AUTH_FEATURE_KEY);
 
-// 3. Property selectors
+// Selectors for each property
 export const selectIsLogged = createSelector(
   selectAuthState,
   (state) => state.isLogged
@@ -33,4 +33,3 @@ export const selectAuthError = createSelector(
   selectAuthState,
   (state) => state.error
 );
-

@@ -1,7 +1,11 @@
+// Defines AuthState and initialAuthState
+
 import { User } from '../../models/auth.model';
 
+// Define roles for type safety
 export type Role = 'administrateur' | 'employé' | 'utilisateur';
 
+// State interface for the auth feature
 export interface AuthState {
   isLogged: boolean;
   role: Role;
@@ -10,6 +14,7 @@ export interface AuthState {
   error: string | null;
 }
 
+// Initial/default state
 export const initialAuthState: AuthState = {
   isLogged: false,
   role: 'utilisateur',
