@@ -28,6 +28,7 @@ import { TheaterService } from '../../../services/theater.service';
 import { HallService } from '../../../services/halls.service';
 import { AuthFacade } from '../../../store/auth/auth.facade';
 import { NewBookingDataService } from './new-booking-data.service';
+import { BookedSeat } from '../../../models/bookedSeat.model';
 
 @Component({
   selector: 'app-new-booking',
@@ -49,15 +50,14 @@ import { NewBookingDataService } from './new-booking-data.service';
   ],
 })
 export class NewBooking {
-  // --- Form group for all fields
   bookingForm: FormGroup;
 
-  // --- UI signals for state feedback
+  // UI signals for loading & error/success messages
   isLoading = signal(false);
   apiError = signal('');
   successMessage = signal('');
 
-  // --- Data signals for async/observable data
+  // Data signals for loaded lists & selections
   movies: Signal<Movie[]>;
   theaters: Signal<Theater[]>;
   screenings = signal<ScreeningAttributes[]>([]);
@@ -65,10 +65,6 @@ export class NewBooking {
   seatsLayout = signal<string[][]>([]);
   selectedSeats = signal<string[]>([]);
   bookedSeatIds = signal<string[]>([]);
-
-  // --- Query params (for preselecting form fields)
-  movieId: string | null = null;
-  theaterId: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -82,29 +78,30 @@ export class NewBooking {
     private route: ActivatedRoute,
     private bookingDataService: NewBookingDataService
   ) {
-    // Signals for list data
     this.movies = this.movieService.allMovies;
     this.theaters = this.theaterService.allTheaters;
 
-    // Reactive Form setup
     this.bookingForm = this.createBookingForm();
 
-    // Load any prefilled state from service
+    // Load persisted form data if any, set form controls step-by-step
     this.loadPersistedState();
 
-    // Load movies and theaters if not already loaded
+    // Fetch movies and theaters if needed
     this.initMovieAndTheaterLoad();
 
-    // Handle movieId/theaterId in URL query params
+    // Handle URL query parameters
     this.handleQueryParams();
 
-    // Setup listeners for form fields, screeningId, and seat sync
+    // Persist form data & load screenings when inputs change
     this.setupFormListeners();
+
+    // Listen to screeningId changes to load seats and booked seats
     this.setupScreeningIdListener();
+
+    // Sync seat selection count and total price in form controls
     this.setupSeatSelectionSync();
   }
 
-  // --- FORM GROUP CREATION ---
   private createBookingForm(): FormGroup {
     return this.fb.group({
       movieId: ['', Validators.required],
@@ -117,25 +114,31 @@ export class NewBooking {
     });
   }
 
-  // --- PERSISTED STATE (for multi-step or navigated-away users) ---
   private loadPersistedState() {
     const persisted = this.bookingDataService.bookingFormData();
     if (persisted) {
-      this.bookingForm.patchValue({
-        movieId: persisted.movieId,
-        theaterId: persisted.theaterId,
-        date: persisted.date,
-        screeningId: persisted.screeningId,
-      });
+      // Step by step set each form control with patchValue, checking for null
+      if (persisted.movieId) {
+        this.bookingForm.get('movieId')!.setValue(persisted.movieId);
+      }
+      if (persisted.theaterId) {
+        this.bookingForm.get('theaterId')!.setValue(persisted.theaterId);
+      }
+      if (persisted.date) {
+        this.bookingForm.get('date')!.setValue(persisted.date);
+      }
+      if (persisted.screeningId) {
+        this.bookingForm.get('screeningId')!.setValue(persisted.screeningId);
+      }
+
       if (persisted.movieId && persisted.theaterId && persisted.date) {
-        setTimeout(() =>
-          this.loadScreenings(persisted.screeningId ?? undefined)
-        );
+        // Use undefined if screeningId is null or empty
+        const screeningId = persisted.screeningId || undefined;
+        setTimeout(() => this.loadScreenings(screeningId));
       }
     }
   }
 
-  // --- INITIAL DATA LOAD ---
   private initMovieAndTheaterLoad() {
     if (!this.movies() || this.movies().length === 0) {
       this.movieService.getAllMovies().subscribe();
@@ -145,37 +148,64 @@ export class NewBooking {
     }
   }
 
-  // --- QUERY PARAMS HANDLING ---
   private handleQueryParams() {
     this.route.queryParams.subscribe((params) => {
-      this.movieId = params['movieId'] ?? null;
-      this.theaterId = params['theaterId'] ?? null;
+      const movieId = params['movieId'] ?? '';
+      const theaterId = params['theaterId'] ?? '';
+      const screeningId = params['screeningId'] ?? '';
+      const dateParam = params['screeningDate'] ?? params['date'] ?? '';
 
-      // Set fields in form if present in query params
+      const parsedDate = this.parseDate(dateParam);
+
       effect(() => {
-        if (
-          this.movies() &&
-          this.movies().length &&
-          this.movieId &&
-          this.bookingForm.get('movieId')!.value !== this.movieId
-        ) {
-          this.bookingForm.get('movieId')?.setValue(this.movieId);
-        }
-        if (
-          this.theaters() &&
-          this.theaters().length &&
-          this.theaterId &&
-          this.bookingForm.get('theaterId')!.value !== this.theaterId
-        ) {
-          this.bookingForm.get('theaterId')?.setValue(this.theaterId);
+        const moviesLoaded = this.movies() && this.movies().length > 0;
+        const theatersLoaded = this.theaters() && this.theaters().length > 0;
+
+        if (moviesLoaded && theatersLoaded) {
+          // Set form values one by one only if different
+          if (movieId && this.bookingForm.get('movieId')!.value !== movieId) {
+            this.bookingForm.get('movieId')!.setValue(movieId);
+          }
+          if (
+            theaterId &&
+            this.bookingForm.get('theaterId')!.value !== theaterId
+          ) {
+            this.bookingForm.get('theaterId')!.setValue(theaterId);
+          }
+          if (
+            parsedDate &&
+            (!this.bookingForm.get('date')!.value ||
+              new Date(this.bookingForm.get('date')!.value)
+                .toISOString()
+                .slice(0, 10) !== parsedDate.toISOString().slice(0, 10))
+          ) {
+            this.bookingForm.get('date')!.setValue(parsedDate);
+          }
+
+          if (
+            this.bookingForm.get('movieId')!.valid &&
+            this.bookingForm.get('theaterId')!.valid &&
+            this.bookingForm.get('date')!.valid
+          ) {
+            this.loadScreenings(screeningId);
+          }
         }
       });
     });
   }
 
-  // --- FORM FIELD LISTENERS ---
+  private parseDate(dateStr: string | null): Date | null {
+    if (!dateStr) return null;
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return null;
+    const year = Number(parts[0]);
+    const month = Number(parts[1]) - 1;
+    const day = Number(parts[2]);
+    const date = new Date(year, month, day);
+    return isNaN(date.getTime()) ? null : date;
+  }
+
   private setupFormListeners() {
-    // Save form state to service except calculated fields
     this.bookingForm.valueChanges.subscribe((values) => {
       this.bookingDataService.setMovieId(values.movieId || null);
       this.bookingDataService.setTheaterId(values.theaterId || null);
@@ -183,7 +213,6 @@ export class NewBooking {
       this.bookingDataService.setScreeningId(values.screeningId || null);
     });
 
-    // Reload screenings on relevant field changes
     this.bookingForm
       .get('movieId')!
       .valueChanges.subscribe(() => this.loadScreenings());
@@ -195,7 +224,6 @@ export class NewBooking {
       .valueChanges.subscribe(() => this.loadScreenings());
   }
 
-  // --- SCREENINGID LISTENER FOR SEAT MAP ---
   private setupScreeningIdListener() {
     this.bookingForm
       .get('screeningId')!
@@ -206,16 +234,14 @@ export class NewBooking {
           );
           if (screening) {
             this.loadHallSeats(screening.hallId);
-            // Load booked seats for this screening
             this.screeningService.getBookedSeats(screeningId).subscribe({
               next: (res) => {
-                this.bookedSeatIds.set(
-                  res.data.map((seat: any) => seat.seatId)
+                const bookedSeats = res.data.map(
+                  (seat: BookedSeat) => seat.seatId
                 );
+                this.bookedSeatIds.set(bookedSeats);
               },
-              error: () => {
-                this.bookedSeatIds.set([]);
-              },
+              error: () => this.bookedSeatIds.set([]),
             });
           } else {
             this.seatsLayout.set([]);
@@ -230,39 +256,35 @@ export class NewBooking {
       });
   }
 
-  // --- SYNC SEAT SELECTION TO FORM FIELDS ---
   private setupSeatSelectionSync() {
     effect(() => {
       const selected = this.selectedSeats();
       this.bookingForm
-        .get('seatsNumber')
-        ?.setValue(selected.length, { emitEvent: false });
+        .get('seatsNumber')!
+        .setValue(selected.length, { emitEvent: false });
       this.bookingForm
-        .get('seatIds')
-        ?.setValue(selected.join(', '), { emitEvent: false });
+        .get('seatIds')!
+        .setValue(selected.join(', '), { emitEvent: false });
 
       const screeningId = this.bookingForm.get('screeningId')!.value;
       const screening = this.screenings().find(
         (s) => s.screeningId === screeningId
       );
       if (screening) {
-        const total = selected.length * screening.price;
         this.bookingForm
-          .get('totalPrice')
-          ?.setValue(total, { emitEvent: false });
+          .get('totalPrice')!
+          .setValue(selected.length * screening.price, { emitEvent: false });
       } else {
-        this.bookingForm.get('totalPrice')?.setValue(0, { emitEvent: false });
+        this.bookingForm.get('totalPrice')!.setValue(0, { emitEvent: false });
       }
     });
   }
 
-  // --- LOAD SCREENINGS, REMOVE DUPLICATES, FILTER BY LOCAL DATE ---
   loadScreenings(selectedScreeningId?: string) {
     const movieId = this.bookingForm.get('movieId')!.value;
     const theaterId = this.bookingForm.get('theaterId')!.value;
     const dateObj = this.bookingForm.get('date')!.value;
 
-    // Utility to get local date as YYYY-MM-DD string
     function getLocalDateString(date: Date): string {
       return [
         date.getFullYear(),
@@ -272,19 +294,16 @@ export class NewBooking {
     }
 
     if (movieId && theaterId && dateObj) {
-      const selectedDate = new Date(dateObj);
-      const filterDateStr = getLocalDateString(selectedDate);
+      const filterDateStr = getLocalDateString(new Date(dateObj));
 
       this.screeningService
         .searchScreenings({ movieId, theaterId, date: filterDateStr })
         .subscribe({
           next: (screenings) => {
-            // 1️⃣ Remove duplicates by screeningId
             const uniqueMap = new Map<string, ScreeningAttributes>();
             screenings.forEach((s) => uniqueMap.set(s.screeningId, s));
             let uniqueScreenings = Array.from(uniqueMap.values());
 
-            // 2️⃣ Filter by exact local date only (fix timezone bug!)
             uniqueScreenings = uniqueScreenings.filter((s) => {
               const local = new Date(s.startTime);
               const localDay = getLocalDateString(local);
@@ -293,20 +312,23 @@ export class NewBooking {
 
             this.screenings.set(uniqueScreenings);
 
-            // 3️⃣ Restore previous screening selection if available
             if (
               selectedScreeningId &&
               uniqueScreenings.some(
                 (s) => s.screeningId === selectedScreeningId
               )
             ) {
-              this.bookingForm
-                .get('screeningId')
-                ?.setValue(selectedScreeningId);
+              setTimeout(() =>
+                this.bookingForm
+                  .get('screeningId')!
+                  .setValue(selectedScreeningId)
+              );
             } else {
-              this.bookingForm.get('screeningId')?.setValue('');
+              setTimeout(() =>
+                this.bookingForm.get('screeningId')!.setValue('')
+              );
             }
-            // 4️⃣ Reset seats and booked state
+
             this.seatsLayout.set([]);
             this.selectedSeats.set([]);
             this.bookedSeatIds.set([]);
@@ -316,36 +338,47 @@ export class NewBooking {
             this.seatsLayout.set([]);
             this.selectedSeats.set([]);
             this.bookedSeatIds.set([]);
+            this.bookingForm.get('screeningId')!.setValue('');
           },
         });
     } else {
-      // Not enough data to filter: reset
       this.screenings.set([]);
       this.seatsLayout.set([]);
       this.selectedSeats.set([]);
-      this.bookingForm.get('screeningId')?.setValue('');
+      this.bookingForm.get('screeningId')!.setValue('');
       this.bookedSeatIds.set([]);
     }
   }
 
-  // --- LOAD SEAT MAP FOR GIVEN HALL ---
   loadHallSeats(hallId: string) {
     const theaterId = this.bookingForm.get('theaterId')!.value;
-    if (!theaterId) return;
+    if (!theaterId || !hallId) {
+      this.seatsLayout.set([]);
+      this.selectedSeats.set([]);
+      return;
+    }
 
-    this.hallService.getHallsByTheaterId(theaterId).subscribe((halls) => {
-      const hall = halls.find((h) => h.hallId === hallId);
-      if (hall && hall.seatsLayout) {
-        this.seatsLayout.set(hall.seatsLayout);
-        this.selectedSeats.set([]);
-      } else {
+    this.hallService.searchHall(theaterId, hallId).subscribe({
+      next: (halls) => {
+        const hall = halls[0];
+        if (hall && hall.seatsLayout) {
+          const layoutStr = hall.seatsLayout.map((row: any[]) =>
+            row.map((seat) => seat.toString())
+          );
+          this.seatsLayout.set(layoutStr);
+          this.selectedSeats.set([]);
+        } else {
+          this.seatsLayout.set([]);
+          this.selectedSeats.set([]);
+        }
+      },
+      error: () => {
         this.seatsLayout.set([]);
         this.selectedSeats.set([]);
-      }
+      },
     });
   }
 
-  // --- SEAT HANDLING ---
   isSeatSelected(seat: string): boolean {
     return this.selectedSeats().includes(seat);
   }
@@ -364,7 +397,6 @@ export class NewBooking {
     }
   }
 
-  // --- FIELD VALIDATION HELPERS ---
   hasFieldError(field: string): boolean {
     const ctrl = this.bookingForm.get(field);
     return !!ctrl && ctrl.invalid && (ctrl.touched || ctrl.dirty);
@@ -373,12 +405,11 @@ export class NewBooking {
   getFieldError(field: string): string {
     const ctrl = this.bookingForm.get(field);
     if (!ctrl || !ctrl.errors) return '';
-    if (ctrl.errors['required']) return 'Ce champ est requis';
-    if (ctrl.errors['min']) return 'Valeur trop basse';
-    return 'Champ invalide';
+    if (ctrl.errors['required']) return 'This field is required';
+    if (ctrl.errors['min']) return 'Value is too low';
+    return 'Invalid field';
   }
 
-  // --- FORM SUBMISSION ---
   onSubmit() {
     if (this.bookingForm.invalid) return;
 
@@ -406,7 +437,7 @@ export class NewBooking {
 
     this.bookingService.createBooking(payload).subscribe({
       next: () => {
-        this.successMessage.set('Réservation créée avec succès !');
+        this.successMessage.set('Booking created successfully!');
         this.isLoading.set(false);
         this.bookingForm.reset();
         this.screenings.set([]);
@@ -418,11 +449,11 @@ export class NewBooking {
       error: (err) => {
         if (err?.status === 409) {
           this.apiError.set(
-            'Un ou plusieurs sièges sélectionnés ne sont plus disponibles. Veuillez recharger la page ou choisir d’autres sièges.'
+            'One or more selected seats are no longer available. Please reload or select different seats.'
           );
         } else {
           this.apiError.set(
-            'Erreur lors de la création : ' + (err?.error?.message || '')
+            'Error creating booking: ' + (err?.error?.message || '')
           );
         }
         this.isLoading.set(false);
@@ -430,9 +461,12 @@ export class NewBooking {
     });
   }
 
-  // --- GET USER ID FROM AUTH FACADE ---
   get userId(): string | null {
     const user = this.authFacade.user();
     return user?.userId ?? null;
+  }
+
+  trackByScreeningId(index: number, screening: ScreeningAttributes) {
+    return screening.screeningId;
   }
 }

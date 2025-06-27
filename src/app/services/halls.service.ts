@@ -10,6 +10,7 @@ export class HallService {
 
   public createdHalls = signal<Hall[]>([]);
   public allHalls = signal<Hall[]>([]);
+  public searchedHalls = signal<Hall[]>([]); 
 
   constructor(private http: HttpClient) {}
 
@@ -18,7 +19,7 @@ export class HallService {
     const url = this.baseUrl;
     const obs = this.http.get<Hall[]>(url, { withCredentials: true });
     obs.subscribe((halls) => {
-      this.allHalls.set(halls); 
+      this.allHalls.set(halls);
     });
     return obs;
   }
@@ -28,7 +29,19 @@ export class HallService {
     const url = `${this.baseUrl}theater/${encodeURIComponent(theaterId)}`;
     const obs = this.http.get<Hall[]>(url, { withCredentials: true });
     obs.subscribe((halls) => {
-      this.createdHalls.set(halls); 
+      this.createdHalls.set(halls);
+    });
+    return obs;
+  }
+
+  /** GET: Search hall by theaterId and hallId, store in signal */
+  searchHall(theaterId: string, hallId: string): Observable<Hall[]> {
+    const url = `${this.baseUrl}search?theaterId=${encodeURIComponent(
+      theaterId
+    )}&hallId=${encodeURIComponent(hallId)}`;
+    const obs = this.http.get<Hall[]>(url, { withCredentials: true });
+    obs.subscribe((halls) => {
+      this.searchedHalls.set(halls);
     });
     return obs;
   }
@@ -40,3 +53,5 @@ export class HallService {
     });
   }
 }
+
+

@@ -1,7 +1,9 @@
 <div class="favorite-container">
   <div class="favorite-message">
     <h2>🎬 Notre coup de cœur</h2>
-    <button (click)="onSubmit()">Réserver</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      Réserver
+    </button>
   </div>
   <div class="favorite-card">
     @if (loading) {
@@ -9,8 +11,7 @@
     } @else if (error) {
     <div class="movie-error">{{ error }}</div>
     } @else if (movie) {
-
-    <mat-card class="facorite-slide" appearance="outlined" (click)="onSubmit()">
+    <mat-card class="favorite-slide" appearance="outlined" (click)="onSubmit()">
       <div class="poster-wrapper">
         <img
           mat-card-image
@@ -18,6 +19,14 @@
           [src]="movie.posterUrl || 'assets/placeholder.jpg'"
           [alt]="movie.title"
         />
+      </div>
+      <div class="movie-info">
+        <h3>{{ movie.title }}</h3>
+        <p>
+          <mat-icon>event</mat-icon>
+          {{ movie.releaseDate | date: 'longDate' }}
+        </p>
+        <p>{{ movie.description }}</p>
       </div>
     </mat-card>
     }

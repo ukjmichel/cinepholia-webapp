@@ -3,6 +3,7 @@
   [hasBackdrop]="true"
   (backdropClick)="drawer.close()"
 >
+  <!-- Sidebar Drawer for Filters -->
   <mat-drawer
     #drawer
     [mode]="'over'"
@@ -12,15 +13,20 @@
     <div class="movie-theater-filter-container">
       <h1 class="filter-title">Filtrer les cinémas</h1>
       <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <!-- Cinema Dropdown -->
         <mat-form-field appearance="outline">
-          <mat-label>Cinéma ID</mat-label>
-          <input
-            matInput
-            placeholder="Cinéma ID"
-            formControlName="theaterId"
-            autocomplete="off"
-          />
+          <mat-label>Cinéma</mat-label>
+          <mat-select formControlName="theaterId">
+            <mat-option value="">Tous les cinémas</mat-option>
+            @for (theater of allTheaters(); track theater.theaterId) {
+            <mat-option [value]="theater.theaterId">
+              {{ theater.theaterId }} - {{ theater.city }}
+            </mat-option>
+            }
+          </mat-select>
         </mat-form-field>
+
+        <!-- Postal Code Input -->
         <mat-form-field appearance="outline">
           <mat-label>Code Postal</mat-label>
           <input
@@ -30,6 +36,8 @@
             autocomplete="off"
           />
         </mat-form-field>
+
+        <!-- City Input -->
         <mat-form-field appearance="outline">
           <mat-label>Ville</mat-label>
           <input
@@ -39,15 +47,18 @@
             autocomplete="off"
           />
         </mat-form-field>
+
         <button mat-raised-button class="full-width" type="submit">
           Filtrer
         </button>
       </form>
-      @if(apiError){
+      @if (apiError) {
       <div class="api-error-message">{{ apiError }}</div>
       }
     </div>
   </mat-drawer>
+
+  <!-- Main Content / Toolbar -->
   <mat-drawer-content>
     <div class="toolbar-actions">
       <button

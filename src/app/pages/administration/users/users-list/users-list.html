@@ -1,0 +1,28 @@
+<!-- src/app/pages/administration/users/users-list/users-list.html -->
+
+<div class="users-list-page">
+  <h1>Liste des utilisateurs</h1>
+
+  <!-- User List -->
+  <ng-container *ngIf="users().length > 0; else noResults">
+    <div class="user-list-cards">
+      <mat-card *ngFor="let user of users()">
+        <mat-card-title>{{ user.username }}</mat-card-title>
+        <mat-card-content>
+          <div><strong>ID:</strong> {{ user.userId }}</div>
+          <div><strong>Prénom:</strong> {{ user.firstName }}</div>
+          <div><strong>Nom:</strong> {{ user.lastName }}</div>
+          <div><strong>Email:</strong> {{ user.email }}</div>
+          <div><strong>Role:</strong> {{ user.role }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-container>
+
+  <!-- No Results or Error -->
+  <ng-template #noResults>
+    <div class="api-error-message">
+      {{ userService.usersApiError() || 'Aucun utilisateur trouvé.' }}
+    </div>
+  </ng-template>
+</div>

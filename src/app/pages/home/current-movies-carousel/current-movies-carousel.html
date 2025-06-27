@@ -66,21 +66,6 @@
   </div>
 
   <!-- Dots -->
-  @if (totalPages() > 1) {
-  <div class="carousel-dots">
-    @for (_ of [].constructor(totalPages()); track $index) {
-    <button
-      mat-icon-button
-      class="dot"
-      [color]="$index === currentPage() ? 'primary' : undefined"
-      (click)="goToPage($index)"
-      [disabled]="isAnimating()"
-    >
-      <mat-icon>fiber_manual_record</mat-icon>
-    </button>
-    }
-  </div>
-  }
 </div>
 }
 

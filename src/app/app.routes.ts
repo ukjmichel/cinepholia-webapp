@@ -29,104 +29,79 @@ import { LegalNotices } from './pages/legal-notices/legal-notices';
 import { CookiePolicy } from './pages/cookie-policy/cookie-policy';
 import { CommentsAdmin } from './pages/administration/comments/comments';
 import { CommentsList } from './pages/administration/comments/comments-list/comments-list';
+import { TheatersMoviesSearch } from './pages/theaters/theaters';
+import { UsersAdmin } from './pages/administration/users/users';
+import { UsersList } from './pages/administration/users/users-list/users-list';
+import { NewUser } from './pages/administration/users/new-user/new-user';
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: Home,
-  },
+  // Home
+  { path: '', component: Home },
+
+  // Admin Section
   {
     path: 'admin',
     component: Administration,
     children: [
+      // Theaters admin
       {
         path: 'theaters',
         component: TheatersAdmin,
         children: [
-          {
-            path: 'search',
-            component: TheatersList,
-          },
-          {
-            path: 'new-theater',
-            component: NewTheater,
-          },
-          {
-            path: '',
-            redirectTo: 'search',
-            pathMatch: 'full',
-          },
+          { path: 'search', component: TheatersList },
+          { path: 'new-theater', component: NewTheater },
+          { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
+      // Halls admin
       {
         path: 'halls',
         component: HallsAdmin,
         children: [
-          {
-            path: 'search',
-            component: HallsList,
-          },
-          {
-            path: 'new-hall',
-            component: NewHall,
-          },
-          {
-            path: '',
-            redirectTo: 'search',
-            pathMatch: 'full',
-          },
+          { path: 'search', component: HallsList },
+          { path: 'new-hall', component: NewHall },
+          { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
+      // Movies admin
       {
         path: 'movies',
         component: MoviesAdmin,
         children: [
-          {
-            path: 'search',
-            component: MoviesAdminList,
-          },
-          {
-            path: 'new-movie',
-            component: NewMovie,
-          },
-          {
-            path: '',
-            redirectTo: 'search',
-            pathMatch: 'full',
-          },
+          { path: 'search', component: MoviesAdminList },
+          { path: 'new-movie', component: NewMovie },
+          { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
+      // Screenings admin
       {
         path: 'screenings',
         component: ScreeningsAdmin,
         children: [
-          {
-            path: 'search',
-            component: ScreeningsList,
-          },
-          {
-            path: 'new-screening',
-            component: NewScreening,
-          },
-          {
-            path: '',
-            redirectTo: 'search',
-            pathMatch: 'full',
-          },
+          { path: 'search', component: ScreeningsList },
+          { path: 'new-screening', component: NewScreening },
+          { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
+      // Comments admin
       {
         path: 'comments',
         component: CommentsAdmin,
+        children: [{ path: 'search', component: CommentsList }],
+      },
+      {
+        path: 'users',
+        component: UsersAdmin,
         children: [
-          {
-            path: 'search',
-            component: CommentsList,
-          },
+          { path: 'search', component: UsersList },
+          { path: 'new-user', component: NewUser },
+          { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
     ],
   },
+
+  // Auth Section
   {
     path: 'auth',
     component: Authentication,
@@ -136,54 +111,43 @@ export const routes: Routes = [
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
+
+  // Public Movies Section
   {
     path: 'movies',
     component: Movies,
     children: [
-      {
-        path: 'search',
-        component: MoviesList,
-      },
-      {
-        path: '',
-        redirectTo: 'search',
-        pathMatch: 'full',
-      },
-      {
-        path: ':movieId',
-        component: MovieDetails,
-      },
-    ],
-  },
-  {
-    path: 'bookings',
-    component: BookingsAdmin,
-    children: [
-      {
-        path: 'search',
-        component: BookingsList,
-      },
-      {
-        path: 'new-booking',
-        component: NewBooking,
-      },
+      { path: 'search', component: MoviesList },
+      { path: ':movieId', component: MovieDetails },
+      { path: '', redirectTo: 'search', pathMatch: 'full' },
     ],
   },
 
   {
-    path: 'privacy-policy',
-    component: PrivacyPolicy,
+    path: 'theaters',
+    component: TheatersMoviesSearch,
+    children: [
+      { path: 'search', component: TheatersList },
+      { path: '', redirectTo: 'search', pathMatch: 'full' },
+    ],
   },
+
+  // Bookings Section (for users)
   {
-    path: 'terms-and-conditions',
-    component: TermsAndConditions,
+    path: 'bookings',
+    component: BookingsAdmin,
+    children: [
+      { path: 'search', component: BookingsList },
+      { path: 'new-booking', component: NewBooking },
+    ],
   },
-  {
-    path: 'legal-notices',
-    component: LegalNotices,
-  },
-  {
-    path: 'cookie-policy',
-    component: CookiePolicy,
-  },
+
+  // Static/Legal Pages
+  { path: 'privacy-policy', component: PrivacyPolicy },
+  { path: 'terms-and-conditions', component: TermsAndConditions },
+  { path: 'legal-notices', component: LegalNotices },
+  { path: 'cookie-policy', component: CookiePolicy },
+
+  // Fallback or error route
+  { path: '**', redirectTo: '' },
 ];

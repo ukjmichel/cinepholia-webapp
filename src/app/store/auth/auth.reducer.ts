@@ -28,7 +28,7 @@ export const authReducer = createReducer(
     ...state,
     isLogged: true,
     user: data.user,
-    role: getValidRole(data.user.role),
+    role: getValidRole(data.user.role ?? 'utilisateur'), // <-- fixed
     loading: false,
     error: null,
   })),
@@ -51,7 +51,7 @@ export const authReducer = createReducer(
     ...state,
     isLogged: true,
     user: response.data,
-    role: getValidRole(response.data.role),
+    role: getValidRole(response.data.role ?? 'utilisateur'), // <-- fixed
     loading: false,
     error: null,
   })),
@@ -74,7 +74,7 @@ export const authReducer = createReducer(
     ...state,
     isLogged: true,
     user: data.user,
-    role: getValidRole(data.user.role),
+    role: getValidRole(data.user.role ?? 'utilisateur'), // <-- fixed
     loading: false,
     error: null,
   })),
@@ -93,7 +93,6 @@ export const authReducer = createReducer(
     loading: true,
     error: null,
   })),
-  // These just end the loading state, any retry logic is handled in effects
   on(AuthActions.refreshTokenSuccess, (state) => ({
     ...state,
     loading: false,

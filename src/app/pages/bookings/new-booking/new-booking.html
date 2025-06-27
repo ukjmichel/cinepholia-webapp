@@ -8,13 +8,13 @@
       <mat-label>Film</mat-label>
       <mat-select formControlName="movieId" required>
         <mat-option value="">Choisir un film</mat-option>
-        @for (movie of movies(); track movie.movieId) {
-        <mat-option [value]="movie.movieId">{{ movie.title }}</mat-option>
-        }
+        <mat-option *ngFor="let movie of movies()" [value]="movie.movieId">
+          {{ movie.title }}
+        </mat-option>
       </mat-select>
-      @if (hasFieldError('movieId')) {
-      <mat-error>{{ getFieldError('movieId') }}</mat-error>
-      }
+      <mat-error *ngIf="hasFieldError('movieId')"
+        >{{ getFieldError('movieId') }}</mat-error
+      >
     </mat-form-field>
 
     <!-- Theater select -->
@@ -22,18 +22,19 @@
       <mat-label>Cinéma</mat-label>
       <mat-select formControlName="theaterId" required>
         <mat-option value="">Choisir un cinéma</mat-option>
-        @for (theater of theaters(); track theater.theaterId) {
-        <mat-option [value]="theater.theaterId">
+        <mat-option
+          *ngFor="let theater of theaters()"
+          [value]="theater.theaterId"
+        >
           {{ theater.theaterId }} - {{ theater.city }}
         </mat-option>
-        }
       </mat-select>
-      @if (hasFieldError('theaterId')) {
-      <mat-error>{{ getFieldError('theaterId') }}</mat-error>
-      }
+      <mat-error *ngIf="hasFieldError('theaterId')"
+        >{{ getFieldError('theaterId') }}</mat-error
+      >
     </mat-form-field>
 
-    <!-- Date -->
+    <!-- Date picker -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Date</mat-label>
       <input
@@ -45,60 +46,61 @@
       />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="hasFieldError('date')"
+        >{{ getFieldError('date') }}</mat-error
+      >
     </mat-form-field>
 
-    <!-- Liste des séances disponibles ce jour -->
-    @if (screenings().length > 0) {
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Séance</mat-label>
-      <mat-select formControlName="screeningId" required>
-        <mat-option value="">Choisir une séance</mat-option>
-        @for (screening of screenings(); track screening.screeningId) {
-        <mat-option [value]="screening.screeningId">
-          {{ screening.startTime | date:'shortTime' }} - Salle {{
-          screening.hallId }}
-        </mat-option>
-        }
-      </mat-select>
-      @if (hasFieldError('screeningId')) {
-      <mat-error>{{ getFieldError('screeningId') }}</mat-error>
-      }
-    </mat-form-field>
-    } @else {
-    <div
-      *ngIf="bookingForm.get('movieId')?.value && bookingForm.get('theaterId')?.value && bookingForm.get('date')?.value"
-      class="no-screenings-msg"
-    >
-      Aucune séance disponible pour cette date.
-    </div>
-    }
+    <!-- Screenings select -->
+    <ng-container *ngIf="screenings().length > 0; else noScreenings">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Séance</mat-label>
+        <mat-select formControlName="screeningId" required>
+          <mat-option value="">Choisir une séance</mat-option>
+          <mat-option
+            *ngFor="let screening of screenings()"
+            [value]="screening.screeningId"
+          >
+            {{ screening.startTime | date:'shortTime' }} - Salle {{
+            screening.hallId }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="hasFieldError('screeningId')">
+          {{ getFieldError('screeningId') }}
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-template #noScreenings>
+      <div
+        *ngIf="bookingForm.get('movieId')?.value && bookingForm.get('theaterId')?.value && bookingForm.get('date')?.value"
+        class="no-screenings-msg"
+      >
+        Aucune séance disponible pour cette date.
+      </div>
+    </ng-template>
 
     <!-- Seat selection table -->
-    @if (seatsLayout().length > 0) {
-    <div class="seats-container">
+    <div *ngIf="seatsLayout().length > 0" class="seats-container">
       <table>
         <tbody>
-          @for (row of seatsLayout(); track row) {
-          <tr>
-            @for (seat of row; track seat) {
+          <tr *ngFor="let row of seatsLayout(); let i = index">
             <td
+              *ngFor="let seat of row; let j = index"
               class="seat"
               [class.empty]="seat === 'x'"
               [class.selected]="isSeatSelected(seat)"
               [class.disabled]="seat === 'x' || isSeatBooked(seat)"
               (click)="seat !== 'x' && !isSeatBooked(seat) && toggleSeat(seat)"
+              [attr.aria-disabled]="isSeatBooked(seat) ? 'true' : null"
+              [attr.tabindex]="seat !== 'x' && !isSeatBooked(seat) ? 0 : null"
             >
               <div class="seat-backrest"></div>
               <div class="seat-bottom">{{ seat !== 'x' ? seat : '' }}</div>
             </td>
-
-            }
           </tr>
-          }
         </tbody>
       </table>
     </div>
-    }
 
     <!-- Auto-calculated fields -->
     <div class="auto-fields-container">
@@ -138,9 +140,9 @@
         step="0.01"
         readonly
       />
-      @if (hasFieldError('totalPrice')) {
-      <mat-error>{{ getFieldError('totalPrice') }}</mat-error>
-      }
+      <mat-error *ngIf="hasFieldError('totalPrice')"
+        >{{ getFieldError('totalPrice') }}</mat-error
+      >
     </mat-form-field>
 
     <!-- Submit button -->
@@ -152,25 +154,21 @@
         type="submit"
         [disabled]="bookingForm.invalid || isLoading()"
       >
-        @if (isLoading()) {
-        <ng-container>
+        <ng-container *ngIf="isLoading(); else notLoading">
           <mat-icon>hourglass_empty</mat-icon> Réservation en cours...
         </ng-container>
-        } @else {
-        <ng-container> <mat-icon>check</mat-icon> Réserver </ng-container>
-        }
+        <ng-template #notLoading>
+          <mat-icon>check</mat-icon> Réserver
+        </ng-template>
       </button>
     </div>
 
     <!-- Success & Error messages -->
-    @if (successMessage()) {
-    <div class="success-message">
+    <div *ngIf="successMessage()" class="success-message">
       <mat-icon>check_circle</mat-icon> {{ successMessage() }}
     </div>
-    } @if (apiError()) {
-    <div class="api-error-message">
+    <div *ngIf="apiError()" class="api-error-message">
       <mat-icon>error</mat-icon> {{ apiError() }}
     </div>
-    }
   </form>
 </div>

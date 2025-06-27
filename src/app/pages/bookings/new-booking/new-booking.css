@@ -130,6 +130,19 @@
   height: 20px;
 }
 
+.seat.disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  background: #ddd !important;
+  box-shadow: none;
+}
+.seat.disabled .seat-backrest,
+.seat.disabled .seat-bottom {
+  background: #cfd8dc !important;
+  color: #999 !important;
+  box-shadow: none !important;
+}
+
 /* Responsive design for mobile */
 @media (max-width: 480px) {
   .add-booking-form {

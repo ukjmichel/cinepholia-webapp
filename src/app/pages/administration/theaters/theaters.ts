@@ -1,4 +1,4 @@
-import { Component, signal, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit, Signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,6 +8,7 @@ import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Theater } from '../../../models/theater.model';
 import { TheaterService } from '../../../services/theater.service';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-theater-admin',
@@ -19,15 +20,19 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
     MatInputModule,
     MatIconModule,
     MatSidenavModule,
+    MatSelectModule,
     RouterModule,
   ],
   templateUrl: './theaters.html',
   styleUrls: ['./theaters.css'],
 })
-export class TheatersAdmin {
+export class TheatersAdmin implements OnInit {
   @ViewChild('drawer') drawer!: MatDrawer;
   filterForm: FormGroup;
   apiError = '';
+
+  // Expose the signal to the template
+  allTheaters: Signal<Theater[]>;
 
   constructor(
     private fb: FormBuilder,
@@ -40,6 +45,16 @@ export class TheatersAdmin {
       postalCode: [''],
       city: [''],
     });
+
+    // Correctly assign the signal from service
+    this.allTheaters = this.theaterService.allTheaters;
+  }
+
+  ngOnInit() {
+    // Defensive: load theaters only if signal has no value or is empty array
+    if (!this.allTheaters() || this.allTheaters().length === 0) {
+      this.theaterService.getAllTheaters().subscribe();
+    }
   }
 
   onSubmit() {

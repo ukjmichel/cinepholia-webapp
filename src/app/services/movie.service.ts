@@ -53,6 +53,18 @@ export class MovieService {
   }
 
   /**
+   * GET: Get all movies displayed in a given theater (with at least one screening).
+   * @param theaterId - The ID of the theater (as in /theater/:theaterId)
+   * @returns Observable<Movie[]>
+   */
+  getMoviesByTheater(theaterId: string): Observable<Movie[]> {
+    const url = `${this.baseUrl}theater/${theaterId}`;
+    return this.http
+      .get<{ message: string; data: Movie[] }>(url, { withCredentials: true })
+      .pipe(map((res) => res.data));
+  }
+
+  /**
    * Search movies by filters
    * @param filters - Object of search fields
    * @returns Observable<Movie[]>

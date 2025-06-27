@@ -12,6 +12,9 @@
       <mat-option value="screenings">Séances</mat-option>
       <mat-option value="comments">Commentaires</mat-option>
       <mat-option value="incidentReports">Incidents</mat-option>
+      @if(role==="administrateur"){
+      <mat-option value="users">Utilisateur</mat-option>
+      }
     </mat-select>
   </mat-form-field>
 </header>

@@ -1,10 +1,18 @@
+:host,
+.favorite-bg {
+  display: block;
+  width: 100vw;
+  padding: 10px 0;
+  margin: 0;
+  background: var(--secondary-dark-color);
+}
+
 .favorite-container {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 50px;
   padding: 2.2rem 0;
-  background-color: var(--secondary-dark-color);
 }
 
 .favorite-message {
@@ -27,38 +35,103 @@
   letter-spacing: -1px;
 }
 
-.favorite-message button{
+.favorite-message button {
   background-color: var(--primary-color);
   color: white;
   border: none;
-  padding: 10px 50px ;
+  padding: 10px 50px;
   border-radius: 12px;
   font-size: 16px;
   margin: auto;
 }
-.facorite-slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background-color: var(--secondary-dark-color);
-}
 
-.poster-wrapper img {
-  max-width: 400px;
-}
-
-.favorite-message p {
-  margin: 0;
-  font-size: 1.14rem;
-  line-height: 1.5;
-}
-
+/* --- Featured Movie Card --- */
 .favorite-card {
   flex: 0 0 380px;
   min-width: 300px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+.favorite-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  border: none;
+  background-color: var(--secondary-dark-color);
+  border-radius: 18px;
+  box-shadow: 0 2px 18px #0004, 0 1.5px 4px #0002;
+  width: 100%;
+  max-width: 400px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.poster-wrapper {
+  width: 100%;
+  aspect-ratio: 2/3; /* Portrait format for movie posters */
+  background: linear-gradient(135deg, #444 0%, #333 100%);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  background: #222;
+  box-shadow: 0 2px 12px #0008;
+  display: block;
+}
+
+.movie-info {
+  width: 100%;
+  padding: 1.6rem 1.1rem 1.3rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.7rem;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+.movie-info h3 {
+  margin: 0 0 0.4rem 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--secondary-color);
+  letter-spacing: -0.5px;
+}
+
+.movie-info p {
+  margin: 0;
+  color: var(--primary-dark-color);
+  font-size: 1.07rem;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Loader & error styles */
+.movie-loader,
+.movie-error {
+  width: 100%;
+  text-align: center;
+  color: var(--secondary-color);
+  font-size: 1.2rem;
+  margin: 1.5rem 0;
+}
+
+/* Responsive Tweaks for Mobile */
 @media (max-width: 900px) {
   .favorite-container {
     flex-direction: column;
@@ -74,5 +147,11 @@
     width: 100%;
     min-width: unset;
     max-width: 98vw;
+  }
+  .favorite-slide {
+    max-width: 95vw;
+  }
+  .poster-wrapper {
+    max-width: 96vw;
   }
 }

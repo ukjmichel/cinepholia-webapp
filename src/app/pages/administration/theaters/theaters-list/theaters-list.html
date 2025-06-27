@@ -1,7 +1,13 @@
 @if (filteredTheaters()!.length > 0) {
 <div class="theater-results">
   @for (theater of filteredTheaters()!; track theater.theaterId) {
-  <div class="theater-card">
+  <div
+    class="theater-card"
+    role="button"
+    tabindex="0"
+    style="cursor: pointer"
+    (click)="goToBookings(theater.theaterId)"
+  >
     <h3>{{ theater.city }} – {{ theater.address }}</h3>
     <p><strong>ID:</strong> {{ theater.theaterId }}</p>
     <p><strong>Code postal:</strong> {{ theater.postalCode }}</p>

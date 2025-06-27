@@ -27,9 +27,11 @@ export class FavoriteMovie implements OnInit {
   ngOnInit(): void {
     this.movieService.searchMovies({ recommended: true }).subscribe({
       next: (movies) => {
+        console.log('All recommended movies:', movies);
         if (movies.length > 0) {
           const randomIndex = Math.floor(Math.random() * movies.length);
           this.movie = movies[randomIndex];
+          console.log('Selected recommended movie:', this.movie);
         } else {
           this.error = 'No recommended movies found';
         }

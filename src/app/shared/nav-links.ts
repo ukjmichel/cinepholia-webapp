@@ -5,12 +5,14 @@ export interface NavLink {
 
 export const BASE_NAV_LINKS: NavLink[] = [
   { label: 'A propos', url: '/about' },
+  { label: 'Cinémas', url: '/theaters' },
   { label: 'Film', url: '/movies' },
   { label: 'Réservation', url: '/bookings' },
   { label: 'Contact', url: '/contact' },
 ];
 export const USER_NAV_LINKS: NavLink[] = [
   { label: 'A propos', url: '/about' },
+  { label: 'Cinémas', url: '/theaters' },
   { label: 'Film', url: '/movies' },
   { label: 'Réservation', url: '/bookings' },
   { label: 'Profil', url: '/user/:userId' },

@@ -1,0 +1,25 @@
+.users-list-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  .filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .user-list-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .api-error-message {
+    color: #d32f2f;
+    margin: 20px 0;
+  }
+  mat-card {
+    min-width: 240px;
+    padding: 10px;
+  }
+  
