@@ -1,0 +1,32 @@
+<div class="dashboard-container">
+  <mat-form-field appearance="outline" class="movie-select">
+    <mat-label>Choose a movie</mat-label>
+    <mat-select
+      [value]="selectedMovieId()"
+      (selectionChange)="onSelectMovie($event.value)"
+    >
+      <mat-option *ngFor="let movie of movies()" [value]="movie.movieId">
+        {{ movie.title }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div *ngIf="selectedMovieId()">
+    <h3>Bookings over time (7 days)</h3>
+    <ngx-charts-line-chart
+      [view]="view"
+      [results]="lineChartData()"
+      [xAxis]="true"
+      [yAxis]="true"
+      [legend]="false"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [xAxisLabel]="'Date'"
+      [yAxisLabel]="'Bookings'"
+      [autoScale]="true"
+      [animations]="true"
+      class="booking-chart"
+    >
+    </ngx-charts-line-chart>
+  </div>
+</div>

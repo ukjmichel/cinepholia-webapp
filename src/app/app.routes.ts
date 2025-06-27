@@ -33,6 +33,7 @@ import { TheatersMoviesSearch } from './pages/theaters/theaters';
 import { UsersAdmin } from './pages/administration/users/users';
 import { UsersList } from './pages/administration/users/users-list/users-list';
 import { NewUser } from './pages/administration/users/new-user/new-user';
+import { Dashboard } from './pages/administration/dashboard/dashboard';
 
 export const routes: Routes = [
   // Home
@@ -43,6 +44,10 @@ export const routes: Routes = [
     path: 'admin',
     component: Administration,
     children: [
+      {
+        path: 'dashboard',
+        component: Dashboard,
+      },
       // Theaters admin
       {
         path: 'theaters',
@@ -98,6 +103,7 @@ export const routes: Routes = [
           { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
 
