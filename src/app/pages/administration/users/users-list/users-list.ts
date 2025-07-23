@@ -12,6 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-users-list',
@@ -23,6 +25,8 @@ import { FormsModule } from '@angular/forms';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
+    MatIconModule,
+    RouterModule,
   ],
   templateUrl: './users-list.html',
   styleUrls: ['./users-list.css'],
@@ -36,7 +40,7 @@ export class UsersList {
     email: '',
   };
 
-  users:Signal<User[]>;
+  users: Signal<User[]>;
 
   constructor(public userService: UserService) {
     // Load all users on init

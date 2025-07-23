@@ -1,0 +1,103 @@
+<div class="update-hall-form">
+  <!-- Top-right reset icon -->
+  <div class="update-hall-actions-top">
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="loadHall()"
+      [disabled]="isLoading()"
+      aria-label="Réinitialiser le formulaire"
+      class="reset-btn-top"
+      type="button"
+    >
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+  <header>
+    <h1>Modifier la salle</h1>
+  </header>
+  <form [formGroup]="hallForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Hall ID (editable) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Identifiant de la salle</mat-label>
+      <input
+        matInput
+        placeholder="hallA"
+        formControlName="hallId"
+        required
+        autocomplete="off"
+      />
+      <mat-hint>Identifiant court, ex: grande-salle</mat-hint>
+      <mat-error *ngIf="hallForm.get('hallId')?.invalid && (hallForm.get('hallId')?.dirty || hallForm.get('hallId')?.touched)">
+        L'identifiant de la salle est requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Quality -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Qualité de la salle</mat-label>
+      <mat-select formControlName="quality" required>
+        <mat-option [value]="''">Sélectionner...</mat-option>
+        <mat-option *ngFor="let q of qualityOptions" [value]="q">
+          {{ q }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="hallForm.get('quality')?.invalid && (hallForm.get('quality')?.dirty || hallForm.get('quality')?.touched)">
+        La qualité est requise
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Seats Layout Grid -->
+    <div *ngIf="seatsGrid.length > 0" class="seat-grid">
+      <h3>Configuration des sièges</h3>
+      <p class="grid-instructions">
+        Modifiez les identifiants des sièges si besoin :
+      </p>
+      <table>
+        <tr *ngFor="let row of seatsGrid; let i = index">
+          <td *ngFor="let seat of row; let j = index">
+            <input
+              type="text"
+              [value]="seat"
+              (input)="onSeatInputChange($event, i, j)"
+              maxlength="8"
+              class="seat-input"
+              [placeholder]="'Siège ' + seat"
+              aria-label="Identifiant du siège"
+            />
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="form-actions" style="margin-top: 1.2rem; display: flex; gap: 1rem">
+      <button
+        mat-raised-button
+        color="primary"
+        class="full-width"
+        type="submit"
+        [disabled]="hallForm.invalid || isLoading()"
+        style="flex: 1 1 auto"
+      >
+        <ng-container *ngIf="isLoading(); else notLoading">
+          <mat-icon>hourglass_empty</mat-icon>
+          Mise à jour en cours...
+        </ng-container>
+        <ng-template #notLoading>
+          <mat-icon>save</mat-icon>
+          Enregistrer
+        </ng-template>
+      </button>
+      <!-- Reset button now at top right! -->
+    </div>
+
+    <div *ngIf="successMessage()" class="success-message">
+      <mat-icon>check_circle</mat-icon>
+      {{ successMessage() }}
+    </div>
+    <div *ngIf="apiError()" class="api-error-message">
+      <mat-icon>error</mat-icon>
+      {{ apiError() }}
+    </div>
+  </form>
+</div>

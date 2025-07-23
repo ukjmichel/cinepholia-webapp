@@ -43,6 +43,25 @@
       <mat-error>L'identifiant de la salle est requis</mat-error>
       }
     </mat-form-field>
+    <!-- Hall Quality -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Qualité de la salle</mat-label>
+      <mat-select
+        formControlName="quality"
+        required
+        (focus)="clearMessages()"
+        (selectionChange)="clearMessages()"
+      >
+        <mat-option value="2D">2D</mat-option>
+        <mat-option value="3D">3D</mat-option>
+        <mat-option value="IMAX">IMAX</mat-option>
+        <mat-option value="4DX">4DX</mat-option>
+      </mat-select>
+      @if(hallForm.get('quality')?.invalid && (hallForm.get('quality')?.dirty ||
+      hallForm.get('quality')?.touched)) {
+      <mat-error>La qualité est requise</mat-error>
+      }
+    </mat-form-field>
 
     <!-- Number of Rows -->
     <mat-form-field appearance="outline" class="full-width">

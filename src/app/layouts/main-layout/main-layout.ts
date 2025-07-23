@@ -1,53 +1,60 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { Router, RouterModule } from '@angular/router';
+
 import {
   BASE_NAV_LINKS,
   USER_NAV_LINKS,
   EMPLOYYEE_NAV_LINKS,
   ADMIN_NAV_LINKS,
 } from '../../shared/nav-links';
-import { RouterModule } from '@angular/router';
 import { AuthFacade } from '../../store/auth/auth.facade';
-import { Footer } from "../../components/footer/footer";
+import { Footer } from '../../components/footer/footer';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-main-layout',
+  standalone: true,
   imports: [
+    CommonModule,
     MatIconModule,
     MatSidenavModule,
-    RouterModule,
     MatFormFieldModule,
     MatSelectModule,
-    Footer
-],
+    RouterModule,
+    Footer,
+  ],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.css'],
-  standalone: true,
 })
-export class MainLayout {
+export class MainLayout implements AfterViewInit {
   authFacade = inject(AuthFacade);
+  router = inject(Router);
+
+  // Access drawer instance to control it programmatically
+  @ViewChild('drawer') drawer!: MatDrawer;
+
   isLogged = this.authFacade.isLogged;
 
-  // Debugging: Log the user data
-  user = computed(() => {
-    const userData = this.authFacade.user();
-    return userData;
-  });
+  // Get user data from the store
+  user = computed(() => this.authFacade.user());
 
-  // Debugging: Log the role
-  role = computed(() => {
-    const userRole = this.user()?.role;
-    return userRole;
-  });
+  // Get role from user object
+  role = computed(() => this.user()?.role);
 
-  // Debugging: Log the computed navlinks
+  // Determine nav links based on role
   navlinks = computed(() => {
-    const currentRole = this.role();
-
-    switch (currentRole) {
+    switch (this.role()) {
       case 'utilisateur':
         return USER_NAV_LINKS;
       case 'employé':
@@ -59,9 +66,19 @@ export class MainLayout {
     }
   });
 
+  ngAfterViewInit() {
+    // Close drawer when navigating to a new route
+    this.router.events.subscribe(() => {
+      if (this.drawer?.opened) {
+        this.drawer.close();
+      }
+    });
+  }
+
   logout() {
     this.authFacade.logout();
     console.log('Logged out');
     console.log('Is logged in:', this.isLogged());
+    this.drawer.close(); // Close drawer on logout
   }
 }

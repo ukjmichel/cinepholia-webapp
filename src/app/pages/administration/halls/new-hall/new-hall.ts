@@ -47,6 +47,7 @@ export class NewHall {
       hallId: ['', Validators.required],
       rows: [5, [Validators.required, Validators.min(1)]],
       columns: [10, [Validators.required, Validators.min(1)]],
+      quality: ['2D', Validators.required], // ← NEW FIELD
     });
 
     // Charge les cinémas si la liste est vide
@@ -90,13 +91,14 @@ export class NewHall {
     this.apiError.set('');
     this.successMessage.set('');
 
-    const { theaterId, hallId } = this.hallForm.value;
+    const { theaterId, hallId, quality } = this.hallForm.value;
 
     this.hallService
       .addHall({
         theaterId,
         hallId,
         seatsLayout: this.seatsGrid,
+        quality,
       })
       .subscribe({
         next: () => {
@@ -121,6 +123,7 @@ export class NewHall {
       hallId: '',
       rows: 5,
       columns: 10,
+      quality: '2D',
     });
     this.buildGrid();
     this.successMessage.set('');

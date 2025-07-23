@@ -34,6 +34,14 @@ import { UsersAdmin } from './pages/administration/users/users';
 import { UsersList } from './pages/administration/users/users-list/users-list';
 import { NewUser } from './pages/administration/users/new-user/new-user';
 import { Dashboard } from './pages/administration/dashboard/dashboard';
+import { EditUser } from './pages/administration/users/edit-user/edit-user';
+import { UserDashboard } from './pages/user-dashboard/user-dashboard';
+import path from 'path';
+import { UserComponent } from './pages/user-dashboard/user/user';
+import { UserBookings } from './pages/user-dashboard/user-bookings/user-bookings';
+import { UserComments } from './pages/user-dashboard/user-comments/user-comments';
+import { UserBookingsList } from './pages/user-dashboard/user-bookings/user-bookings-list/user-bookings-list';
+import { UpdateHall } from './pages/administration/halls/update-hall/update-hall';
 
 export const routes: Routes = [
   // Home
@@ -65,6 +73,8 @@ export const routes: Routes = [
         children: [
           { path: 'search', component: HallsList },
           { path: 'new-hall', component: NewHall },
+          // NEW: Edit/Update route
+          { path: ':theaterId/:hallId/edit', component: UpdateHall },
           { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
@@ -100,6 +110,7 @@ export const routes: Routes = [
         children: [
           { path: 'search', component: UsersList },
           { path: 'new-user', component: NewUser },
+          { path: ':userId/edit', component: EditUser },
           { path: '', redirectTo: 'search', pathMatch: 'full' },
         ],
       },
@@ -115,6 +126,28 @@ export const routes: Routes = [
       { path: 'login', component: LoginForm },
       { path: 'register', component: SignUpForm },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
+    ],
+  },
+  {
+    path: 'user',
+    component: UserDashboard,
+    children: [
+      {
+        path: ':userId',
+        component: UserComponent,
+      },
+      {
+        path: ':userId/bookings',
+        component: UserBookings,
+        children: [
+          { path: 'search', component: UserBookingsList },
+          { path: '', redirectTo: 'search', pathMatch: 'full' },
+        ],
+      },
+      {
+        path: ':userId/comments',
+        component: UserComments,
+      },
     ],
   },
 
@@ -143,8 +176,8 @@ export const routes: Routes = [
     path: 'bookings',
     component: BookingsAdmin,
     children: [
-      { path: 'search', component: BookingsList },
       { path: 'new-booking', component: NewBooking },
+      { path: '', redirectTo: 'new-booking', pathMatch: 'full' },
     ],
   },
 
@@ -155,5 +188,5 @@ export const routes: Routes = [
   { path: 'cookie-policy', component: CookiePolicy },
 
   // Fallback or error route
-  { path: '**', redirectTo: '' },
+  //{ path: '**', redirectTo: '' },
 ];

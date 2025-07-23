@@ -1,15 +1,15 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, of, map, tap } from 'rxjs';
 import { environment } from '../environments/environment';
 
 /**
- * User role types for authorization.
+ * Possible user roles for access control.
  */
 export type UserRole = 'administrateur' | 'employé' | 'utilisateur';
 
 /**
- * Core User model for authentication and user management.
+ * Interface representing a user object.
  */
 export interface User {
   userId: string;
@@ -24,7 +24,7 @@ export interface User {
 }
 
 /**
- * Data Transfer Object for updating a user (Self or Staff).
+ * DTO for updating user fields (admin or self).
  */
 export interface UpdateUserDto {
   username?: string;
@@ -35,7 +35,7 @@ export interface UpdateUserDto {
 }
 
 /**
- * Data Transfer Object for creating a new user (Admin/Staff action).
+ * DTO for creating a new user (public registration).
  */
 export interface CreateUserDto {
   username: string;
@@ -46,7 +46,7 @@ export interface CreateUserDto {
 }
 
 /**
- * Data Transfer Object for creating a new employee.
+ * DTO for creating a new employee (admin/staff).
  */
 export interface CreateEmployeeDto {
   username: string;
@@ -57,7 +57,7 @@ export interface CreateEmployeeDto {
 }
 
 /**
- * Flexible search filters for the user search endpoint.
+ * Search filters for querying users.
  */
 export interface UserSearchFilters {
   q?: string;
@@ -72,7 +72,7 @@ export interface UserSearchFilters {
 }
 
 /**
- * Paginated result for user list/search.
+ * Format for paginated user results.
  */
 export interface PaginatedUserResult {
   users: User[];
@@ -82,34 +82,34 @@ export interface PaginatedUserResult {
 }
 
 /**
- * User Service
- *
- * Provides methods for:
- * - Creating, getting, updating, deleting, and changing password of users
- * - Listing users (with pagination and filters)
- * - Flexible search by any combination of fields or global text
- * - Reactive state for user list and API error
+ * UserService is responsible for:
+ * - Managing CRUD operations for users
+ * - Searching and listing users
+ * - Handling authentication-related actions like password change
+ * - Caching user data to reduce redundant requests
  */
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  /** Base API URL for user endpoints */
+  /** Base API endpoint for user operations */
   private baseUrl = `${environment.apiUrl}users/`;
 
-  /** Signal holding the current user list (for search/filter/list) */
+  /** Reactive signal holding the latest user list */
   public users = signal<User[]>([]);
-  /** Signal for last API error message */
+
+  /** Reactive signal for tracking the last user-related API error */
   public usersApiError = signal<string>('');
+
+  /** In-memory cache for individual users, by userId */
+  private userCache = new Map<string, User>();
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Create a new user (public registration).
-   * Calls the `/auth/register` endpoint.
-   * @param dto New user data
-   * @returns Observable emitting the created user
+   * Registers a new public user.
+   * @param dto New user details
+   * @returns Observable emitting the created User
    */
   createUser(dto: CreateUserDto): Observable<User> {
-    // Use the auth/register endpoint
     const url = `${environment.apiUrl}auth/register`;
     return this.http
       .post<{ message: string; data: User }>(url, dto, {
@@ -119,10 +119,9 @@ export class UserService {
   }
 
   /**
-   * Create a new employee (admin/staff action).
-   * Calls the `/auth/register-employee` endpoint.
-   * @param dto New employee data
-   * @returns Observable emitting the created user (employee)
+   * Registers a new employee (admin/staff action).
+   * @param dto New employee details
+   * @returns Observable emitting the created User
    */
   createEmployee(dto: CreateEmployeeDto): Observable<User> {
     const url = `${environment.apiUrl}auth/register-employee`;
@@ -134,36 +133,48 @@ export class UserService {
   }
 
   /**
-   * Get user by their unique ID.
-   * @param userId The user ID (UUID)
-   * @returns Observable emitting the user object
+   * Fetch a user by ID.
+   * Uses in-memory cache to avoid unnecessary API calls.
+   * @param userId User's unique identifier
+   * @returns Observable emitting the User
    */
   getUserById(userId: string): Observable<User> {
+    const cachedUser = this.userCache.get(userId);
+    if (cachedUser) {
+      return of(cachedUser);
+    }
+
     return this.http
       .get<{ message: string; data: User }>(`${this.baseUrl}${userId}`, {
         withCredentials: true,
       })
-      .pipe(map((res) => res.data));
+      .pipe(
+        map((res) => res.data),
+        tap((user) => this.userCache.set(userId, user))
+      );
   }
 
   /**
-   * Update a user (Self or Staff only)
-   * @param userId The user ID
-   * @param dto Partial user update data
-   * @returns Observable emitting the updated user object
+   * Update a user by ID and clear their cached data.
+   * @param userId ID of the user to update
+   * @param dto Fields to update
+   * @returns Observable emitting the updated User
    */
   updateUser(userId: string, dto: UpdateUserDto): Observable<User> {
     return this.http
       .put<{ message: string; data: User }>(`${this.baseUrl}${userId}`, dto, {
         withCredentials: true,
       })
-      .pipe(map((res) => res.data));
+      .pipe(
+        map((res) => res.data),
+        tap(() => this.userCache.delete(userId)) // Invalidate cache after update
+      );
   }
 
   /**
-   * Delete a user (Self or Staff only)
-   * @param userId The user ID
-   * @returns Observable emitting a confirmation message
+   * Deletes a user by ID.
+   * @param userId ID of the user to delete
+   * @returns Observable with confirmation message
    */
   deleteUser(userId: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.baseUrl}${userId}`, {
@@ -172,10 +183,10 @@ export class UserService {
   }
 
   /**
-   * Change a user's password (Self or Staff only)
-   * @param userId The user ID
-   * @param newPassword The new password to set
-   * @returns Observable emitting a confirmation message
+   * Changes a user's password.
+   * @param userId ID of the user
+   * @param newPassword The new password
+   * @returns Observable with confirmation message
    */
   changePassword(
     userId: string,
@@ -189,9 +200,9 @@ export class UserService {
   }
 
   /**
-   * List users with pagination and filters (Admin/Staff only)
-   * Updates the `users` signal.
-   * @param options Filtering and pagination options (page, pageSize, username, email)
+   * Lists users with optional pagination and filters.
+   * Updates the `users` signal with the result.
+   * @param options Pagination and filter options
    */
   listUsers(options?: {
     page?: number;
@@ -207,6 +218,7 @@ export class UserService {
         }
       });
     }
+
     this.http
       .get<{ message: string; data: PaginatedUserResult }>(this.baseUrl, {
         params,
@@ -228,9 +240,9 @@ export class UserService {
   }
 
   /**
-   * Flexible user search by global query or any combination of fields.
-   * Updates the `users` signal with the results.
-   * @param filters See UserSearchFilters.
+   * Searches users using a global query or specific filters.
+   * Updates the `users` signal with the result.
+   * @param filters Flexible search filters
    */
   searchUsers(filters: UserSearchFilters = {}): void {
     let params = new HttpParams();
@@ -239,6 +251,7 @@ export class UserService {
         params = params.set(key, String(value));
       }
     });
+
     this.http
       .get<{ message: string; data: User[] }>(`${this.baseUrl}search`, {
         params,

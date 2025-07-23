@@ -4,10 +4,11 @@ import { Component, effect, inject } from '@angular/core';
 import { Hall } from '../../../../models/hall.model';
 import { HallService } from '../../../../services/halls.service';
 import { MatIcon } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-halls-list',
-  imports: [MatIcon],
+  imports: [MatIcon, RouterModule],
   templateUrl: './halls-list.html',
   styleUrl: './halls-list.css',
   standalone: true,

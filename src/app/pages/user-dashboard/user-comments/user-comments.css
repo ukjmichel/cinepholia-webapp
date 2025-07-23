@@ -1,0 +1,23 @@
+.comment-card {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 14px;
+}
+
+.rating {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: #ff9800; /* Optional for better highlight */
+}
+
+.rating mat-icon {
+  margin-right: 0.25rem;
+}

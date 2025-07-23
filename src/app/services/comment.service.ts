@@ -2,8 +2,10 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import {
   BookingComment,
+  BookingCommentWithMovieAndUser,
   CreateBookingCommentDto,
 } from '../models/comment.model';
 import { environment } from '../environments/environment';
@@ -25,7 +27,21 @@ export class CommentService {
         { withCredentials: true }
       )
       .pipe(map((res) => res.data));
+
     obs.subscribe((comment) => this.fetchedComment.set(comment));
+    return obs;
+  }
+
+  /** GET: Fetch comments by user ID (with movie info) */
+  getCommentsByUserId(
+    userId: string
+  ): Observable<BookingCommentWithMovieAndUser[]> {
+    const obs = this.http
+      .get<{ message: string; data: BookingCommentWithMovieAndUser[] }>(
+        `${this.apiUrl}users/${userId}/comments`,
+        { withCredentials: true }
+      )
+      .pipe(map((res) => res.data));
     return obs;
   }
 
@@ -75,6 +91,7 @@ export class CommentService {
         { withCredentials: true }
       )
       .pipe(map((res) => res.data));
+
     obs.subscribe((comments) => this.commentsList.set(comments));
     return obs;
   }
@@ -87,6 +104,7 @@ export class CommentService {
         { withCredentials: true }
       )
       .pipe(map((res) => res.data));
+
     obs.subscribe((comments) => this.commentsList.set(comments));
     return obs;
   }
@@ -101,6 +119,7 @@ export class CommentService {
         { withCredentials: true }
       )
       .pipe(map((res) => res.data));
+
     obs.subscribe((comments) => this.commentsList.set(comments));
     return obs;
   }
@@ -121,6 +140,7 @@ export class CommentService {
         httpParams = httpParams.set(key, value);
       }
     });
+
     const obs = this.http
       .get<{ message: string; data: BookingComment[] }>(
         `${this.apiUrl}bookings/comments/search`,
@@ -130,6 +150,7 @@ export class CommentService {
         }
       )
       .pipe(map((res) => res.data));
+
     obs.subscribe((comments) => this.commentsList.set(comments));
     return obs;
   }

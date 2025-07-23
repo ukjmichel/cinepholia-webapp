@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { CommonModule } from '@angular/common';
 import { User } from '../../../models/auth.model';
-import { UserService, UserSearchFilters } from '../../../services/user.service';
+import { UserSearchFilters, UserService } from '../../../services/user.service';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,7 +23,7 @@ import { FormsModule } from '@angular/forms';
     MatIconModule,
     MatSidenavModule,
     RouterOutlet,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './users.html',
   styleUrls: ['./users.css'],

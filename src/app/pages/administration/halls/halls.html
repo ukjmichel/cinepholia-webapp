@@ -13,23 +13,28 @@
       <h1 class="filter-title">Filtrer les salles</h1>
       <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline">
-          <mat-label>Cinéma ID</mat-label>
-          <input
-            matInput
-            placeholder="Cinéma ID"
-            formControlName="theaterId"
-            autocomplete="off"
-          />
+          <mat-label>Choisir un cinéma</mat-label>
+          <mat-select formControlName="theaterId">
+            <mat-option
+              *ngFor="let theater of allTheaters()"
+              [value]="theater.theaterId"
+            >
+              {{ theater.theaterId }} ({{ theater.city }})
+            </mat-option>
+          </mat-select>
         </mat-form-field>
+
         <button mat-raised-button class="full-width" type="submit">
           Filtrer
         </button>
       </form>
+
       @if(apiError()) {
       <div class="api-error-message">{{ apiError() }}</div>
       }
     </div>
   </mat-drawer>
+
   <mat-drawer-content>
     <div class="toolbar-actions">
       <button
@@ -44,6 +49,7 @@
         <mat-icon [routerLink]="'./new-hall'">add</mat-icon>
       </button>
     </div>
+
     <router-outlet></router-outlet>
   </mat-drawer-content>
 </mat-drawer-container>
