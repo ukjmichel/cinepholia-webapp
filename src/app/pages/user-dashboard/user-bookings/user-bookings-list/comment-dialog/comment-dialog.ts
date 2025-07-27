@@ -12,6 +12,9 @@ import { FormsModule } from '@angular/forms';
 import { BookingComment } from '../../../../../models/comment.model';
 import { BookingService } from '../../../../../services/booking.service';
 
+import DOMPurify from 'dompurify';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 @Component({
   selector: 'app-comment-dialog',
   standalone: true,
@@ -33,42 +36,49 @@ export class CommentDialog implements OnInit {
   loading = signal(true);
   loadedComment: BookingComment | null = null;
 
+  /** Sanitized version of the loaded comment */
+  sanitizedComment: SafeHtml | null = null;
+
   constructor(
     public dialogRef: MatDialogRef<CommentDialog>,
     @Inject(MAT_DIALOG_DATA) public data: { bookingId: string },
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
-    // Fetch comment when dialog opens
-    console.log('CommentDialog opened with data:', this.data);
     this.bookingService.getComment(this.data.bookingId).subscribe({
       next: (result) => {
-        console.log('Fetched comment from API:', result);
         if (result && result.comment) {
           this.loadedComment = result;
+          // ✅ Sanitize comment to prevent XSS
+          const clean = DOMPurify.sanitize(result.comment, {
+            ALLOWED_TAGS: [],
+            ALLOWED_ATTR: [],
+          });
+          this.sanitizedComment = this.sanitizer.bypassSecurityTrustHtml(clean);
         }
         this.loading.set(false);
       },
-      error: () => {
-        // No comment found (404) -> show form
-        this.loading.set(false);
-      },
+      error: () => this.loading.set(false),
     });
   }
 
   submitForm() {
     if (this.comment && this.rating !== null) {
+      // ✅ Sanitize user input before sending to API
+      const cleanComment = DOMPurify.sanitize(this.comment, {
+        ALLOWED_TAGS: [],
+        ALLOWED_ATTR: [],
+      });
+
       this.bookingService
-        .saveComment(
-          this.data.bookingId, // First argument: bookingId
-          {
-            comment: this.comment,
-            rating: this.rating,
-          }
-        )
+        .saveComment(this.data.bookingId, {
+          comment: cleanComment,
+          rating: this.rating,
+        })
         .subscribe(() => {
-          this.dialogRef.close({ comment: this.comment, rating: this.rating });
+          this.dialogRef.close({ comment: cleanComment, rating: this.rating });
         });
     }
   }

@@ -1,54 +1,51 @@
 <h2 mat-dialog-title>Comment</h2>
 <mat-dialog-content>
   @if (loading()) {
-    <div>Loading...</div>
-  }
-  @else {
-    @if (loadedComment?.comment) {
-      <div class="saved-comment">
-        <div><b>Comment:</b> {{ loadedComment!.comment }}</div>
-        @if (loadedComment!.rating !== undefined && loadedComment!.rating !== null) {
-          <div><b>Rating:</b> {{ loadedComment!.rating }} / 5</div>
+  <div>Loading...</div>
+  } @else { @if (loadedComment?.comment) {
+  <div class="saved-comment">
+    <div><b>Comment:</b> <span [innerHTML]="sanitizedComment"></span></div>
+    @if (loadedComment!.rating !== undefined && loadedComment!.rating !== null)
+    {
+    <div><b>Rating:</b> {{ loadedComment!.rating }} / 5</div>
+    }
+  </div>
+  } @else {
+  <form #commentForm="ngForm" (ngSubmit)="submitForm()" autocomplete="off">
+    <mat-form-field appearance="outline" style="width: 100%">
+      <mat-label>Comment</mat-label>
+      <textarea
+        matInput
+        name="comment"
+        [(ngModel)]="comment"
+        required
+        minlength="2"
+      ></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline" style="width: 100%; margin-top: 1rem">
+      <mat-label>Rating</mat-label>
+      <mat-select name="rating" [(ngModel)]="rating" required>
+        @for (r of ratings; track r) {
+        <mat-option [value]="r">{{ r }}</mat-option>
         }
-      </div>
-    }
-    @else {
-      <form #commentForm="ngForm" (ngSubmit)="submitForm()" autocomplete="off">
-        <mat-form-field appearance="outline" style="width: 100%">
-          <mat-label>Comment</mat-label>
-          <textarea
-            matInput
-            name="comment"
-            [(ngModel)]="comment"
-            required
-            minlength="2"
-          ></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="outline" style="width: 100%; margin-top: 1rem">
-          <mat-label>Rating</mat-label>
-          <mat-select name="rating" [(ngModel)]="rating" required>
-            @for (r of ratings; track r) {
-              <mat-option [value]="r">{{ r }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </form>
-    }
-  }
+      </mat-select>
+    </mat-form-field>
+  </form>
+  } }
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-stroked-button type="button" (click)="dialogRef.close()">
     Close
   </button>
   @if (!loading() && !loadedComment?.comment) {
-    <button
-      mat-flat-button
-      color="primary"
-      [disabled]="!comment || rating === null"
-      type="submit"
-      (click)="submitForm()"
-    >
-      Save
-    </button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="!comment || rating === null"
+    type="submit"
+    (click)="submitForm()"
+  >
+    Save
+  </button>
   }
 </mat-dialog-actions>

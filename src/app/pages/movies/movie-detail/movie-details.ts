@@ -17,6 +17,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MovieComments } from "./movie-comments/movie-comments";
+
+
 
 @Component({
   selector: 'app-movie-detail',
@@ -34,7 +37,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatNativeDateModule,
     MatButtonModule,
-  ],
+    MovieComments
+],
 })
 export class MovieDetails {
   // ------------------ Signals & State ------------------

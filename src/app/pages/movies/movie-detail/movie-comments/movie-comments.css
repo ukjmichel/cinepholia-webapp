@@ -1,0 +1,70 @@
+.comment-carousel {
+  position: relative;
+  max-width: 400px;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-card {
+  background: var(--secondary-color, #fff);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  min-height: 140px;
+  text-align: center;
+  position: relative;
+}
+
+.comment-text {
+  font-size: 1.1rem;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.comment-rating {
+  margin: 8px 0;
+}
+
+.comment-rating .star {
+  font-size: 1.5rem;
+  color: gold;
+  text-shadow: 1px 1px 2px #0003;
+  margin: 0 2px;
+}
+
+.comment-user {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* === Navigation Arrows === */
+.nav-arrow {
+  position: absolute;
+  top: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s;
+}
+
+.nav-arrow:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.nav-arrow.left {
+  left: 8px;
+}
+
+.nav-arrow.right {
+  right: 8px;
+}

@@ -3,6 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../environments/environment';
 import { Movie } from '../models/movie.model';
+import { MovieComment } from '../models/movieComment.model';
+
+/**
+ * Interface representing a booking comment returned by the API.
+ */
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
@@ -13,7 +18,10 @@ export class MovieService {
 
   constructor(private http: HttpClient) {}
 
-  /** GET: Get all movies (no filter, returns everything) */
+  /**
+   * Retrieves all movies from the backend.
+   * @returns Observable emitting an array of movies.
+   */
   getAllMovies(): Observable<Movie[]> {
     const url = `${environment.apiUrl}movies`;
     const obs = this.http
@@ -28,9 +36,9 @@ export class MovieService {
   }
 
   /**
-   * GET: Get a single movie by its ID
-   * @param movieId - The ID of the movie (as in /movies/:movieId)
-   * @returns Observable<Movie>
+   * Retrieves a single movie by its ID.
+   * @param movieId - The unique identifier of the movie.
+   * @returns Observable emitting the movie details.
    */
   getMovieById(movieId: string): Observable<Movie> {
     return this.http
@@ -41,8 +49,8 @@ export class MovieService {
   }
 
   /**
-   * GET: Get a single movie by its ID
-   * @returns Observable<Movie[]>
+   * Retrieves upcoming movies (with a release date in the future).
+   * @returns Observable emitting an array of upcoming movies.
    */
   getUpcommingMovies(): Observable<Movie[]> {
     return this.http
@@ -53,9 +61,9 @@ export class MovieService {
   }
 
   /**
-   * GET: Get all movies displayed in a given theater (with at least one screening).
-   * @param theaterId - The ID of the theater (as in /theater/:theaterId)
-   * @returns Observable<Movie[]>
+   * Retrieves all movies being screened in a specific theater.
+   * @param theaterId - The ID of the theater.
+   * @returns Observable emitting an array of movies screened at the theater.
    */
   getMoviesByTheater(theaterId: string): Observable<Movie[]> {
     const url = `${this.baseUrl}theater/${theaterId}`;
@@ -65,16 +73,16 @@ export class MovieService {
   }
 
   /**
-   * Search movies by filters
-   * @param filters - Object of search fields
-   * @returns Observable<Movie[]>
+   * Searches for movies based on provided filters.
+   * @param filters - Object containing optional search criteria.
+   * @returns Observable emitting an array of movies matching the filters.
    */
   searchMovies(filters: {
     movieId?: string;
     title?: string;
     genre?: string;
     ageRating?: string;
-    releaseDate?: string; // ISO string for query param
+    releaseDate?: string;
     director?: string;
     recommended?: boolean;
   }): Observable<Movie[]> {
@@ -94,6 +102,7 @@ export class MovieService {
         params,
       })
       .pipe(map((res) => res.data));
+
     obs.subscribe((movies) => {
       this.filteredMovies.set(movies);
     });
@@ -101,10 +110,29 @@ export class MovieService {
     return obs;
   }
 
-  /** POST: Add a new movie */
+  /**
+   * Sends a POST request to create a new movie.
+   * @param movie - The movie object or FormData containing movie details.
+   * @returns Observable emitting the created movie.
+   */
   addMovie(movie: Movie | FormData): Observable<Movie> {
     return this.http.post<Movie>(this.baseUrl, movie, {
       withCredentials: true,
     });
+  }
+
+  /**
+   * Retrieves all comments associated with a given movie.
+   * This calls the backend endpoint `/movies/:movieId/comments`.
+   * @param movieId - The ID of the movie to retrieve comments for.
+   * @returns Observable emitting an array of MovieComment.
+   */
+  getCommentsByMovie(movieId: string): Observable<MovieComment[]> {
+    const url = `${this.baseUrl}${movieId}/comments`;
+    return this.http
+      .get<{ message: string; data: MovieComment[] }>(url, {
+        withCredentials: true,
+      })
+      .pipe(map((res) => res.data));
   }
 }
