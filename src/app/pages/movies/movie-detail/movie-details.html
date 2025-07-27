@@ -27,6 +27,10 @@
           <p><strong>Réalisateur :</strong> {{ movie()!.director }}</p>
           <p><strong>Âge :</strong> {{ movie()!.ageRating }}</p>
           <p><strong>Résumé :</strong> {{ movie()!.description }}</p>
+          <!-- ✅ Show average rating only if it exists -->
+          @if(movie()!.rating !== undefined && movie()!.rating !== null) {
+          <p><strong>Note moyenne :</strong> {{ movie()!.rating }} / 5</p>
+          }
         </mat-card-content>
         <mat-card-actions>
           <a mat-button color="primary" routerLink="/movies">
@@ -87,8 +91,8 @@
 
   <!-- Screenings List -->
   <div class="screening-list">
-    @if (filteredSortedScreenings().length > 0 ) { @for (screening
-    of filteredSortedScreenings(); track screening.screeningId) {
+    @if (filteredSortedScreenings().length > 0 ) { @for (screening of
+    filteredSortedScreenings(); track screening.screeningId) {
     <div class="screening-item" (click)="goToBooking(screening)">
       <span class="screening-hour">
         {{ screening.startTime | date: 'shortTime' }}

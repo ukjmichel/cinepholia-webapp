@@ -1,50 +1,52 @@
 <div class="movie-results">
   @if (filteredMovies().length === 0) {
+    <div class="empty-state">
+      <mat-icon color="warn" style="vertical-align: middle">search_off</mat-icon>
+      <p>Aucun film trouvé.</p>
+    </div>
+  } 
+  @for (movie of filteredMovies(); track movie.movieId) {
+    <a [routerLink]="['/movies', movie.movieId]" style="text-decoration: none; color: inherit">
+      <mat-card class="movie-card-mat mat-elevation-z2" hoverable>
+        <div class="movie-card-mat-row">
+          <img
+            *ngIf="movie.posterUrl && !movie.posterUrl.endsWith('undefined')"
+            [src]="movie.posterUrl"
+            [alt]="movie.title"
+            class="movie-poster-mat"
+          />
+          <div class="movie-info-mat">
+            <div class="movie-title-row-mat">
+              <h3>{{ movie.title }}</h3>
+              @if(movie.recommended) {
+                <mat-icon color="warn" class="movie-heart-mat">favorite</mat-icon>
+              }
+            </div>
+            <div class="movie-meta-mat">
+              <span class="movie-age-mat">{{ movie.ageRating }}</span>
+              <span>•</span>
+              <span>{{ movie.genre }}</span>
+              <span class="movie-duration-mat">• {{ movie.durationMinutes }} min</span>
+            </div>
 
-  <div class="empty-state">
-    <mat-icon color="warn" style="vertical-align: middle">search_off</mat-icon>
-    <p>Aucun film trouvé.</p>
-  </div>
-  } @for (movie of filteredMovies() ; track movie.movieId) {
-  <!-- Wrap the card with a routerLink for the whole card clickable -->
-  <a
-    [routerLink]="['/movies', movie.movieId]"
-    style="text-decoration: none; color: inherit"
-  >
-    <mat-card class="movie-card-mat mat-elevation-z2" hoverable>
-      <div class="movie-card-mat-row">
-        <img
-          *ngIf="movie.posterUrl && !movie.posterUrl.endsWith('undefined')"
-          [src]="movie.posterUrl"
-          [alt]="movie.title"
-          class="movie-poster-mat"
-        />
-        <div class="movie-info-mat">
-          <div class="movie-title-row-mat">
-            <h3>{{ movie.title }}</h3>
-            @if(movie.recommended) {
-            <mat-icon color="warn" class="movie-heart-mat">favorite</mat-icon>
+            <p>{{ movie.description }}</p>
+
+            <div class="movie-meta-mat">
+              <strong>Réalisateur:</strong> {{ movie.director }}
+            </div>
+            <div class="movie-meta-mat">
+              <strong>Date de sortie:</strong> {{ movie.releaseDate | date: 'longDate' }}
+            </div>
+
+            <!-- ✅ Show average rating only if it exists -->
+            @if(movie.rating !== undefined && movie.rating !== null) {
+              <div class="movie-meta-mat">
+                <strong>Note moyenne:</strong> {{ movie.rating }} / 5
+              </div>
             }
           </div>
-          <div class="movie-meta-mat">
-            <span class="movie-age-mat">{{ movie.ageRating }}</span>
-            <span>•</span>
-            <span>{{ movie.genre }}</span>
-            <span class="movie-duration-mat">
-              • {{ movie.durationMinutes }} min
-            </span>
-          </div>
-          <p>{{ movie.description }}</p>
-          <div class="movie-meta-mat">
-            <strong>Réalisateur:</strong> {{ movie.director }}
-          </div>
-          <div class="movie-meta-mat">
-            <strong>Date de sortie:</strong>
-            {{ movie.releaseDate | date:'longDate' }}
-          </div>
         </div>
-      </div>
-    </mat-card>
-  </a>
+      </mat-card>
+    </a>
   }
 </div>

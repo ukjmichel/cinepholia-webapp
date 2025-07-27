@@ -9,4 +9,5 @@ export interface Movie {
   durationMinutes: number;
   posterUrl?: string;
   recommended?: boolean;
+  rating?: number | null; // average rating can be a number or null if no comments
 }
