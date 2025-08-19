@@ -96,9 +96,9 @@
     filteredSortedScreenings(); track screening.screeningId) {
     <div class="screening-item" (click)="goToBooking(screening)">
       <span class="screening-hour">
-        {{ screening.startTime | date: 'shortTime' }}
+        {{ screening.startTime | date: 'shortTime' }} | 
       </span>
-      <span class="screening-quality">({{ screening.quality }})</span>
+      <span class="screening-quality">({{ screening.hall?.quality }})</span>
     </div>
     } } @else {
     <div>Aucune séance pour ce cinéma</div>

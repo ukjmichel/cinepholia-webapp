@@ -99,10 +99,6 @@ export class NewBookingDataService {
     this.newBookingData.update((state) => ({ ...state, screeningId: id }));
   }
 
-  // These are now removed:
-  // setSeatsNumber(num: number) { ... }
-  // setSeatIds(ids: string[]) { ... }
-  // setTotalPrice(price: number) { ... }
 
   // Reset to initial state
   reset() {

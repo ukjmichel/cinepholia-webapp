@@ -1,9 +1,11 @@
+<!-- new-hall.html -->
 <div class="add-hall-form">
   <header>
     <h1>Ajouter une salle</h1>
   </header>
+
   <form [formGroup]="hallForm" (ngSubmit)="onSubmit()" autocomplete="off">
-    <!-- Theater ID -->
+    <!-- Theater -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Choisir un cinéma</mat-label>
       <mat-select
@@ -13,13 +15,13 @@
         (selectionChange)="clearMessages()"
       >
         <mat-option [value]="''">Sélectionner...</mat-option>
-        @for(theater of theaters(); track theater.theaterId) {
+        @for (theater of theaters(); track theater.theaterId) {
         <mat-option [value]="theater.theaterId">
           {{ theater.theaterId }} — {{ theater.city }}
         </mat-option>
         }
       </mat-select>
-      @if(hallForm.get('theaterId')?.invalid &&
+      @if (hallForm.get('theaterId')?.invalid &&
       (hallForm.get('theaterId')?.dirty || hallForm.get('theaterId')?.touched))
       {
       <mat-error>Le cinéma est requis</mat-error>
@@ -38,12 +40,13 @@
         (focus)="clearMessages()"
         (input)="clearMessages()"
       />
-      @if(hallForm.get('hallId')?.invalid && (hallForm.get('hallId')?.dirty ||
+      @if (hallForm.get('hallId')?.invalid && (hallForm.get('hallId')?.dirty ||
       hallForm.get('hallId')?.touched)) {
       <mat-error>L'identifiant de la salle est requis</mat-error>
       }
     </mat-form-field>
-    <!-- Hall Quality -->
+
+    <!-- Quality -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Qualité de la salle</mat-label>
       <mat-select
@@ -57,13 +60,13 @@
         <mat-option value="IMAX">IMAX</mat-option>
         <mat-option value="4DX">4DX</mat-option>
       </mat-select>
-      @if(hallForm.get('quality')?.invalid && (hallForm.get('quality')?.dirty ||
-      hallForm.get('quality')?.touched)) {
+      @if (hallForm.get('quality')?.invalid && (hallForm.get('quality')?.dirty
+      || hallForm.get('quality')?.touched)) {
       <mat-error>La qualité est requise</mat-error>
       }
     </mat-form-field>
 
-    <!-- Number of Rows -->
+    <!-- Rows -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nombre de rangées</mat-label>
       <input
@@ -74,16 +77,18 @@
         formControlName="rows"
         required
         autocomplete="off"
+        (change)="onDimsChange()"
+        (blur)="onDimsChange()"
+        (keyup.enter)="onDimsChange()"
         (focus)="clearMessages()"
-        (input)="clearMessages()"
       />
-      @if(hallForm.get('rows')?.invalid && (hallForm.get('rows')?.dirty ||
+      @if (hallForm.get('rows')?.invalid && (hallForm.get('rows')?.dirty ||
       hallForm.get('rows')?.touched)) {
       <mat-error>Le nombre de rangées doit être supérieur à 0</mat-error>
       }
     </mat-form-field>
 
-    <!-- Number of Columns -->
+    <!-- Columns -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nombre de sièges par rangée</mat-label>
       <input
@@ -94,26 +99,29 @@
         formControlName="columns"
         required
         autocomplete="off"
+        (change)="onDimsChange()"
+        (blur)="onDimsChange()"
+        (keyup.enter)="onDimsChange()"
         (focus)="clearMessages()"
-        (input)="clearMessages()"
       />
-      @if(hallForm.get('columns')?.invalid && (hallForm.get('columns')?.dirty ||
-      hallForm.get('columns')?.touched)) {
+      @if (hallForm.get('columns')?.invalid && (hallForm.get('columns')?.dirty
+      || hallForm.get('columns')?.touched)) {
       <mat-error>Le nombre de sièges doit être supérieur à 0</mat-error>
       }
     </mat-form-field>
 
-    <!-- Editable seat grid using @if and @for -->
-    @if(seatsGrid.length > 0) {
+    <!-- Seat grid -->
+    @if (seatsGrid.length > 0) {
     <div class="seat-grid">
       <h3>Configuration des sièges</h3>
       <p class="grid-instructions">
         Personnalisez les identifiants des sièges :
       </p>
+
       <table>
-        @for(row of seatsGrid; track i; let i = $index) {
+        @for (row of seatsGrid; track $index; let i = $index) {
         <tr>
-          @for(seat of row; track j; let j = $index) {
+          @for (seat of row; track $index; let j = $index) {
           <td>
             <input
               type="text"
@@ -138,7 +146,7 @@
       type="submit"
       [disabled]="hallForm.invalid || isLoading()"
     >
-      @if(isLoading()) {
+      @if (isLoading()) {
       <ng-container>
         <mat-icon>hourglass_empty</mat-icon>
         Création en cours...
@@ -151,12 +159,12 @@
       }
     </button>
 
-    @if(successMessage()) {
+    @if (successMessage()) {
     <div class="success-message">
       <mat-icon>check_circle</mat-icon>
       <span>{{ successMessage() }}</span>
     </div>
-    } @if(apiError()) {
+    } @if (apiError()) {
     <div class="api-error-message">
       <mat-icon>error</mat-icon>
       <span>{{ apiError() }}</span>

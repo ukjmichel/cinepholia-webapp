@@ -19,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { AuthFacade } from '../../../store/auth/auth.facade';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login-form',
@@ -31,9 +32,10 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    CommonModule
   ],
   templateUrl: './login-form.html',
-  styleUrls: ['./login-form.css'],
+  styleUrls: ['../../../styles/authentication/form.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginForm {

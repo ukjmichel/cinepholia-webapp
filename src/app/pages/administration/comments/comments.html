@@ -13,33 +13,31 @@
       <h1 class="filter-title">Filtrer les commentaires</h1>
       <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline">
-          <mat-label>Movie ID</mat-label>
-          <input
-            matInput
-            placeholder="Movie ID"
-            formControlName="movieId"
-            autocomplete="off"
-          />
+          <mat-label>Film</mat-label>
+          <mat-select formControlName="movieId" placeholder="Choisir un film">
+            <mat-option [value]="''">Tous les films</mat-option>
+            @for (movie of allMovies(); track movie.movieId) {
+            <mat-option [value]="movie.movieId">{{ movie.title }}</mat-option>
+            }
+          </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline">
-          <mat-label>Status</mat-label>
+          <mat-label>Statut</mat-label>
           <mat-select formControlName="status">
-            <mat-option value="">Tous</mat-option>
+            <mat-option value="">Tous les statuts</mat-option>
             <mat-option value="pending">En attente</mat-option>
             <mat-option value="confirmed">Confirmé</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Recherche texte</mat-label>
-          <input
-            matInput
-            placeholder="Mot-clé dans le commentaire"
-            formControlName="q"
-            autocomplete="off"
-          />
-        </mat-form-field>
-        <button mat-raised-button class="full-width" type="submit">
-          Filtrer
+        <button
+          mat-raised-button
+          class="full-width"
+          type="submit"
+          [disabled]="isLoading()"
+        >
+          @if (isLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          } @else { Filtrer }
         </button>
       </form>
       @if (apiError()) {
@@ -58,7 +56,6 @@
         <mat-icon>search</mat-icon>
       </button>
     </div>
-
     <router-outlet></router-outlet>
   </mat-drawer-content>
 </mat-drawer-container>

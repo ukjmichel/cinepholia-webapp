@@ -9,7 +9,7 @@ export interface User {
   lastName: string;
   email: string;
   verified: boolean;
-  role?: Role; // Mark as optional if your API may omit it
+  role?: Role; 
   createdAt?: string;
   updatedAt?: string;
 }

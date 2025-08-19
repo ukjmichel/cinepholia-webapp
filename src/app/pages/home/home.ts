@@ -9,6 +9,7 @@ import { ContactForm } from './contact-form/contact-form';
 import { SocialIcons } from "./social-icons/social-icons";
 
 
+
 @Component({
   selector: 'app-home',
   imports: [
@@ -18,7 +19,8 @@ import { SocialIcons } from "./social-icons/social-icons";
     CurrentMoviesCarousel,
     SubscribeForm,
     ContactForm,
-    SocialIcons
+    SocialIcons,
+    
 ],
   templateUrl: './home.html',
   styleUrls: ['./home.css'],

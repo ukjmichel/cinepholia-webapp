@@ -4,10 +4,8 @@ import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-bookings',
-  imports: [MatIcon,RouterModule],
+  imports: [RouterModule],
   templateUrl: './bookings.html',
-  styleUrl: './bookings.css'
+  styleUrl: './bookings.css',
 })
-export class BookingsAdmin {
-
-}
+export class BookingsAdmin {}

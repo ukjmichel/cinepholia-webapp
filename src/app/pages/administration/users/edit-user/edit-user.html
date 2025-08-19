@@ -24,7 +24,7 @@
     <!-- Role -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Type de compte</mat-label>
-      <input matInput [value]="userForm.get('role')?.value" disabled />
+      <input matInput [value]="displayedRole" disabled />
     </mat-form-field>
 
     <!-- Username -->
@@ -35,7 +35,6 @@
         formControlName="username"
         required
         autocomplete="off"
-        placeholder="Ex: johndoe"
         (focus)="clearMessages()"
         (input)="clearMessages()"
       />
@@ -54,7 +53,6 @@
         formControlName="firstName"
         required
         autocomplete="off"
-        placeholder="Ex: Jean"
         (focus)="clearMessages()"
         (input)="clearMessages()"
       />
@@ -73,7 +71,6 @@
         formControlName="lastName"
         required
         autocomplete="off"
-        placeholder="Ex: Dupont"
         (focus)="clearMessages()"
         (input)="clearMessages()"
       />
@@ -93,7 +90,6 @@
         formControlName="email"
         required
         autocomplete="off"
-        placeholder="exemple@email.com"
         (focus)="clearMessages()"
         (input)="clearMessages()"
       />
@@ -103,9 +99,8 @@
         Un email valide est requis
       </mat-error>
     </mat-form-field>
-
-    <!-- Changer le mot de passe -->
-    <div class="full-width" style="margin-bottom: 16px">
+    <div class="button-container">
+      <!-- Changer le mot de passe -->
       <button
         mat-stroked-button
         color="accent"
@@ -113,10 +108,20 @@
         (click)="openPasswordDialog()"
       >
         <mat-icon>lock</mat-icon>
-        Changer le mot de passe
+        <span>Changer le mot de passe</span>
+      </button>
+
+      <!-- Reset Button -->
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="resetForm()"
+        [disabled]="isLoading || userForm.pristine"
+      >
+        <mat-icon>refresh</mat-icon>
+        <span>Réinitialiser aux valeurs originales</span>
       </button>
     </div>
-
     <!-- Submit -->
     <button
       mat-raised-button

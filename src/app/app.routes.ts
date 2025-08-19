@@ -42,6 +42,8 @@ import { UserBookings } from './pages/user-dashboard/user-bookings/user-bookings
 import { UserComments } from './pages/user-dashboard/user-comments/user-comments';
 import { UserBookingsList } from './pages/user-dashboard/user-bookings/user-bookings-list/user-bookings-list';
 import { UpdateHall } from './pages/administration/halls/update-hall/update-hall';
+import { RequestPasswordResetForm } from './pages/authentication/request-password-reset-form/request-password-reset-form';
+import { ConfirmPasswordResetForm } from './pages/authentication/confirm-password-reset-form/confirm-password-reset-form';
 
 export const routes: Routes = [
   // Home
@@ -125,6 +127,8 @@ export const routes: Routes = [
     children: [
       { path: 'login', component: LoginForm },
       { path: 'register', component: SignUpForm },
+      { path: 'forgot-password', component: RequestPasswordResetForm },
+      { path: 'reset-password', component: ConfirmPasswordResetForm },
       { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },

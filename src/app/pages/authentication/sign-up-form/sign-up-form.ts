@@ -12,11 +12,12 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthFacade } from '../../../store/auth/auth.facade'; // Update the import path as needed
 import { Signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-signup-form',
   templateUrl: './sign-up-form.html',
-  styleUrls: ['./sign-up-form.css'],
+  styleUrls: ['../../../styles/authentication/form.scss'],
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -24,7 +25,8 @@ import { RouterModule } from '@angular/router';
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    CommonModule
   ],
   standalone: true,
 })

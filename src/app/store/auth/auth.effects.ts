@@ -1,13 +1,23 @@
+// auth.effects.ts
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
-import { catchError, exhaustMap, map, switchMap, tap } from 'rxjs/operators';
+import { Action } from '@ngrx/store';
+import { Observable, of, concat } from 'rxjs';
+import {
+  catchError,
+  exhaustMap,
+  map,
+  switchMap,
+  tap,
+  concatMap,
+} from 'rxjs/operators';
 
 import * as AuthActions from './auth.actions';
 import { environment } from '../../environments/environment';
-import { LoginResponse, RegisterResponse, User } from '../../models/auth.model';
+import { LoginResponse, User } from '../../models/auth.model';
+import { ApiEnvelope } from '../../models/api.model';
 
 @Injectable()
 export class AuthEffects {
@@ -17,26 +27,26 @@ export class AuthEffects {
   private apiUrl = environment.apiUrl;
 
   /**
-   * Login effect:
-   * Tries to log in with provided credentials.
-   * On success, dispatches loginSuccess with the response.
-   * On failure, dispatches loginFailure with error details.
+   * Login
+   * API: ApiEnvelope<{ user: User }>
    */
   login$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.login),
       exhaustMap(({ email, password }) =>
         this.http
-          .post<LoginResponse>(
+          .post<ApiEnvelope<{ user: User }>>(
             `${this.apiUrl}auth/login`,
             { emailOrUsername: email, password },
             { withCredentials: true }
           )
           .pipe(
-            tap((response) =>
-              console.log('[AuthEffects] login response:', response)
+            map((res) =>
+              AuthActions.loginSuccess({
+                message: res.message,
+                data: res.data, // { user }
+              })
             ),
-            map((response) => AuthActions.loginSuccess(response)),
             catchError((error) =>
               of(
                 AuthActions.loginFailure({
@@ -51,32 +61,67 @@ export class AuthEffects {
   );
 
   /**
-   * Register effect:
-   * Tries to register a new user.
-   * On success, dispatches registerSuccess with the API response.
-   * On failure, dispatches registerFailure with error details.
+   * Register then login
+   * Register API: ApiEnvelope<User>
+   * Login API: ApiEnvelope<{ user: User }>
    */
   register$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.register),
       exhaustMap(({ email, username, password, firstName, lastName }) =>
         this.http
-          .post<RegisterResponse>(
+          .post<ApiEnvelope<User>>(
             `${this.apiUrl}auth/register`,
             { email, username, password, firstName, lastName },
             { withCredentials: true }
           )
           .pipe(
-            tap((response) =>
-              console.log('[AuthEffects] register response:', response)
-            ),
-            map((response) => AuthActions.registerSuccess({ response })),
-            catchError((error) =>
+            // 1) emit registerSuccess
+            // 2) call /auth/login and emit loginSuccess (so isLogged = true)
+            concatMap((res): Observable<Action> => {
+              const registerPayload: LoginResponse = {
+                message: res.message,
+                data: { user: res.data },
+              };
+              const registerAction =
+                AuthActions.registerSuccess(registerPayload);
+
+              const login$: Observable<
+                | ReturnType<typeof AuthActions.loginSuccess>
+                | ReturnType<typeof AuthActions.loginFailure>
+              > = this.http
+                .post<ApiEnvelope<{ user: User }>>(
+                  `${this.apiUrl}auth/login`,
+                  { emailOrUsername: email, password },
+                  { withCredentials: true }
+                )
+                .pipe(
+                  map((loginRes) =>
+                    AuthActions.loginSuccess({
+                      message: loginRes.message,
+                      data: loginRes.data, // { user }
+                    })
+                  ),
+                  catchError((err) =>
+                    of(
+                      AuthActions.loginFailure({
+                        error:
+                          err?.error?.message ??
+                          err?.message ??
+                          'Login failed after registration',
+                      })
+                    )
+                  )
+                );
+
+              return concat(of(registerAction), login$);
+            }),
+            catchError((err) =>
               of(
                 AuthActions.registerFailure({
                   error:
-                    error?.error?.message ||
-                    error?.message ||
+                    err?.error?.message ??
+                    err?.message ??
                     'Registration failed',
                 })
               )
@@ -87,32 +132,26 @@ export class AuthEffects {
   );
 
   /**
-   * Load current user (session check) effect:
-   * Fetches /users/me to get the current authenticated user's public info.
-   * If not authenticated (401), attempts silent refresh.
-   * On other errors, dispatches getUserFailure.
+   * Load current user (session check)
+   * API: ApiEnvelope<{ user: User }>
    */
   loadUser$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.getUser),
       switchMap(() =>
         this.http
-          .get<{ message: string; data: User }>(`${this.apiUrl}users/me`, {
+          .get<ApiEnvelope<{ user: User }>>(`${this.apiUrl}users/me`, {
             withCredentials: true,
           })
           .pipe(
-            tap((response) =>
-              console.log('[AuthEffects] getUser response:', response)
-            ),
-            map((response) =>
+            map((res) =>
               AuthActions.getUserSuccess({
-                message: response.message,
-                data: { user: response.data }, // wrap user as { user }
+                message: res.message,
+                data: { user: res.data.user },
               })
             ),
             catchError((error) => {
-              console.log('[AuthEffects] getUser error:', error);
-              if (error.status === 401) {
+              if (error?.status === 401) {
                 return of(AuthActions.refreshToken());
               }
               return of(
@@ -127,10 +166,7 @@ export class AuthEffects {
   );
 
   /**
-   * Refresh token effect:
-   * Calls /auth/refresh to get new tokens.
-   * On success, tries to re-fetch current user info.
-   * On failure, dispatches refreshTokenFailure.
+   * Refresh token
    */
   refreshToken$ = createEffect(() =>
     this.actions$.pipe(
@@ -139,28 +175,21 @@ export class AuthEffects {
         this.http
           .post(`${this.apiUrl}auth/refresh`, {}, { withCredentials: true })
           .pipe(
-            tap((response) =>
-              console.log('[AuthEffects] refreshToken response:', response)
-            ),
-            // On success, trigger a silent getUser (retries user fetch)
             map(() => AuthActions.getUser()),
-            catchError((error) => {
-              console.log('[AuthEffects] refreshToken error:', error);
-              return of(AuthActions.refreshTokenFailure());
-            })
+            catchError(() => of(AuthActions.refreshTokenFailure()))
           )
       )
     )
   );
 
   /**
-   * Redirect after login or registration:
-   * Navigates to returnUrl (or home) on successful login/registration.
+   * Redirect after successful auth
+   * (listen only to loginSuccess to avoid double navigation)
    */
   redirectAfterAuth$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
+        ofType(AuthActions.loginSuccess),
         tap(() => {
           const returnUrl =
             this.router.routerState.snapshot.root.queryParamMap.get(
@@ -173,9 +202,7 @@ export class AuthEffects {
   );
 
   /**
-   * Logout effect:
-   * Calls logout API and navigates to login page.
-   * Always redirects to /auth/login (even if API call fails).
+   * Logout
    */
   logout$ = createEffect(
     () =>

@@ -78,7 +78,6 @@ export class NewScreening {
       hallId: ['', Validators.required],
       date: ['', Validators.required], // Date seule
       time: ['', Validators.required], // Heure seule (ex: '20:15')
-      quality: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0)]],
     });
 
@@ -133,7 +132,6 @@ export class NewScreening {
       theaterId: formValue.theaterId,
       hallId: formValue.hallId,
       startTime, // Champ ISO
-      quality: formValue.quality,
       price: Number(formValue.price),
     };
 
@@ -171,7 +169,6 @@ export class NewScreening {
       hallId: '',
       date: '',
       time: '',
-      quality: '',
       price: '',
     });
     this.apiError.set('');

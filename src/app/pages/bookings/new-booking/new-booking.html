@@ -62,7 +62,7 @@
             [value]="screening.screeningId"
           >
             {{ screening.startTime | date:'shortTime' }} - Salle {{
-            screening.hallId }}
+            screening.hallId }} - {{screening.hall?.quality}}
           </mat-option>
         </mat-select>
         <mat-error *ngIf="hasFieldError('screeningId')">

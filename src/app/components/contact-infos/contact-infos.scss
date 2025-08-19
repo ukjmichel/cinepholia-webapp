@@ -1,0 +1,102 @@
+:host {
+  display: block;
+}
+
+/* Banner */
+.contact-banner {
+  width: 100%;
+  background: var(--primary-color, #c8102e);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+  border-radius: 0; /* square corners */
+  padding: 16px 12px;
+}
+
+/* GRID: mobile first (stacked) */
+.banner-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "contact"
+    "schedule";
+  place-items: center; /* center both areas */
+  gap: 0;
+}
+
+/* Shared block styles */
+.contact,
+.schedule {
+  grid-area: auto; /* set by area names below */
+  display: grid;
+  place-items: center; /* center content inside each block */
+  text-align: center;
+  width: 100%;
+  padding: 16px;
+
+}
+.contact {
+  grid-area: contact;
+}
+.schedule {
+  grid-area: schedule;
+}
+
+/* Typography */
+.title {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+.addr {
+  font-size: 12px;
+  margin: 0 0 8px;
+  opacity: 0.95;
+}
+.phone {
+  font-size: 12px;
+  margin: 0;
+  opacity: 0.95;
+}
+
+/* Schedule box */
+.section-title {
+  font-weight: 700;
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+.schedule-box {
+  border-radius: 0; /* square */
+  padding: 10px 14px;
+  margin: 0;
+}
+.schedule-line {
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+/* DESKTOP: contact left, schedule right (both centered) */
+@media (min-width: 1024px) {
+  .contact-banner {
+    padding: 20px 24px;
+  }
+
+  .banner-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "contact schedule";
+    min-height: 120px;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+  .addr,
+  .phone,
+  .schedule-line {
+    font-size: 13px;
+  }
+  .schedule-box {
+    padding: 12px 16px;
+  }
+}

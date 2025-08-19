@@ -19,7 +19,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Movie } from '../../../models/movie.model';
 import { Theater } from '../../../models/theater.model';
-import { ScreeningAttributes } from '../../../models/screening.model';
+import { ScreeningAttributes, ScreeningWithDetails } from '../../../models/screening.model';
 import { Hall } from '../../../models/hall.model';
 import { BookingService } from '../../../services/booking.service';
 import { ScreeningService } from '../../../services/screening.service';
@@ -28,7 +28,6 @@ import { TheaterService } from '../../../services/theater.service';
 import { HallService } from '../../../services/halls.service';
 import { AuthFacade } from '../../../store/auth/auth.facade';
 import { NewBookingDataService } from './new-booking-data.service';
-import { BookedSeat } from '../../../models/bookedSeat.model';
 
 @Component({
   selector: 'app-new-booking',
@@ -60,7 +59,7 @@ export class NewBooking {
   // Data signals for loaded lists & selections
   movies: Signal<Movie[]>;
   theaters: Signal<Theater[]>;
-  screenings = signal<ScreeningAttributes[]>([]);
+  screenings = signal<ScreeningWithDetails[]>([]);
   halls = signal<Hall[]>([]);
   seatsLayout = signal<string[][]>([]);
   selectedSeats = signal<string[]>([]);
@@ -117,7 +116,6 @@ export class NewBooking {
   private loadPersistedState() {
     const persisted = this.bookingDataService.bookingFormData();
     if (persisted) {
-      // Step by step set each form control with patchValue, checking for null
       if (persisted.movieId) {
         this.bookingForm.get('movieId')!.setValue(persisted.movieId);
       }
@@ -132,7 +130,6 @@ export class NewBooking {
       }
 
       if (persisted.movieId && persisted.theaterId && persisted.date) {
-        // Use undefined if screeningId is null or empty
         const screeningId = persisted.screeningId || undefined;
         setTimeout(() => this.loadScreenings(screeningId));
       }
@@ -162,7 +159,6 @@ export class NewBooking {
         const theatersLoaded = this.theaters() && this.theaters().length > 0;
 
         if (moviesLoaded && theatersLoaded) {
-          // Set form values one by one only if different
           if (movieId && this.bookingForm.get('movieId')!.value !== movieId) {
             this.bookingForm.get('movieId')!.setValue(movieId);
           }
@@ -234,14 +230,16 @@ export class NewBooking {
           );
           if (screening) {
             this.loadHallSeats(screening.hallId);
+
+            // Normalize whatever the API returns to string[] of seatIds
             this.screeningService.getBookedSeats(screeningId).subscribe({
-              next: (res) => {
-                const bookedSeats = res.data.map(
-                  (seat: BookedSeat) => seat.seatId
-                );
-                this.bookedSeatIds.set(bookedSeats);
+              next: (payload: unknown) => {
+                const ids = this.normalizeBookedSeatIds(payload);
+                this.bookedSeatIds.set(ids);
               },
-              error: () => this.bookedSeatIds.set([]),
+              error: () => {
+                this.bookedSeatIds.set([]);
+              },
             });
           } else {
             this.seatsLayout.set([]);
@@ -300,7 +298,7 @@ export class NewBooking {
         .searchScreenings({ movieId, theaterId, date: filterDateStr })
         .subscribe({
           next: (screenings) => {
-            const uniqueMap = new Map<string, ScreeningAttributes>();
+            const uniqueMap = new Map<string, ScreeningWithDetails>();
             screenings.forEach((s) => uniqueMap.set(s.screeningId, s));
             let uniqueScreenings = Array.from(uniqueMap.values());
 
@@ -466,7 +464,35 @@ export class NewBooking {
     return user?.userId ?? null;
   }
 
-  trackByScreeningId(index: number, screening: ScreeningAttributes) {
+  trackByScreeningId(index: number, screening: ScreeningWithDetails) {
     return screening.screeningId;
+  }
+
+  /** Normalize booked-seats API responses to string[] of seatIds */
+  private normalizeBookedSeatIds(input: unknown): string[] {
+    try {
+      if (Array.isArray(input)) {
+        if (input.length === 0) return [];
+        if (typeof input[0] === 'string') return input as string[];
+        return (input as any[])
+          .map((x) =>
+            'seatId' in (x ?? {}) ? String((x as any).seatId) : String(x)
+          )
+          .filter(Boolean);
+      }
+      const data = (input as any)?.data;
+      if (Array.isArray(data)) {
+        if (data.length === 0) return [];
+        if (typeof data[0] === 'string') return data as string[];
+        return (data as any[])
+          .map((x) =>
+            'seatId' in (x ?? {}) ? String((x as any).seatId) : String(x)
+          )
+          .filter(Boolean);
+      }
+    } catch {
+      // swallow normalization errors; return empty list
+    }
+    return [];
   }
 }

@@ -70,6 +70,17 @@ mat-error {
   display: block;
 }
 
+.button-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.button-container span {
+  display: none;
+}
+
 /* Submit button */
 button[type="submit"] {
   width: 100%;
@@ -128,3 +139,11 @@ button[type="submit"] {
     transform: translateY(0);
   }
 }
+
+@media screen and (min-width: 720px) {
+  .button-container span {
+    display: block;
+  }
+}
+
+  

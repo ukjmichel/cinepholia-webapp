@@ -5,7 +5,7 @@ import { Movie } from '../../../models/movie.model';
 import { TheaterService } from '../../../services/theater.service';
 import { Theater } from '../../../models/theater.model';
 import { ScreeningService } from '../../../services/screening.service';
-import { ScreeningAttributes } from '../../../models/screening.model';
+import { ScreeningWithDetails } from '../../../models/screening.model';
 import { AuthFacade } from '../../../store/auth/auth.facade';
 
 import { CommonModule } from '@angular/common';
@@ -56,7 +56,7 @@ export class MovieDetails {
   selectedDateObj = signal<Date | null>(null); // actual Date object
 
   // Raw list of screenings returned from API (can contain extra or wrong dates)
-  screeningsList: Signal<ScreeningAttributes[]>;
+  screeningsList: Signal<ScreeningWithDetails[]>;
 
   // ------------- FILTERED & DEDUPED SCREENINGS --------------
   /**
@@ -82,7 +82,7 @@ export class MovieDetails {
     });
 
     // Deduplicate by screeningId
-    const uniqueMap = new Map<string, ScreeningAttributes>();
+    const uniqueMap = new Map<string, ScreeningWithDetails>();
     filtered.forEach((s) => uniqueMap.set(s.screeningId, s));
 
     // Sort by start time
@@ -174,7 +174,7 @@ export class MovieDetails {
   }
 
   // Go to booking page with correct params
-  goToBooking(screening: ScreeningAttributes) {
+  goToBooking(screening: ScreeningWithDetails) {
     const movieId = this.movie()?.movieId;
     const theaterId = this.selectedTheater()?.theaterId;
     const screeningId = screening.screeningId;

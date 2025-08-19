@@ -20,7 +20,7 @@ import { reducers } from './store'; // Réducteurs NGRX (état global)
 import { provideEffects } from '@ngrx/effects';
 import { AuthEffects } from './store/auth/auth.effects'; // Effets liés à l'authentification
 
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http'; // Gestion des requêtes HTTP + Interceptors
+import { HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http'; // Gestion des requêtes HTTP + Interceptors
 
 import { AuthInterceptor } from './interceptors/auth.interceptor'; // Ton interceptor d'authentification
 
@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(), // Capture les erreurs globales (console.error, uncaught exceptions)
     provideZonelessChangeDetection(), // Change detection sans zone.js (performances)
 
-    provideHttpClient(), // ⚠️ Obligatoire pour HttpClient + permet aux interceptors de fonctionner
+    provideHttpClient(withFetch()), // ⚠️ Obligatoire pour HttpClient + permet aux interceptors de fonctionner
 
     provideRouter(routes, withViewTransitions()), // Routing Angular avec transition de vues activée
 

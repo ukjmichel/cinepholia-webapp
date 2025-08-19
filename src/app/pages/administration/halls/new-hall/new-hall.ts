@@ -1,4 +1,12 @@
-import { Component, effect, signal, Signal } from '@angular/core';
+// new-hall.ts
+import {
+  Component,
+  Signal,
+  signal,
+  OnInit,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   Validators,
@@ -13,11 +21,21 @@ import { MatIconModule } from '@angular/material/icon';
 import { HallService } from '../../../../services/halls.service';
 import { TheaterService } from '../../../../services/theater.service';
 import { Theater } from '../../../../models/theater.model';
+import { Hall } from '../../../../models/hall.model';
+
+type HallFormValue = {
+  theaterId: string;
+  hallId: string;
+  rows: number;
+  columns: number;
+  quality: Hall['quality'];
+};
 
 @Component({
   selector: 'app-new-hall',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -26,62 +44,109 @@ import { Theater } from '../../../../models/theater.model';
     MatSelectModule,
   ],
   templateUrl: './new-hall.html',
-  styleUrl: './new-hall.css',
+  styleUrls: ['./new-hall.css'],
 })
-export class NewHall {
+export class NewHall implements OnInit {
   apiError = signal('');
   successMessage = signal('');
   isLoading = signal(false);
+
   hallForm: FormGroup;
   seatsGrid: string[][] = [];
-  theaters: Signal<Theater[]>; // <-- Ajout du signal pour les cinémas
+  theaters: Signal<Theater[]>;
 
   constructor(
     private fb: FormBuilder,
     private hallService: HallService,
-    private theaterService: TheaterService
+    private theaterService: TheaterService,
+    private cdr: ChangeDetectorRef
   ) {
-    this.theaters = this.theaterService.allTheaters; // <-- Récupère les cinémas
+    this.theaters = this.theaterService.allTheaters;
+
     this.hallForm = this.fb.group({
       theaterId: ['', Validators.required],
       hallId: ['', Validators.required],
-      rows: [5, [Validators.required, Validators.min(1)]],
-      columns: [10, [Validators.required, Validators.min(1)]],
-      quality: ['2D', Validators.required], // ← NEW FIELD
+      rows: this.fb.control(5, {
+        validators: [Validators.required, Validators.min(1)],
+      }),
+      columns: this.fb.control(10, {
+        validators: [Validators.required, Validators.min(1)],
+      }),
+      quality: this.fb.control('2D' as Hall['quality'], {
+        validators: [Validators.required],
+      }),
     });
 
-    // Charge les cinémas si la liste est vide
     if (
       !this.theaterService.allTheaters() ||
       this.theaterService.allTheaters().length === 0
     ) {
       this.theaterService.getAllTheaters().subscribe();
     }
-
-    this.hallForm.get('rows')!.valueChanges.subscribe(() => this.buildGrid());
-    this.hallForm
-      .get('columns')!
-      .valueChanges.subscribe(() => this.buildGrid());
-    this.buildGrid();
   }
 
+  ngOnInit(): void {
+    // Fresh defaults on refresh
+    this.hallForm.reset(
+      {
+        theaterId: '',
+        hallId: '',
+        rows: 5,
+        columns: 10,
+        quality: '2D' as Hall['quality'],
+      },
+      { emitEvent: false }
+    );
+    this.seatsGrid = [];
+    this.buildGrid();
+    this.cdr.markForCheck();
+  }
+
+  /** Rebuild grid; preserve existing labels; number new seats sequentially */
   buildGrid() {
-    const rows = this.hallForm.get('rows')!.value || 0;
-    const columns = this.hallForm.get('columns')!.value || 0;
+    const rawRows = Number(this.hallForm.get('rows')!.value);
+    const rawCols = Number(this.hallForm.get('columns')!.value);
+    const rows = Number.isFinite(rawRows) && rawRows >= 1 ? rawRows : 1;
+    const columns = Number.isFinite(rawCols) && rawCols >= 1 ? rawCols : 1;
+
     const oldGrid = this.seatsGrid;
-    const newGrid: string[][] = [];
-    let seatNum = 1;
-    for (let i = 0; i < rows; i++) {
-      newGrid[i] = [];
-      for (let j = 0; j < columns; j++) {
-        newGrid[i][j] = oldGrid[i]?.[j] ?? String(seatNum++);
+
+    // Highest existing numeric label
+    let maxNum = 0;
+    for (const row of oldGrid) {
+      for (const cell of row ?? []) {
+        if (typeof cell === 'string' && /^\d+$/.test(cell)) {
+          const n = Number(cell);
+          if (n > maxNum) maxNum = n;
+        }
       }
     }
+
+    let seatNum = maxNum + 1;
+    const newGrid: string[][] = Array.from({ length: rows }, (_, i) =>
+      Array.from(
+        { length: columns },
+        (_, j) => oldGrid[i]?.[j] ?? String(seatNum++)
+      )
+    );
+
     this.seatsGrid = newGrid;
+    this.cdr.markForCheck(); // ensure DOM updates immediately
+  }
+
+  /** Triggered by (change)/(blur)/(keyup.enter) on rows/columns */
+  onDimsChange(): void {
+    this.buildGrid();
   }
 
   onSeatChange(i: number, j: number, value: string) {
     this.seatsGrid[i][j] = value;
+    this.cdr.markForCheck();
+  }
+
+  onSeatInputChange(event: Event, i: number, j: number) {
+    const target = event.target as HTMLInputElement;
+    if (target) this.onSeatChange(i, j, target.value);
   }
 
   onSubmit() {
@@ -91,7 +156,8 @@ export class NewHall {
     this.apiError.set('');
     this.successMessage.set('');
 
-    const { theaterId, hallId, quality } = this.hallForm.value;
+    const { theaterId, hallId, quality } =
+      this.hallForm.getRawValue() as HallFormValue;
 
     this.hallService
       .addHall({
@@ -108,11 +174,9 @@ export class NewHall {
         },
         error: (err) => {
           this.isLoading.set(false);
-          if (err.error && err.error.message) {
-            this.apiError.set(err.error.message);
-          } else {
-            this.apiError.set('Erreur lors de la création de la salle.');
-          }
+          this.apiError.set(
+            err?.error?.message ?? 'Erreur lors de la création de la salle.'
+          );
         },
       });
   }
@@ -123,22 +187,17 @@ export class NewHall {
       hallId: '',
       rows: 5,
       columns: 10,
-      quality: '2D',
+      quality: '2D' as Hall['quality'],
     });
+    this.seatsGrid = [];
     this.buildGrid();
     this.successMessage.set('');
     this.apiError.set('');
+    this.cdr.markForCheck();
   }
 
   clearMessages() {
     this.apiError.set('');
     this.successMessage.set('');
-  }
-
-  onSeatInputChange(event: Event, i: number, j: number) {
-    const target = event.target as HTMLInputElement;
-    if (target) {
-      this.onSeatChange(i, j, target.value);
-    }
   }
 }

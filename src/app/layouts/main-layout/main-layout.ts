@@ -21,6 +21,7 @@ import {
 import { AuthFacade } from '../../store/auth/auth.facade';
 import { Footer } from '../../components/footer/footer';
 import { CommonModule } from '@angular/common';
+import { ContactInfos } from "../../components/contact-infos/contact-infos";
 
 @Component({
   selector: 'app-main-layout',
@@ -33,7 +34,8 @@ import { CommonModule } from '@angular/common';
     MatSelectModule,
     RouterModule,
     Footer,
-  ],
+    ContactInfos
+],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.css'],
 })

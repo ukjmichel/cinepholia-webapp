@@ -72,6 +72,7 @@ export class NewUser {
       // Send regular user creation request
       this.userService.createUser(userData as CreateUserDto).subscribe({
         next: (user) => {
+          console.log(user);
           this.successMessage = `Utilisateur ${user.username} créé avec succès !`;
           this.userForm.reset({ role: 'utilisateur' }); // reset role default
           this.isLoading = false;
@@ -85,6 +86,7 @@ export class NewUser {
       // Send employee creation request
       this.userService.createEmployee(userData as CreateEmployeeDto).subscribe({
         next: (user) => {
+          console.log(user);
           this.successMessage = `Employé ${user.username} créé avec succès !`;
           this.userForm.reset({ role: 'utilisateur' });
           this.isLoading = false;

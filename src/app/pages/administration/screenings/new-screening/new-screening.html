@@ -79,19 +79,6 @@
       />
     </mat-form-field>
 
-    <!-- Qualité -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Qualité</mat-label>
-      <mat-select formControlName="quality" required>
-        <mat-option value="2D">2D</mat-option>
-        <mat-option value="3D">3D</mat-option>
-        <mat-option value="IMAX">IMAX</mat-option>
-      </mat-select>
-      @if(hasFieldError('quality')) {
-      <mat-error>{{ getFieldError('quality') }}</mat-error>
-      }
-    </mat-form-field>
-
     <!-- Prix -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Prix (€)</mat-label>

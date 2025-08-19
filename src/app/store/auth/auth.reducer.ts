@@ -1,98 +1,75 @@
+// auth.reducer.ts
 import { createReducer, on } from '@ngrx/store';
 import * as AuthActions from './auth.actions';
-import { initialAuthState, AuthState, Role } from './auth.state';
+import { User, Role } from '../../models/auth.model';
 
-// Helper to ensure valid role values
-function getValidRole(role: string): Role {
-  switch (role) {
-    case 'administrateur':
-    case 'employé':
-    case 'utilisateur':
-      return role as Role;
-    default:
-      return 'utilisateur';
-  }
+export interface AuthState {
+  isLogged: boolean;
+  role: Role;
+  user: User | null;
+  loading: boolean;
+  error: string | null;
 }
 
-// Auth reducer handles all auth actions and updates state accordingly
-export const authReducer = createReducer(
+export const initialAuthState: AuthState = {
+  isLogged: false,
+  role: 'utilisateur',
+  user: null,
+  loading: false,
+  error: null,
+};
+
+export const authFeatureKey = 'auth';
+
+const reducer = createReducer(
   initialAuthState,
 
-  // --- Login ---
-  on(AuthActions.login, (state) => ({
+  // ---- Requests start
+  on(AuthActions.getUser, AuthActions.login, AuthActions.register, (state) => ({
     ...state,
     loading: true,
     error: null,
-  })),
-  on(AuthActions.loginSuccess, (state, { data }) => ({
-    ...state,
-    isLogged: true,
-    user: data.user,
-    role: getValidRole(data.user.role ?? 'utilisateur'), // <-- fixed
-    loading: false,
-    error: null,
-  })),
-  on(AuthActions.loginFailure, (state, { error }) => ({
-    ...state,
-    isLogged: false,
-    user: null,
-    role: 'utilisateur' as Role,
-    loading: false,
-    error,
   })),
 
-  // --- Register ---
-  on(AuthActions.register, (state) => ({
-    ...state,
-    loading: true,
-    error: null,
-  })),
-  on(AuthActions.registerSuccess, (state, { response }) => ({
-    ...state,
-    isLogged: true,
-    user: response.data,
-    role: getValidRole(response.data.role ?? 'utilisateur'), // <-- fixed
-    loading: false,
-    error: null,
-  })),
-  on(AuthActions.registerFailure, (state, { error }) => ({
-    ...state,
-    isLogged: false,
-    user: null,
-    role: 'utilisateur' as Role,
-    loading: false,
-    error,
-  })),
+  // ---- Success: ensure isLogged = true
+  on(
+    AuthActions.loginSuccess,
+    AuthActions.registerSuccess,
+    (state, { data }) => ({
+      ...state,
+      isLogged: true,
+      user: data.user,
+      role: data.user.role ?? 'utilisateur',
+      loading: false,
+      error: null,
+    })
+  ),
 
-  // --- Get User (session check) ---
-  on(AuthActions.getUser, (state) => ({
-    ...state,
-    loading: true,
-    error: null,
-  })),
   on(AuthActions.getUserSuccess, (state, { data }) => ({
     ...state,
     isLogged: true,
     user: data.user,
-    role: getValidRole(data.user.role ?? 'utilisateur'), // <-- fixed
+    role: data.user.role ?? 'utilisateur',
     loading: false,
     error: null,
-  })),
-  on(AuthActions.getUserFailure, (state, { error }) => ({
-    ...state,
-    isLogged: false,
-    user: null,
-    role: 'utilisateur' as Role,
-    loading: false,
-    error,
   })),
 
-  // --- Refresh Token ---
-  on(AuthActions.refreshToken, (state) => ({
-    ...state,
-    loading: true,
-    error: null,
-  })),
+  // ---- Failures
+  on(
+    AuthActions.getUserFailure,
+    AuthActions.loginFailure,
+    AuthActions.registerFailure,
+    (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
+      // do NOT forcibly flip isLogged here; leave it as-is unless you want strict false:
+      // isLogged: false,
+    })
+  ),
+
+  // ---- Refresh token outcomes (optional state tweaks)
+  on(AuthActions.refreshToken, (state) => ({ ...state, loading: true })),
   on(AuthActions.refreshTokenSuccess, (state) => ({
     ...state,
     loading: false,
@@ -100,19 +77,18 @@ export const authReducer = createReducer(
   on(AuthActions.refreshTokenFailure, (state) => ({
     ...state,
     loading: false,
-    isLogged: false,
-    user: null,
-    role: 'utilisateur' as Role,
   })),
 
-  // --- Logout ---
-  on(AuthActions.logout, () => ({
-    ...initialAuthState,
-  })),
+  // ---- Clear error
+  on(AuthActions.clearError, (state) => ({ ...state, error: null })),
 
-  // --- Clear Error ---
-  on(AuthActions.clearError, (state) => ({
-    ...state,
-    error: null,
-  }))
+  // ---- Logout resets state
+  on(AuthActions.logout, () => initialAuthState)
 );
+
+export function authReducer(
+  state: AuthState | undefined,
+  action: any
+): AuthState {
+  return reducer(state, action);
+}

@@ -1,8 +1,8 @@
-<div class="signup-form">
+<div class="auth-form">
   <header><h1>Créer un compte</h1></header>
   <form (ngSubmit)="onSubmit()" autocomplete="off">
     <!-- First Name field -->
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline">
       <mat-label>Prénom</mat-label>
       <input
         matInput
@@ -13,14 +13,14 @@
         type="text"
       />
       @if (firstname.invalid && (firstname.dirty || firstname.touched)) {
-      <mat-error>
-        <div>Le prénom est requis</div>
-      </mat-error>
+        <mat-error>
+          <div>Le prénom est requis</div>
+        </mat-error>
       }
     </mat-form-field>
 
     <!-- Last Name field -->
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline">
       <mat-label>Nom</mat-label>
       <input
         matInput
@@ -31,14 +31,14 @@
         type="text"
       />
       @if (lastname.invalid && (lastname.dirty || lastname.touched)) {
-      <mat-error>
-        <div>Le nom est requis</div>
-      </mat-error>
+        <mat-error>
+          <div>Le nom est requis</div>
+        </mat-error>
       }
     </mat-form-field>
 
     <!-- Username field -->
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline">
       <mat-label>Nom d'utilisateur</mat-label>
       <input
         matInput
@@ -49,14 +49,14 @@
         type="text"
       />
       @if (username.invalid && (username.dirty || username.touched)) {
-      <mat-error>
-        <div>Le nom d'utilisateur est requis</div>
-      </mat-error>
+        <mat-error>
+          <div>Le nom d'utilisateur est requis</div>
+        </mat-error>
       }
     </mat-form-field>
 
     <!-- Email field -->
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
       <input
         matInput
@@ -67,16 +67,16 @@
         type="email"
       />
       @if (email.invalid && (email.dirty || email.touched)) {
-      <mat-error>
-        @for (msg of emailErrorMessages(); track msg) {
-        <div>{{ msg }}</div>
-        }
-      </mat-error>
+        <mat-error>
+          @for (msg of emailErrorMessages(); track msg) {
+            <div>{{ msg }}</div>
+          }
+        </mat-error>
       }
     </mat-form-field>
 
     <!-- Password field -->
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline">
       <mat-label>Mot de passe</mat-label>
       <input
         matInput
@@ -97,27 +97,29 @@
         <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
       @if (password.invalid && (password.dirty || password.touched)) {
-      <mat-error>
-        <div>Le mot de passe est requis</div>
-      </mat-error>
+        <mat-error>
+          <div>Le mot de passe est requis</div>
+        </mat-error>
       }
     </mat-form-field>
-    <div class="api-error-message">
-      @if(apiErrorMessage()){ {{apiErrorMessage()}} }
+
+    <!-- API error message -->
+    <div class="api-error-message" *ngIf="apiErrorMessage()">
+      {{ apiErrorMessage() }}
     </div>
 
     <button
       mat-raised-button
       color="primary"
-      class="full-width"
       type="submit"
       [disabled]="
-          firstname.invalid || lastname.invalid ||
-          username.invalid || email.invalid || password.invalid
-        "
+        firstname.invalid || lastname.invalid ||
+        username.invalid || email.invalid || password.invalid
+      "
     >
       S'inscrire
     </button>
+
     <p><a [routerLink]="['../login']">Se connecter</a></p>
   </form>
 </div>

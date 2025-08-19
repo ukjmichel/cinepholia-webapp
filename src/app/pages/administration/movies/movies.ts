@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import { MovieService } from '../../../services/movie.service'; // <-- make sure the path is correct
+import { MovieService } from '../../../services/movie.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MoviesFilter } from "../../../filters/movies-filter/movies-filter";

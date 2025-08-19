@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../environments/environment';
 import { MovieStats } from '../models/movie-stats.model';
+import { ApiEnvelope } from '../models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -19,8 +20,10 @@ export class DashboardService {
    */
   getStatsByMovieId(movieId: string): Observable<MovieStats> {
     const url = `${this.baseUrl}${movieId}/stats`;
-    const obs = this.http.get<MovieStats>(url, { withCredentials: true });
-
-    return obs;
+    return this.http
+      .get<ApiEnvelope<MovieStats>>(url, {
+        withCredentials: true,
+      })
+      .pipe(map((res) => res.data));
   }
 }

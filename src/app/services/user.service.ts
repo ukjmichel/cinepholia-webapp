@@ -2,15 +2,12 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, map, tap } from 'rxjs';
 import { environment } from '../environments/environment';
+import { ApiEnvelope } from '../models/api.model';
 
-/**
- * Possible user roles for access control.
- */
+/** Possible user roles for access control. */
 export type UserRole = 'administrateur' | 'employé' | 'utilisateur';
 
-/**
- * Interface representing a user object.
- */
+/** Interface representing a user object. */
 export interface User {
   userId: string;
   username: string;
@@ -23,9 +20,7 @@ export interface User {
   updatedAt?: string;
 }
 
-/**
- * DTO for updating user fields (admin or self).
- */
+/** DTO for updating user fields (admin or self). */
 export interface UpdateUserDto {
   username?: string;
   firstName?: string;
@@ -34,9 +29,7 @@ export interface UpdateUserDto {
   role?: UserRole;
 }
 
-/**
- * DTO for creating a new user (public registration).
- */
+/** DTO for creating a new user (public registration). */
 export interface CreateUserDto {
   username: string;
   firstName: string;
@@ -45,9 +38,7 @@ export interface CreateUserDto {
   password: string;
 }
 
-/**
- * DTO for creating a new employee (admin/staff).
- */
+/** DTO for creating a new employee (admin/staff). */
 export interface CreateEmployeeDto {
   username: string;
   firstName: string;
@@ -56,9 +47,7 @@ export interface CreateEmployeeDto {
   password: string;
 }
 
-/**
- * Search filters for querying users.
- */
+/** Search filters for querying users. */
 export interface UserSearchFilters {
   q?: string;
   userId?: string;
@@ -71,9 +60,7 @@ export interface UserSearchFilters {
   pageSize?: number;
 }
 
-/**
- * Format for paginated user results.
- */
+/** Format for paginated user results. */
 export interface PaginatedUserResult {
   users: User[];
   total: number;
@@ -82,11 +69,12 @@ export interface PaginatedUserResult {
 }
 
 /**
- * UserService is responsible for:
- * - Managing CRUD operations for users
- * - Searching and listing users
- * - Handling authentication-related actions like password change
- * - Caching user data to reduce redundant requests
+ * UserService
+ * - CRUD for users
+ * - Search & list (with pagination)
+ * - Password change
+ * - Lightweight cache for single user fetches
+ * - Uses API response format `{ message, data }` consistently
  */
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -104,105 +92,83 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Registers a new public user.
-   * @param dto New user details
-   * @returns Observable emitting the created User
-   */
+  /** Register a new public user. */
   createUser(dto: CreateUserDto): Observable<User> {
     const url = `${environment.apiUrl}auth/register`;
     return this.http
-      .post<{ message: string; data: User }>(url, dto, {
-        withCredentials: true,
-      })
-      .pipe(map((res) => res.data));
+      .post<ApiEnvelope<{ user: User }>>(url, dto, { withCredentials: true })
+      .pipe(map((res) => res.data.user));
   }
 
-  /**
-   * Registers a new employee (admin/staff action).
-   * @param dto New employee details
-   * @returns Observable emitting the created User
-   */
+  /** Register a new employee (admin/staff action). */
   createEmployee(dto: CreateEmployeeDto): Observable<User> {
     const url = `${environment.apiUrl}auth/register-employee`;
     return this.http
-      .post<{ message: string; data: User }>(url, dto, {
-        withCredentials: true,
-      })
-      .pipe(map((res) => res.data));
+      .post<ApiEnvelope<{ user: User }>>(url, dto, { withCredentials: true })
+      .pipe(map((res) => res.data.user));
   }
 
   /**
    * Fetch a user by ID.
    * Uses in-memory cache to avoid unnecessary API calls.
-   * @param userId User's unique identifier
-   * @returns Observable emitting the User
    */
   getUserById(userId: string): Observable<User> {
-    const cachedUser = this.userCache.get(userId);
-    if (cachedUser) {
-      return of(cachedUser);
-    }
+    const cached = this.userCache.get(userId);
+    if (cached) return of(cached);
 
     return this.http
-      .get<{ message: string; data: User }>(`${this.baseUrl}${userId}`, {
-        withCredentials: true,
-      })
+      .get<ApiEnvelope<{ user: User }>>(
+        `${this.baseUrl}${encodeURIComponent(userId)}`,
+        {
+          withCredentials: true,
+        }
+      )
       .pipe(
-        map((res) => res.data),
+        map((res) => res.data.user), // Changed from res.data to res.data.user
         tap((user) => this.userCache.set(userId, user))
       );
   }
 
-  /**
-   * Update a user by ID and clear their cached data.
-   * @param userId ID of the user to update
-   * @param dto Fields to update
-   * @returns Observable emitting the updated User
-   */
+  /** Update a user by ID and invalidate their cached entry. */
   updateUser(userId: string, dto: UpdateUserDto): Observable<User> {
     return this.http
-      .put<{ message: string; data: User }>(`${this.baseUrl}${userId}`, dto, {
-        withCredentials: true,
-      })
+      .put<ApiEnvelope<User>>(
+        `${this.baseUrl}${encodeURIComponent(userId)}`,
+        dto,
+        {
+          withCredentials: true,
+        }
+      )
       .pipe(
         map((res) => res.data),
-        tap(() => this.userCache.delete(userId)) // Invalidate cache after update
+        tap(() => this.userCache.delete(userId))
       );
   }
 
-  /**
-   * Deletes a user by ID.
-   * @param userId ID of the user to delete
-   * @returns Observable with confirmation message
-   */
+  /** Delete a user by ID. */
   deleteUser(userId: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.baseUrl}${userId}`, {
-      withCredentials: true,
-    });
+    return this.http.delete<{ message: string }>(
+      `${this.baseUrl}${encodeURIComponent(userId)}`,
+      { withCredentials: true }
+    );
   }
 
-  /**
-   * Changes a user's password.
-   * @param userId ID of the user
-   * @param newPassword The new password
-   * @returns Observable with confirmation message
-   */
+  /** Change a user's password. */
   changePassword(
     userId: string,
     newPassword: string
   ): Observable<{ message: string }> {
     return this.http.patch<{ message: string }>(
-      `${this.baseUrl}${userId}/password`,
+      `${this.baseUrl}${encodeURIComponent(userId)}/password`,
       { newPassword },
       { withCredentials: true }
     );
   }
 
   /**
-   * Lists users with optional pagination and filters.
-   * Updates the `users` signal with the result.
-   * @param options Pagination and filter options
+   * List users (same endpoint also supports filters).
+   * Updates the `users` signal with the returned list.
+   * Note: backend returns `{ message, data: { users, total, page, pageSize } }`.
    */
   listUsers(options?: {
     page?: number;
@@ -212,22 +178,22 @@ export class UserService {
   }): void {
     let params = new HttpParams();
     if (options) {
-      Object.entries(options).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          params = params.set(key, String(value));
+      Object.entries(options).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') {
+          params = params.set(k, String(v));
         }
       });
     }
 
     this.http
-      .get<{ message: string; data: PaginatedUserResult }>(this.baseUrl, {
+      .get<ApiEnvelope<PaginatedUserResult>>(this.baseUrl, {
         params,
         withCredentials: true,
       })
       .pipe(map((res) => res.data.users))
       .subscribe({
-        next: (users) => {
-          this.users.set(users);
+        next: (list) => {
+          this.users.set(list ?? []);
           this.usersApiError.set('');
         },
         error: (err) => {
@@ -240,27 +206,27 @@ export class UserService {
   }
 
   /**
-   * Searches users using a global query or specific filters.
-   * Updates the `users` signal with the result.
-   * @param filters Flexible search filters
+   * Search users with flexible filters.
+   * Uses the SAME `/users` endpoint (no `/users/search` on backend).
+   * Updates `users` signal with the returned list.
    */
   searchUsers(filters: UserSearchFilters = {}): void {
     let params = new HttpParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        params = params.set(key, String(value));
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        params = params.set(k, String(v));
       }
     });
 
     this.http
-      .get<{ message: string; data: User[] }>(`${this.baseUrl}search`, {
+      .get<ApiEnvelope<PaginatedUserResult>>(this.baseUrl, {
         params,
         withCredentials: true,
       })
-      .pipe(map((res) => res.data))
+      .pipe(map((res) => res.data.users))
       .subscribe({
-        next: (users) => {
-          this.users.set(users);
+        next: (list) => {
+          this.users.set(list ?? []);
           this.usersApiError.set('');
         },
         error: (err) => {

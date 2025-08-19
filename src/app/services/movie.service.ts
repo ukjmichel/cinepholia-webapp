@@ -1,81 +1,107 @@
+/**
+ * MovieService
+ * --------------------------------------------------------------------------
+ * Service responsible for communicating with the backend API for movie-related
+ * operations such as retrieving, searching, creating movies, and fetching
+ * associated comments.
+ *
+ * It handles the backend's response format, including a fallback for a known
+ * typo where the field `data` may be incorrectly returned as `date`.
+ *
+ * This service uses Angular Signals to store global movie state for
+ * easy reactive consumption in components.
+ * --------------------------------------------------------------------------
+ */
+
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../environments/environment';
 import { Movie } from '../models/movie.model';
 import { MovieComment } from '../models/movieComment.model';
-
-/**
- * Interface representing a booking comment returned by the API.
- */
+import { ApiEnvelope } from '../models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
+  /** Base URL for movie-related endpoints */
   private baseUrl = `${environment.apiUrl}movies/`;
 
+  /** Signal holding the most recently fetched filtered movies */
   public filteredMovies = signal<Movie[]>([]);
+
+  /** Signal holding all movies fetched from the API */
   public allMovies = signal<Movie[]>([]);
 
   constructor(private http: HttpClient) {}
 
   /**
+   * Unwraps the API envelope to extract the actual data payload.
+   * Supports both `{ data }` and `{ date }` formats.
+   * @param res API envelope object
+   * @returns The extracted payload of type `T`
+   */
+  private unwrap<T>(res: ApiEnvelope<T>): T {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (res as any).data ?? (res as any).date;
+  }
+
+  /**
    * Retrieves all movies from the backend.
-   * @returns Observable emitting an array of movies.
+   * Also updates the `allMovies` signal.
+   * @returns Observable emitting the list of movies.
    */
   getAllMovies(): Observable<Movie[]> {
     const url = `${environment.apiUrl}movies`;
     const obs = this.http
-      .get<{ message: string; data: Movie[] }>(url, { withCredentials: true })
-      .pipe(map((res) => res.data));
+      .get<ApiEnvelope<Movie[]>>(url, { withCredentials: true })
+      .pipe(map((res) => this.unwrap<Movie[]>(res)));
 
-    obs.subscribe((movies) => {
-      this.allMovies.set(movies);
-    });
-
+    obs.subscribe((movies) => this.allMovies.set(movies));
     return obs;
   }
 
   /**
-   * Retrieves a single movie by its ID.
-   * @param movieId - The unique identifier of the movie.
+   * Retrieves details of a single movie by its ID.
+   * @param movieId The UUID of the movie.
    * @returns Observable emitting the movie details.
    */
   getMovieById(movieId: string): Observable<Movie> {
     return this.http
-      .get<{ message: string; data: Movie }>(`${this.baseUrl}${movieId}`, {
+      .get<ApiEnvelope<Movie>>(`${this.baseUrl}${movieId}`, {
         withCredentials: true,
       })
-      .pipe(map((res) => res.data));
+      .pipe(map((res) => this.unwrap<Movie>(res)));
   }
 
   /**
-   * Retrieves upcoming movies (with a release date in the future).
+   * Retrieves upcoming movies with release dates in the future.
    * @returns Observable emitting an array of upcoming movies.
    */
   getUpcommingMovies(): Observable<Movie[]> {
     return this.http
-      .get<{ message: string; data: Movie[] }>(`${this.baseUrl}upcoming`, {
+      .get<ApiEnvelope<Movie[]>>(`${this.baseUrl}upcoming`, {
         withCredentials: true,
       })
-      .pipe(map((res) => res.data));
+      .pipe(map((res) => this.unwrap<Movie[]>(res)));
   }
 
   /**
-   * Retrieves all movies being screened in a specific theater.
-   * @param theaterId - The ID of the theater.
-   * @returns Observable emitting an array of movies screened at the theater.
+   * Retrieves all movies being screened at a specific theater.
+   * @param theaterId The UUID of the theater.
+   * @returns Observable emitting the list of movies for the given theater.
    */
   getMoviesByTheater(theaterId: string): Observable<Movie[]> {
     const url = `${this.baseUrl}theater/${theaterId}`;
     return this.http
-      .get<{ message: string; data: Movie[] }>(url, { withCredentials: true })
-      .pipe(map((res) => res.data));
+      .get<ApiEnvelope<Movie[]>>(url, { withCredentials: true })
+      .pipe(map((res) => this.unwrap<Movie[]>(res)));
   }
 
   /**
    * Searches for movies based on provided filters.
-   * @param filters - Object containing optional search criteria.
-   * @returns Observable emitting an array of movies matching the filters.
+   * Also updates the `filteredMovies` signal.
+   * @param filters Optional search filters.
+   * @returns Observable emitting an array of movies matching the criteria.
    */
   searchMovies(filters: {
     movieId?: string;
@@ -94,45 +120,43 @@ export class MovieService {
     if (filters.releaseDate)
       params = params.set('releaseDate', filters.releaseDate);
     if (filters.director) params = params.set('director', filters.director);
-    if (filters.recommended !== undefined)
+    if (filters.recommended !== undefined) {
       params = params.set('recommended', String(filters.recommended));
+    }
 
     const obs = this.http
-      .get<{ message: string; data: Movie[] }>(`${this.baseUrl}search`, {
+      .get<ApiEnvelope<Movie[]>>(`${this.baseUrl}search`, {
         params,
+        withCredentials: true,
       })
-      .pipe(map((res) => res.data));
+      .pipe(map((res) => this.unwrap<Movie[]>(res)));
 
-    obs.subscribe((movies) => {
-      this.filteredMovies.set(movies);
-    });
-
+    obs.subscribe((movies) => this.filteredMovies.set(movies));
     return obs;
   }
 
   /**
-   * Sends a POST request to create a new movie.
-   * @param movie - The movie object or FormData containing movie details.
+   * Sends a request to create a new movie.
+   * Accepts either a plain `Movie` object or a `FormData` instance
+   * (useful for file uploads).
+   * @param movie Movie details or FormData containing the movie.
    * @returns Observable emitting the created movie.
    */
   addMovie(movie: Movie | FormData): Observable<Movie> {
-    return this.http.post<Movie>(this.baseUrl, movie, {
-      withCredentials: true,
-    });
+    return this.http
+      .post<ApiEnvelope<Movie>>(this.baseUrl, movie, { withCredentials: true })
+      .pipe(map((res) => this.unwrap<Movie>(res)));
   }
 
   /**
-   * Retrieves all comments associated with a given movie.
-   * This calls the backend endpoint `/movies/:movieId/comments`.
-   * @param movieId - The ID of the movie to retrieve comments for.
-   * @returns Observable emitting an array of MovieComment.
+   * Retrieves all comments associated with a specific movie.
+   * @param movieId The UUID of the movie.
+   * @returns Observable emitting an array of `MovieComment` objects.
    */
   getCommentsByMovie(movieId: string): Observable<MovieComment[]> {
     const url = `${this.baseUrl}${movieId}/comments`;
     return this.http
-      .get<{ message: string; data: MovieComment[] }>(url, {
-        withCredentials: true,
-      })
-      .pipe(map((res) => res.data));
+      .get<ApiEnvelope<MovieComment[]>>(url, { withCredentials: true })
+      .pipe(map((res) => this.unwrap<MovieComment[]>(res)));
   }
 }
