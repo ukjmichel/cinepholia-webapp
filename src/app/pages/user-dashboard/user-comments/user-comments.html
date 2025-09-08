@@ -1,0 +1,21 @@
+<section *ngIf="comments().length > 0; else noComments">
+  <mat-card *ngFor="let comment of comments()" class="comment-card">
+    <mat-card-content class="card-content">
+      <p><strong>Movie:</strong> {{ comment.movieTitle }}</p>
+      <p><strong>Comment:</strong> {{ comment.comment }}</p>
+      <p><strong>Status:</strong> {{ comment.status }}</p>
+      <p>
+        <strong>Submitted:</strong>
+        {{ comment.createdAt | date: 'short' }}
+      </p>
+      <div class="rating">
+        <mat-icon color="accent">star</mat-icon>
+        {{ comment.rating }} / 5
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>
+
+<ng-template #noComments>
+  <p>No comments found for this user.</p>
+</ng-template>

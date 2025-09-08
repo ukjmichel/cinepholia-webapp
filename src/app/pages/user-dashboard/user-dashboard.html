@@ -1,0 +1,15 @@
+<header>
+  <mat-form-field>
+    <mat-label>Mon espace</mat-label>
+    <mat-select
+      [(value)]="selected"
+      (selectionChange)="onModuleChange($event.value)"
+    >
+      <mat-option value="informations">Mes informations</mat-option>
+      <mat-option value="reservations">Mes réservations</mat-option>
+      <mat-option value="avis">Mes avis</mat-option>
+    </mat-select>
+  </mat-form-field>
+</header>
+
+<router-outlet></router-outlet>

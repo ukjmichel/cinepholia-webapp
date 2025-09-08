@@ -1,0 +1,44 @@
+@if (filteredScreenings() && filteredScreenings()!.length > 0) {
+<div class="screening-results">
+  @for (screening of filteredScreenings()!; track screening.screeningId) {
+  <mat-card class="screening-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon color="primary">movie</mat-icon>
+        {{ screening.movie?.title || 'Film inconnu' }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ screening.theater?.city }} – {{ screening.theater?.address }}
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="info-row">
+        <mat-icon>theaters</mat-icon>
+        <span>Salle : <b>{{ screening.hallId }}</b></span>
+      </div>
+      <div class="info-row">
+        <mat-icon>event</mat-icon>
+        <span>Date : <b>{{ screening.startTime | date:'long' }}</b></span>
+      </div>
+      <div class="info-row">
+        <mat-icon>high_quality</mat-icon>
+        <span>Qualité : <b>{{ screening.quality }}</b></span>
+      </div>
+      <div class="info-row">
+        <mat-icon>euro</mat-icon>
+        <span>Prix : <b>{{ screening.price | number:'1.2-2' }} €</b></span>
+      </div>
+      <div class="info-row screening-id">
+        <mat-icon>qr_code_2</mat-icon>
+        <span> ID : <code>{{ screening.screeningId }}</code> </span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+</div>
+} @else {
+<div class="empty-state">
+  <mat-icon color="warn" style="vertical-align: middle">search_off</mat-icon>
+  <p>Aucune séance trouvée.</p>
+</div>
+}

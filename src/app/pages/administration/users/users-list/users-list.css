@@ -1,0 +1,54 @@
+.users-list-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.user-list-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+}
+
+mat-card {
+  min-width: 260px;
+  max-width: 100%;
+  flex: 1 1 calc(33.333% - 16px);
+  box-sizing: border-box;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+mat-card-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+mat-card-content div {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.api-error-message {
+  color: #d32f2f;
+  margin: 20px 0;
+  font-weight: bold;
+  text-align: center;
+}

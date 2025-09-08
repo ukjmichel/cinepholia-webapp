@@ -1,0 +1,149 @@
+/* Container */
+.add-user-form {
+  min-width: 300px;
+  width: 90vw;
+  max-width: 1024px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-centered {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.header-centered h1 {
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #3f51b5;
+  margin: 0;
+}
+
+.header-centered button {
+  position: absolute;
+  left: 0;
+  color: #3f51b5;
+}
+
+/* Header with back button and title */
+.header-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.header-with-icon h1 {
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #3f51b5;
+  margin: 0;
+}
+
+.header-with-icon button {
+  color: #3f51b5;
+}
+
+/* Spinner */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+/* Form fields */
+mat-form-field.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Error messages */
+mat-error {
+  font-size: 12px;
+  color: #f44336;
+  display: block;
+}
+
+.button-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.button-container span {
+  display: none;
+}
+
+/* Submit button */
+button[type="submit"] {
+  width: 100%;
+  margin-top: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* Success message */
+.success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4caf50;
+  background-color: #e8f5e8;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 16px;
+  border-left: 4px solid #4caf50;
+  font-weight: 500;
+  justify-content: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Error message */
+.api-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f44336;
+  background-color: #ffeaea;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 16px;
+  border-left: 4px solid #f44336;
+  font-weight: 500;
+  justify-content: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+.success-message mat-icon,
+.api-error-message mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media screen and (min-width: 720px) {
+  .button-container span {
+    display: block;
+  }
+}
+
+  

@@ -1,0 +1,144 @@
+<div class="add-user-form">
+  <header>
+    <h1>Créer un utilisateur</h1>
+  </header>
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Role Select -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Type de compte</mat-label>
+      <mat-select
+        formControlName="role"
+        required
+        (selectionChange)="clearMessages()"
+      >
+        <mat-option value="utilisateur">Utilisateur</mat-option>
+        <mat-option value="employé">Employé</mat-option>
+      </mat-select>
+      <mat-error
+        *ngIf="userForm.get('role')?.invalid && (userForm.get('role')?.dirty || userForm.get('role')?.touched)"
+      >
+        Le type de compte est requis
+      </mat-error>
+    </mat-form-field>
+    <!-- Username -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom d'utilisateur</mat-label>
+      <input
+        matInput
+        placeholder="Ex: johndoe"
+        formControlName="username"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      <mat-error
+        *ngIf="userForm.get('username')?.invalid && (userForm.get('username')?.dirty || userForm.get('username')?.touched)"
+      >
+        Le nom d'utilisateur est requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- First Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Prénom</mat-label>
+      <input
+        matInput
+        placeholder="Ex: Jean"
+        formControlName="firstName"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      <mat-error
+        *ngIf="userForm.get('firstName')?.invalid && (userForm.get('firstName')?.dirty || userForm.get('firstName')?.touched)"
+      >
+        Le prénom est requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Last Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom</mat-label>
+      <input
+        matInput
+        placeholder="Ex: Dupont"
+        formControlName="lastName"
+        required
+        autocomplete="off"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      <mat-error
+        *ngIf="userForm.get('lastName')?.invalid && (userForm.get('lastName')?.dirty || userForm.get('lastName')?.touched)"
+      >
+        Le nom est requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        placeholder="exemple@email.com"
+        formControlName="email"
+        required
+        autocomplete="off"
+        type="email"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      <mat-error
+        *ngIf="userForm.get('email')?.invalid && (userForm.get('email')?.dirty || userForm.get('email')?.touched)"
+      >
+        Un email valide est requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Password -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Mot de passe</mat-label>
+      <input
+        matInput
+        placeholder="Votre mot de passe"
+        formControlName="password"
+        required
+        autocomplete="off"
+        type="password"
+        (focus)="clearMessages()"
+        (input)="clearMessages()"
+      />
+      <mat-error
+        *ngIf="userForm.get('password')?.invalid && (userForm.get('password')?.dirty || userForm.get('password')?.touched)"
+      >
+        Le mot de passe est requis (6 caractères minimum)
+      </mat-error>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="full-width"
+      type="submit"
+      [disabled]="userForm.invalid || isLoading"
+    >
+      <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>person_add</mat-icon>
+        Créer l'utilisateur
+      </ng-container>
+      <ng-container *ngIf="isLoading">Création en cours...</ng-container>
+    </button>
+
+    <div class="success-message" *ngIf="successMessage">
+      <mat-icon>check_circle</mat-icon>
+      {{ successMessage }}
+    </div>
+    <div class="api-error-message" *ngIf="apiError">
+      <mat-icon>error</mat-icon>
+      {{ apiError }}
+    </div>
+  </form>
+</div>

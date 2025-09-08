@@ -1,0 +1,110 @@
+.hall-results {
+  max-width: 900px;
+  margin: 2rem auto 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1.7rem;
+}
+
+.hall-card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(63, 81, 181, 0.07);
+  padding: 1.4rem 1.6rem 1.3rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 4px solid #3f51b5;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+}
+
+.hall-card:hover,
+.hall-card:focus-within {
+  box-shadow: 0 4px 24px rgba(63, 81, 181, 0.14), 0 0 0 2px #3f51b540;
+  transform: translateY(-3px) scale(1.015);
+}
+
+.hall-card h3 {
+  margin: 0 0 0.4rem 0;
+  color: #3f51b5;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.hall-card p {
+  margin: 0.2rem 0;
+  font-size: 1.02rem;
+  color: #222;
+  line-height: 1.4;
+}
+
+.hall-card strong {
+  color: #1664c0;
+  font-weight: 500;
+}
+
+/* Edit Button */
+.hall-card button[mat-stroked-button],
+.hall-card a[mat-stroked-button] {
+  margin-top: 1rem;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  min-width: 120px;
+  padding: 0 1.2em;
+  box-shadow: none;
+  text-transform: none;
+  transition: background 0.18s, color 0.18s;
+}
+
+.hall-card button[mat-stroked-button]:hover,
+.hall-card a[mat-stroked-button]:hover {
+  background: #e3ebfd;
+  color: #3f51b5;
+}
+
+.hall-card mat-icon {
+  font-size: 21px;
+  margin-right: 0.45em;
+  color: #3f51b5;
+  vertical-align: middle;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  margin: 3rem auto 0 auto;
+  color: #aaa;
+  font-size: 1.14rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.empty-state mat-icon {
+  font-size: 36px;
+  color: #ff9800;
+  margin-bottom: 0.3rem;
+}
+
+@media (max-width: 600px) {
+  .hall-results {
+    gap: 1.1rem;
+    grid-template-columns: 1fr;
+  }
+  .hall-card {
+    padding: 1rem 0.8rem 1rem 1rem;
+    font-size: 0.99rem;
+  }
+  .hall-card button[mat-stroked-button] {
+    min-width: 100px;
+    font-size: 0.97rem;
+    padding: 0 0.7em;
+  }
+}

@@ -1,0 +1,46 @@
+:host {
+  min-height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--primary-color);
+  height: 56px;
+  padding: 0 10px;
+  color: white;
+}
+
+.navbar-links {
+  list-style-type: none;
+  display: flex;
+  gap: 20px;
+}
+
+.side-nav {
+  min-height: calc(100vh - 56px);
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.side-nav li {
+  padding: 10px;
+  font-size: 20px;
+}
+
+.side-nav li:hover {
+  background-color: var(--secondary-color);
+}
+
+.test-btn {
+  width: 200px;
+  padding: 2px;
+  margin: 5px;
+  background-color: var(--secondary-color);
+}
+
+mat-drawer-container,
+mat-drawer-content {
+  overflow-x: hidden !important;
+}

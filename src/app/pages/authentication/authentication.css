@@ -1,0 +1,8 @@
+:host {
+    display: flex;
+    justify-content: center;   /* Horizontal centering */
+    align-items: center;       /* Vertical centering */
+    min-height: 100vh;         /* Take full viewport height */
+    width: 100vw;              /* Optional: full width */
+    box-sizing: border-box;    /* Consistent sizing */
+  }

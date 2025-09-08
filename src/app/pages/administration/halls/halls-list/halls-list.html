@@ -1,0 +1,29 @@
+@if (createdHalls() && createdHalls()!.length > 0) {
+  <div class="hall-results">
+    @for (hall of createdHalls()!; track hall.hallId) {
+      <div class="hall-card">
+        <h3>Salle {{ hall.hallId }}</h3>
+        <p><strong>Cinéma ID:</strong> {{ hall.theaterId }}</p>
+        <p>
+          <strong>Nombre de sièges:</strong>
+          {{ getSeatCount(hall) }}
+        </p>
+        <button
+          mat-stroked-button
+          color="primary"
+          [routerLink]="['/admin/halls', hall.theaterId, hall.hallId, 'edit']"
+          class="edit-hall-btn"
+          type="button"
+        >
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="empty-state">
+    <mat-icon color="warn" style="vertical-align: middle">search_off</mat-icon>
+    <p>Aucune salle trouvée.</p>
+  </div>
+}

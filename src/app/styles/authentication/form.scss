@@ -1,0 +1,145 @@
+/* ─── Layout Wrapper (Host) ───────────────────────────────────────────── */
+:host {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  min-height: 100vh; /* Full viewport height */
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+/* ─── Auth Form Container ────────────────────────────────────────────── */
+.auth-form {
+  max-width: 400px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+}
+
+/* ─── Headings ───────────────────────────────────────────────────────── */
+.auth-form h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ─── Form Fields ────────────────────────────────────────────────────── */
+.auth-form mat-form-field {
+  width: 100%;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.auth-form mat-form-field:last-child {
+  margin-bottom: 0;
+}
+
+.auth-form .mat-form-field-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.auth-form .mat-input-element {
+  padding: 12px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Material underline and focus */
+.auth-form .mat-form-field-underline {
+  background-color: #e0e0e0;
+}
+.auth-form .mat-form-field-ripple {
+  background-color: #3f51b5;
+}
+.auth-form .mat-form-field.mat-focused .mat-form-field-label {
+  color: #3f51b5;
+}
+.auth-form .mat-form-field.mat-focused .mat-form-field-ripple {
+  background-color: #3f51b5;
+}
+
+/* ─── Validation Error Styling ───────────────────────────────────────── */
+.auth-form mat-error {
+  font-size: 12px;
+  height: 20px;
+  color: #f44336;
+  display: block;
+}
+.auth-form mat-error div {
+  position: relative;
+  bottom: 1rem;
+}
+.auth-form .mat-form-field.mat-form-field-invalid .mat-form-field-label,
+.auth-form .mat-form-field.mat-form-field-invalid .mat-form-field-ripple {
+  color: #f44336;
+  background-color: #f44336;
+}
+
+/* ─── Outline Field Error Position Fix ───────────────────────────────── */
+.auth-form
+  .mat-form-field-appearance-outline
+  .mat-form-field-subscript-wrapper {
+  position: relative;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  min-height: 20px;
+}
+
+/* ─── Password Toggle Button ─────────────────────────────────────────── */
+.auth-form .mat-icon-button {
+  color: #666;
+  width: 40px;
+  height: 40px;
+}
+.auth-form .mat-icon-button:hover {
+  color: #3f51b5;
+  background-color: rgba(63, 81, 181, 0.04);
+}
+.auth-form .mat-icon {
+  font-size: 20px;
+}
+
+/* ─── Submit Button ──────────────────────────────────────────────────── */
+.auth-form button[type="submit"] {
+  width: 100%;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* ─── API Error & Success Messages ───────────────────────────────────── */
+.api-error-message {
+  text-align: center;
+  color: #f44336;
+}
+.success-message {
+  text-align: center;
+  color: #4caf50;
+  font-weight: 500;
+}
+
+/* ─── Links ──────────────────────────────────────────────────────────── */
+.auth-form p {
+  text-align: center;
+  margin: 10px;
+  color: #3f51b5;
+}
+
+/* ─── Responsive Design ─────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .auth-form {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: none;
+  }
+}
+
+/* ─── Accessibility Focus States ───────────────────────────────────── */
+.auth-form .mat-input-element:focus,
+.auth-form .mat-icon-button:focus {
+  outline: 2px solid #3f51b5;
+  outline-offset: 2px;
+}

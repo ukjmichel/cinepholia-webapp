@@ -1,0 +1,31 @@
+<form class="booking-form" [formGroup]="bookingForm" autocomplete="off">
+  <div class="form-fields-row">
+    <mat-form-field appearance="fill" class="form-field">
+      <mat-label>Cinéma</mat-label>
+      <mat-select formControlName="theaterId" required>
+        <mat-option *ngFor="let theater of theaters" [value]="theater.theaterId">
+          {{ theater.theaterId }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="form-field">
+      <mat-label>Film</mat-label>
+      <mat-select formControlName="movieId" required>
+        <mat-option *ngFor="let movie of movies" [value]="movie.movieId">
+          {{ movie.title }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button
+    mat-raised-button
+    class="custom-btn"
+    type="button"
+    [disabled]="!canSubmit"
+    (click)="onSubmit()"
+  >
+    Commencer réservation
+  </button>
+</form>

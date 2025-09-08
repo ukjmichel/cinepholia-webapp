@@ -1,0 +1,78 @@
+<mat-drawer-container
+  class="theather-filter-side"
+  [hasBackdrop]="true"
+  (backdropClick)="drawer.close()"
+>
+  <!-- Sidebar Drawer for Filters -->
+  <mat-drawer
+    #drawer
+    [mode]="'over'"
+    class="drawer-80vw"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <div class="movie-theater-filter-container">
+      <h1 class="filter-title">Filtrer les cinémas</h1>
+      <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <!-- Cinema Dropdown -->
+        <mat-form-field appearance="outline">
+          <mat-label>Cinéma</mat-label>
+          <mat-select formControlName="theaterId">
+            <mat-option value="">Tous les cinémas</mat-option>
+            @for (theater of allTheaters(); track theater.theaterId) {
+            <mat-option [value]="theater.theaterId">
+              {{ theater.theaterId }} - {{ theater.city }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Postal Code Input -->
+        <mat-form-field appearance="outline">
+          <mat-label>Code Postal</mat-label>
+          <input
+            matInput
+            placeholder="Code Postal"
+            formControlName="postalCode"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <!-- City Input -->
+        <mat-form-field appearance="outline">
+          <mat-label>Ville</mat-label>
+          <input
+            matInput
+            placeholder="Ville"
+            formControlName="city"
+            autocomplete="off"
+          />
+        </mat-form-field>
+
+        <button mat-raised-button class="full-width" type="submit">
+          Filtrer
+        </button>
+      </form>
+      @if (apiError) {
+      <div class="api-error-message">{{ apiError }}</div>
+      }
+    </div>
+  </mat-drawer>
+
+  <!-- Main Content / Toolbar -->
+  <mat-drawer-content>
+    <div class="toolbar-actions">
+      <button
+        mat-icon-button
+        class="toolbar-btn"
+        (click)="drawer.toggle()"
+        aria-label="Afficher le filtre"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+      <button mat-icon-button class="toolbar-btn" aria-label="Ajouter">
+        <mat-icon [routerLink]="'./new-theater'">add</mat-icon>
+      </button>
+    </div>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

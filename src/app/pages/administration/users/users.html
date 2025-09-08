@@ -1,0 +1,88 @@
+<mat-drawer-container
+  class="hall-filter-side"
+  [hasBackdrop]="true"
+  (backdropClick)="drawer.close()"
+>
+  <mat-drawer
+    #drawer
+    mode="over"
+    class="drawer-80vw"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <div class="employee-filter-container">
+      <h1 class="filter-title">Filtrer les utilisateurs</h1>
+      <form autocomplete="off" (ngSubmit)="onFilter()">
+        <mat-form-field appearance="outline">
+          <mat-label>ID</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filters.userId"
+            name="userId"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filters.username"
+            name="username"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prénom</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filters.firstName"
+            name="firstName"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filters.lastName"
+            name="lastName"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filters.email"
+            name="email"
+            autocomplete="off"
+          />
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          class="full-width"
+          type="submit"
+        >
+          Filtrer
+        </button>
+      </form>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="toolbar-actions">
+      <button
+        mat-icon-button
+        class="toolbar-btn"
+        (click)="drawer.toggle()"
+        aria-label="Afficher le filtre"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+      <button mat-icon-button class="toolbar-btn" aria-label="Ajouter">
+        <mat-icon [routerLink]="'./new-user'">add</mat-icon>
+      </button>
+      <ng-content></ng-content>
+    </div>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

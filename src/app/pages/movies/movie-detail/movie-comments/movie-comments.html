@@ -1,0 +1,34 @@
+<div class="comment-carousel" *ngIf="comments().length > 0">
+  <!-- Left arrow inside the card -->
+  <button class="nav-arrow left" (click)="prevComment()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+
+  <div class="comment-card">
+    <p
+      class="comment-text"
+      [innerHTML]="sanitizeComment(comments()[currentIndex()].comment)"
+    ></p>
+
+    <p class="comment-rating">
+      <span
+        class="star"
+        *ngFor="let star of getStars(comments()[currentIndex()].rating)"
+      >
+        {{ star }}
+      </span>
+    </p>
+
+    <p class="comment-user">
+      — {{ comments()[currentIndex()].user.username }} · {{
+      comments()[currentIndex()].createdAt | date: 'shortDate' }}
+    </p>
+  </div>
+
+  <!-- Right arrow inside the card -->
+  <button class="nav-arrow right" (click)="nextComment()">
+    <mat-icon>arrow_forward</mat-icon>
+  </button>
+</div>
+
+

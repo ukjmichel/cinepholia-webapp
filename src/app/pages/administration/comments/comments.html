@@ -1,0 +1,61 @@
+<mat-drawer-container
+  class="comment-filter-side"
+  [hasBackdrop]="true"
+  (backdropClick)="drawer.close()"
+>
+  <mat-drawer
+    #drawer
+    [mode]="'over'"
+    class="drawer-80vw"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <div class="movie-hall-filter-container">
+      <h1 class="filter-title">Filtrer les commentaires</h1>
+      <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Film</mat-label>
+          <mat-select formControlName="movieId" placeholder="Choisir un film">
+            <mat-option [value]="''">Tous les films</mat-option>
+            @for (movie of allMovies(); track movie.movieId) {
+            <mat-option [value]="movie.movieId">{{ movie.title }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">Tous les statuts</mat-option>
+            <mat-option value="pending">En attente</mat-option>
+            <mat-option value="confirmed">Confirmé</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button
+          mat-raised-button
+          class="full-width"
+          type="submit"
+          [disabled]="isLoading()"
+        >
+          @if (isLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          } @else { Filtrer }
+        </button>
+      </form>
+      @if (apiError()) {
+      <div class="api-error-message">{{ apiError() }}</div>
+      }
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div class="toolbar-actions">
+      <button
+        mat-icon-button
+        class="toolbar-btn"
+        (click)="drawer.toggle()"
+        aria-label="Afficher le filtre"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

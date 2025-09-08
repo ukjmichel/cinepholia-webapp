@@ -1,0 +1,18 @@
+<div class="subscribe-wrapper">
+  <h2>Connectez-vous</h2>
+
+  <form (ngSubmit)="onSubmit()" class="form">
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="email"
+      required
+      placeholder="votre email"
+      class="email-input"
+    />
+
+    <button mat-raised-button type="submit" class="submit-button">
+      <strong>Valider</strong>
+    </button>
+  </form>
+</div>

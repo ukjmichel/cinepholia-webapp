@@ -1,0 +1,135 @@
+<div class="add-screening-form">
+  <header>
+    <h1>Créer une séance</h1>
+  </header>
+  <form [formGroup]="screeningForm" (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Movie select -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Film</mat-label>
+      <mat-select formControlName="movieId" required>
+        <mat-option [value]="''">Choisir un film</mat-option>
+        @for (movie of movies(); track movie.movieId) {
+        <mat-option [value]="movie.movieId">{{ movie.title }}</mat-option>
+        }
+      </mat-select>
+      @if(hasFieldError('movieId')) {
+      <mat-error>{{ getFieldError('movieId') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Theater select -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cinéma</mat-label>
+      <mat-select formControlName="theaterId" required>
+        <mat-option [value]="''">Choisir un cinéma</mat-option>
+        @for (theater of theaters(); track theater.theaterId) {
+        <mat-option [value]="theater.theaterId"
+          >{{ theater.theaterId }}</mat-option
+        >
+        }
+      </mat-select>
+      @if(hasFieldError('theaterId')) {
+      <mat-error>{{ getFieldError('theaterId') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Hall select -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Salle</mat-label>
+      <mat-select
+        formControlName="hallId"
+        required
+        [disabled]="!halls().length"
+      >
+        <mat-option [value]="''">Choisir une salle</mat-option>
+        @for (hall of halls(); track hall.hallId) {
+        <mat-option [value]="hall.hallId">{{ hall.hallId }}</mat-option>
+        }
+      </mat-select>
+      @if(hasFieldError('hallId')) {
+      <mat-error>{{ getFieldError('hallId') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Date -->
+    <mat-form-field appearance="outline" class="half-width">
+      <mat-label>Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="date"
+        required
+        autocomplete="off"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Heure -->
+    <mat-form-field appearance="outline" class="half-width">
+      <mat-label>Heure</mat-label>
+      <input
+        matInput
+        type="time"
+        formControlName="time"
+        required
+        autocomplete="off"
+        step="900"
+        placeholder="20:00"
+      />
+    </mat-form-field>
+
+    <!-- Prix -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Prix (€)</mat-label>
+      <input
+        matInput
+        formControlName="price"
+        type="number"
+        min="0"
+        required
+        autocomplete="off"
+        placeholder="9.99"
+      />
+      @if(hasFieldError('price')) {
+      <mat-error>{{ getFieldError('price') }}</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button
+        mat-raised-button
+        color="primary"
+        class="full-width"
+        type="submit"
+        [disabled]="screeningForm.invalid || isLoading()"
+      >
+        @if(isLoading()) {
+        <ng-container>
+          <mat-icon>hourglass_empty</mat-icon>
+          Création...
+        </ng-container>
+        } @else {
+        <ng-container>
+          <mat-icon>add</mat-icon>
+          Créer la séance
+        </ng-container>
+        }
+      </button>
+      
+    </div>
+
+    @if(successMessage()) {
+    <div class="success-message">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ successMessage() }}</span>
+    </div>
+    } @if(apiError()) {
+    <div class="api-error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ apiError() }}</span>
+    </div>
+    }
+  </form>
+</div>

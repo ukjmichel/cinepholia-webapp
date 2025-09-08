@@ -1,0 +1,58 @@
+<div class="comments-list-container">
+  <header>
+    <h1>Commentaires des spectateurs</h1>
+    <p class="subtitle">Retrouvez les avis et notes donnés par les clients.</p>
+  </header>
+
+  @if (comments().length) {
+  <div class="comments-grid">
+    @for (c of comments(); track c.bookingId) {
+    <div class="comment-card" (click)="selectedComment = c">
+      <div class="comment-meta">
+        <mat-icon class="comment-icon" aria-hidden="true">person</mat-icon>
+        <span class="comment-date">{{ c.createdAt | date:'short' }}</span>
+        <span
+          class="comment-status"
+          [class.confirmed]="c.status === 'confirmed'"
+        >
+          {{ c.status || 'pending' }}
+        </span>
+        @if (c.rating) {
+        <span class="comment-rating">
+          <mat-icon>star</mat-icon> {{ c.rating }}
+        </span>
+        }
+      </div>
+      <div class="comment-content">{{ c.comment }}</div>
+
+      <!-- CONFIRM BUTTON -->
+      @if (c.status !== 'confirmed') {
+      <button
+        type="button"
+        class="confirm-btn"
+        (click)="confirmComment(c, $event)"
+      >
+        <mat-icon>check_circle</mat-icon>
+        Confirmer
+      </button>
+      }
+      <!-- DELETE BUTTON -->
+      <button
+        type="button"
+        class="delete-btn"
+        (click)="deleteComment(c, $event)"
+      >
+        <mat-icon>delete</mat-icon>
+        Supprimer
+      </button>
+    </div>
+
+    }
+  </div>
+  } @else {
+  <div class="empty-state">
+    <mat-icon>comment</mat-icon>
+    Aucun commentaire pour l’instant.
+  </div>
+  }
+</div>

@@ -1,0 +1,144 @@
+<mat-drawer-container
+  class="theather-filter-side"
+  [hasBackdrop]="true"
+  (backdropClick)="drawer.close()"
+>
+  <!-- Sidebar Drawer for Filters -->
+  <mat-drawer
+    #drawer
+    [mode]="'over'"
+    class="drawer-80vw"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <div class="movie-theater-filter-container">
+      <h1 class="filter-title">Filtrer les cinémas</h1>
+      <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <!-- Cinema Dropdown -->
+        <mat-form-field appearance="outline">
+          <mat-label>Cinéma</mat-label>
+          <mat-select
+            formControlName="theaterId"
+            (selectionChange)="onTheaterChange($event.value)"
+          >
+            <mat-option value="">Tous les cinémas</mat-option>
+            <mat-option
+              *ngFor="let theater of allTheaters(); trackBy: trackByTheaterId"
+              [value]="theater.theaterId"
+            >
+              {{ theater.theaterId }} - {{ theater.city }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Genre Dropdown: visible uniquement si un cinéma est sélectionné -->
+        <ng-container *ngIf="filterForm.value.theaterId">
+          <mat-form-field appearance="outline">
+            <mat-label>Genre</mat-label>
+            <mat-select
+              formControlName="genre"
+              (selectionChange)="onGenreChange($event.value)"
+            >
+              <mat-option value="">Tous les genres</mat-option>
+              <mat-option *ngFor="let g of allGenres()" [value]="g">
+                {{ g }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Movie Dropdown: visible uniquement si un cinéma est sélectionné -->
+        <ng-container *ngIf="filterForm.value.theaterId">
+          <mat-form-field appearance="outline">
+            <mat-label>Film</mat-label>
+            <mat-select
+              formControlName="movieId"
+              (selectionChange)="onMovieChange($event.value)"
+            >
+              <mat-option value="">Tous les films</mat-option>
+              <mat-option
+                *ngFor="let movie of allMoviesByTheater(); trackBy: trackByMovieId"
+                [value]="movie.movieId"
+              >
+                {{ movie.title }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Screening Date Dropdown: visible si film sélectionné et séances existantes -->
+        <ng-container
+          *ngIf="
+            filterForm.value.movieId &&
+            screeningDates().length > 0
+          "
+        >
+          <mat-form-field appearance="outline">
+            <mat-label>Date de séance</mat-label>
+            <mat-select
+              formControlName="screeningDate"
+              (selectionChange)="onScreeningDateChange($event.value)"
+            >
+              <mat-option value="">Toutes les dates</mat-option>
+              <mat-option *ngFor="let date of screeningDates()" [value]="date">
+                {{ date }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Screening Session Dropdown: visible si date sélectionnée et séances existantes -->
+        <ng-container
+          *ngIf="
+            filterForm.value.screeningDate &&
+            allScreenings().length > 0
+          "
+        >
+          <mat-form-field appearance="outline">
+            <mat-label>Séance</mat-label>
+            <mat-select formControlName="screeningId">
+              <mat-option value="">Toutes les séances</mat-option>
+              <mat-option
+                *ngFor="let screening of allScreenings(); trackBy: trackByScreeningId"
+                [value]="screening.screeningId"
+              >
+                {{ screening.startTime | date: 'shortTime' }} - {{
+                screening.quality }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Bouton Réserver -->
+        <button
+          mat-raised-button
+          class="full-width"
+          type="button"
+          (click)="goToBooking()"
+        >
+          Réserver
+        </button>
+      </form>
+
+      <div *ngIf="apiError" class="api-error-message">{{ apiError }}</div>
+    </div>
+  </mat-drawer>
+
+  <!-- Main Content / Toolbar -->
+  <mat-drawer-content>
+    <div class="toolbar-actions">
+      <button
+        mat-icon-button
+        class="toolbar-btn"
+        (click)="drawer.toggle()"
+        aria-label="Afficher le filtre"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+      <button mat-icon-button class="toolbar-btn" aria-label="Ajouter">
+        <mat-icon [routerLink]="'./new-theater'">add</mat-icon>
+      </button>
+    </div>
+
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

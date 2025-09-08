@@ -1,0 +1,20 @@
+<div class="contact-banner">
+  <div class="banner-grid">
+    <div class="contact">
+      <div class="title">{{ title() }}</div>
+      <div class="addr">{{ addressLine1() }}</div>
+      @if (phone()) {
+      <div class="phone">{{ phone() }}</div>
+      }
+    </div>
+
+    <div class="schedule">
+      <div class="section-title">Horaires</div>
+      <div class="schedule-box">
+        @for (line of scheduleLines(); track $index) {
+        <div class="schedule-line">{{ line }}</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

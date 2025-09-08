@@ -1,0 +1,21 @@
+<header>
+  <mat-form-field>
+    <mat-label>Choix du module</mat-label>
+    <mat-select
+      [(value)]="selected"
+      (selectionChange)="onModuleChange($event.value)"
+    >
+      <mat-option value="dashboard">Dashboard</mat-option>
+      <mat-option value="theaters">Cinémas</mat-option>
+      <mat-option value="halls">Halls</mat-option>
+      <mat-option value="movies">Films</mat-option>
+      <mat-option value="screenings">Séances</mat-option>
+      <mat-option value="comments">Commentaires</mat-option>
+
+      <!-- Option visible uniquement pour les administrateurs -->
+      <mat-option *ngIf="isAdmin()" value="users">Utilisateur</mat-option>
+    </mat-select>
+  </mat-form-field>
+</header>
+
+<router-outlet></router-outlet>

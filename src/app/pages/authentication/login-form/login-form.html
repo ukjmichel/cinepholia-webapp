@@ -1,0 +1,76 @@
+<div class="auth-form">
+  <header><h1>Se connecter</h1></header>
+
+  <form (ngSubmit)="onSubmit()" autocomplete="off">
+    <!-- Email field -->
+    <mat-form-field appearance="outline">
+      <mat-label>Enter your email</mat-label>
+      <input
+        matInput
+        placeholder="email@example.com"
+        [formControl]="email"
+        type="email"
+        required
+        autocomplete="username"
+        (blur)="updateErrorMessages()"
+        (focus)="clearApiError()"
+        (input)="clearApiError()"
+      />
+      @if (email.invalid && (email.dirty || email.touched)) {
+        <mat-error>
+          @for (msg of errorMessages(); track msg) {
+            <div>{{ msg }}</div>
+          }
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Password field -->
+    <mat-form-field appearance="outline">
+      <mat-label>Enter your password</mat-label>
+      <input
+        matInput
+        [type]="hide() ? 'password' : 'text'"
+        [formControl]="password"
+        required
+        autocomplete="current-password"
+        (focus)="clearApiError()"
+        (input)="clearApiError()"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="hide()"
+        (click)="togglePassword()"
+        tabindex="-1"
+      >
+        <mat-icon>{{ hide() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (password.invalid && (password.dirty || password.touched)) {
+        <mat-error>
+          <div>Le mot de passe est requis</div>
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <!-- API error -->
+    <div class="api-error-message" *ngIf="apiErrorMessage()">
+      {{ apiErrorMessage() }}
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      mat-raised-button
+      type="submit"
+      [disabled]="email.invalid || password.invalid"
+    >
+      Se connecter
+    </button>
+  </form>
+
+  <!-- Links -->
+  <p><a [routerLink]="['../forgot-password']">Mot de passe oublié ?</a></p>
+  <p><a [routerLink]="['../register']">Créer un compte</a></p>
+</div>

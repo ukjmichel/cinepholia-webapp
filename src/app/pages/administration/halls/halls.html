@@ -1,0 +1,55 @@
+<mat-drawer-container
+  class="hall-filter-side"
+  [hasBackdrop]="true"
+  (backdropClick)="drawer.close()"
+>
+  <mat-drawer
+    #drawer
+    [mode]="'over'"
+    class="drawer-80vw"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <div class="movie-hall-filter-container">
+      <h1 class="filter-title">Filtrer les salles</h1>
+      <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Choisir un cinéma</mat-label>
+          <mat-select formControlName="theaterId">
+            <mat-option
+              *ngFor="let theater of allTheaters()"
+              [value]="theater.theaterId"
+            >
+              {{ theater.theaterId }} ({{ theater.city }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button class="full-width" type="submit">
+          Filtrer
+        </button>
+      </form>
+
+      @if(apiError()) {
+      <div class="api-error-message">{{ apiError() }}</div>
+      }
+    </div>
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <div class="toolbar-actions">
+      <button
+        mat-icon-button
+        class="toolbar-btn"
+        (click)="drawer.toggle()"
+        aria-label="Afficher le filtre"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+      <button mat-icon-button class="toolbar-btn" aria-label="Ajouter">
+        <mat-icon [routerLink]="'./new-hall'">add</mat-icon>
+      </button>
+    </div>
+
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

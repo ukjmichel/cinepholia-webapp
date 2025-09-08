@@ -1,0 +1,228 @@
+/* === Form layout and container === */
+.add-screening-form {
+    min-width: 300px;
+    width: 90vw;
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* === Title and section headings === */
+  .add-screening-form header h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3f51b5;
+    font-weight: 500;
+  }
+  
+  /* === Form fields general styling === */
+  .add-screening-form mat-form-field {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  /* Remove bottom margin for last field */
+  .add-screening-form mat-form-field:last-child {
+    margin-bottom: 0;
+  }
+  
+  /* === Angular Material input and label styling === */
+  .add-screening-form .mat-form-field {
+    font-family: "Roboto", sans-serif;
+  }
+  .add-screening-form .mat-form-field-label {
+    color: #666;
+    font-size: 14px;
+  }
+  .add-screening-form .mat-input-element {
+    padding: 12px 0;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #333;
+  }
+  .add-screening-form .mat-form-field-underline {
+    background-color: #e0e0e0;
+  }
+  .add-screening-form .mat-form-field-ripple {
+    background-color: #3f51b5;
+  }
+  
+  /* Focus state colors for Material fields */
+  .add-screening-form .mat-form-field.mat-focused .mat-form-field-label {
+    color: #3f51b5;
+  }
+  .add-screening-form .mat-form-field.mat-focused .mat-form-field-ripple {
+    background-color: #3f51b5;
+  }
+  
+  /* === Error message styling === */
+  .add-screening-form mat-error {
+    font-size: 12px;
+    min-height: 20px;
+    color: #f44336;
+    display: block;
+    margin-top: 0.2rem;
+  }
+  
+  /* === Fix for Material outline appearance error positioning === */
+  .add-screening-form
+    .mat-form-field-appearance-outline
+    .mat-form-field-subscript-wrapper {
+    position: relative;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    min-height: 20px; /* Reserve space for errors */
+  }
+  .add-screening-form .mat-form-field-appearance-outline {
+    position: relative;
+  }
+  
+  /* Remove extra padding below form fields */
+  .add-screening-form .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+  }
+  .add-screening-form mat-form-field {
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  
+  /* Error coloring for invalid fields */
+  .add-screening-form .mat-form-field.mat-form-field-invalid .mat-form-field-label {
+    color: #f44336;
+  }
+  .add-screening-form .mat-form-field.mat-form-field-invalid .mat-form-field-ripple {
+    background-color: #f44336;
+  }
+  
+  /* === Material icon button styling === */
+  .add-screening-form .mat-icon-button {
+    color: #666;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+  .add-screening-form .mat-icon-button:hover {
+    color: #3f51b5;
+    background-color: rgba(63, 81, 181, 0.04);
+  }
+  .add-screening-form .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* === Responsive design for mobile === */
+  @media (max-width: 480px) {
+    .add-screening-form {
+      margin: 1rem;
+      padding: 1.5rem;
+      max-width: none;
+    }
+  }
+  
+  /* === Focus states for accessibility === */
+  .add-screening-form .mat-input-element:focus {
+    outline: 2px solid #3f51b5;
+    outline-offset: 2px;
+  }
+  .add-screening-form .mat-icon-button:focus {
+    outline: 2px solid #3f51b5;
+    outline-offset: 2px;
+  }
+  
+  /* === Submit button styling === */
+  .add-screening-form button[type="submit"] {
+    width: 100%;
+    display: block;
+    margin: 1rem 0 0 0;
+    text-align: center;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+  
+  /* === Success and error message styling === */
+  .add-screening-form .success-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4caf50;
+    background-color: #e8f5e8;
+    padding: 12px;
+    border-radius: 4px;
+    margin-top: 16px;
+    border-left: 4px solid #4caf50;
+    font-weight: 500;
+    text-align: center;
+    justify-content: center;
+  }
+  .add-screening-form .success-message mat-icon {
+    color: #4caf50;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+  .add-screening-form .api-error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f44336;
+    background-color: #ffeaea;
+    padding: 12px;
+    border-radius: 4px;
+    margin-top: 16px;
+    border-left: 4px solid #f44336;
+    font-weight: 500;
+    text-align: center;
+    justify-content: center;
+  }
+  .add-screening-form .api-error-message mat-icon {
+    color: #f44336;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* === Remove default margin from form === */
+  .add-screening-form form {
+    margin-bottom: 0;
+  }
+  
+  /* Center paragraph text for minor info sections */
+  .add-screening-form p {
+    text-align: center;
+    margin: 10px;
+    color: #3f51b5;
+    font-size: 15px;
+  }
+  
+  /* Disabled state for loading submit button */
+  .add-screening-form button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .add-screening-form button[type="submit"] mat-icon {
+    margin-right: 8px;
+  }
+  
+  /* === Slide in animation for messages === */
+  .success-message,
+  .api-error-message {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  /* === SlideIn animation for feedback messages === */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

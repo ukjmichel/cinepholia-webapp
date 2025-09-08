@@ -1,0 +1,41 @@
+<div class="users-list-page">
+  <h1>Liste des utilisateurs</h1>
+
+  <!-- Liste des utilisateurs si non vide -->
+  <ng-container *ngIf="users().length > 0; else noResults">
+    <div class="user-list-cards">
+      <!-- Carte utilisateur -->
+      <mat-card *ngFor="let user of users()">
+        <mat-card-title>{{ user.username }}</mat-card-title>
+
+        <mat-card-content>
+          <div><strong>ID :</strong> {{ user.userId }}</div>
+          <div><strong>Prénom :</strong> {{ user.firstName }}</div>
+          <div><strong>Nom :</strong> {{ user.lastName }}</div>
+          <div><strong>Email :</strong> {{ user.email }}</div>
+          <div><strong>Rôle :</strong> {{ user.role }}</div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <!-- Bouton de modification redirigeant vers la page d'édition -->
+          <button
+            mat-button
+            color="primary"
+            [routerLink]="['../', user.userId, 'edit']"
+            aria-label="Modifier l’utilisateur"
+          >
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </ng-container>
+
+  <!-- Message si aucun utilisateur ou erreur -->
+  <ng-template #noResults>
+    <div class="api-error-message">
+      {{ userService.usersApiError() || 'Aucun utilisateur trouvé.' }}
+    </div>
+  </ng-template>
+</div>

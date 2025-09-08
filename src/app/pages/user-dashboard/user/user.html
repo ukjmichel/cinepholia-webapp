@@ -1,0 +1,54 @@
+<mat-card *ngIf="user as u" class="user-card">
+  <mat-card-title>Mes informations</mat-card-title>
+  <mat-divider></mat-divider>
+  <mat-card-content>
+    <div *ngIf="!editMode(); else editForm">
+      <p><strong>Nom :</strong> {{ u.lastName }}</p>
+      <p><strong>Prénom :</strong> {{ u.firstName }}</p>
+      <p><strong>Nom d'utilisateur :</strong> {{ u.username }}</p>
+      <p><strong>Email :</strong> {{ u.email }}</p>
+      <p><strong>Rôle :</strong> {{ u.role || 'Non spécifié' }}</p>
+      <p>
+        <strong>Statut :</strong>
+        <span *ngIf="u.verified" style="display: flex; align-items: center; gap: 4px">
+          <mat-icon color="primary">verified</mat-icon> Vérifié
+        </span>
+        <span *ngIf="!u.verified">Non vérifié</span>
+      </p>
+      <p><strong>Inscrit le :</strong> {{ u.createdAt | date:'longDate' }}</p>
+    </div>
+
+    <ng-template #editForm>
+      <mat-form-field appearance="fill" class="field">
+        <mat-label>Nom</mat-label>
+        <input matInput [(ngModel)]="form.lastName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="field">
+        <mat-label>Prénom</mat-label>
+        <input matInput [(ngModel)]="form.firstName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="field">
+        <mat-label>Nom d'utilisateur</mat-label>
+        <input matInput [(ngModel)]="form.username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="field">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="form.email" />
+      </mat-form-field>
+    </ng-template>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="primary" *ngIf="!editMode()" (click)="toggleEdit()">
+      Modifier
+    </button>
+
+    <div *ngIf="editMode()">
+      <button mat-raised-button color="primary" (click)="saveChanges()">Enregistrer</button>
+      <button mat-button (click)="toggleEdit()">Annuler</button>
+    </div>
+  </mat-card-actions>
+</mat-card>
